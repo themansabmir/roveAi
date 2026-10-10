@@ -1,0 +1,10 @@
+{
+  "extends": "@rove/config-ts/react-library.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "tailwind-preset.js"],
+  "exclude": ["node_modules", "dist"]
+}

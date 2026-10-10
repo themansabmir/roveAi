@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../roister/roister-backend"
+		},
+		{
+			"path": "../../roister/roister-dashboard"
+		}
+	],
+	"settings": {}
+}

@@ -1,0 +1,834 @@
+// Rove — automated opportunity engine for local businesses.
+//
+// Source of truth: apps/api/doc/MVP.md
+// Product scope: discover prospects, collect evidence (audits), reason over it
+// with AI, produce sales-ready opportunity briefs, and EXPORT / HAND OFF to a CRM.
+// Out of scope (NOT modeled): outbound campaigns, cold-email sending, call-script
+// dispatch, follow-up sequences. Brief *content* (pitch text) is research output,
+// not a sending engine.
+//
+// Multi-tenant: Organization is the agency workspace. All business data,
+// evidence, snapshots, and AI output are scoped per-organization. No cache is
+// shared across organizations.
+//
+// Files (screenshots, exports, PDFs) live in Cloudflare R2; the DB stores object
+// keys + metadata only.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Prisma 7: connection URLs live in prisma.config.ts, not here.
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum MembershipRole {
+  owner
+  admin
+  member
+}
+
+enum CampaignStatus {
+  DRAFT
+  QUEUED
+  DISCOVERING
+  PROCESSING
+  COMPLETED
+  PARTIALLY_COMPLETED
+  PAUSED
+  FAILED
+  CANCELLED
+}
+
+enum WebsiteFilter {
+  OWNED
+  MISSING
+  EITHER
+}
+
+// How a Maps-provided URL is classified. Only OWNED_SITE is crawled.
+enum WebsiteClass {
+  OWNED_SITE
+  SOCIAL
+  DIRECTORY
+  BOOKING
+  MISSING
+}
+
+enum QualificationStatus {
+  NEW
+  QUALIFIED
+  EXCLUDED_EXISTING_CLIENT
+  LOW_RATING
+  LOW_PRIORITY
+  DUPLICATE
+}
+
+// Lifecycle of the crawl/audit for a single lead's website.
+enum AuditStatus {
+  PENDING
+  SKIPPED_NO_WEBSITE
+  SKIPPED_NOT_OWNED_SITE
+  SKIPPED_BY_ROBOTS
+  UNREACHABLE
+  BLOCKED
+  LOW_TEXT
+  COMPLETED
+  FAILED
+}
+
+// Families of audit modules (MVP section 2). Each produces normalized findings.
+enum AuditModule {
+  TECHNICAL_SEO
+  PERFORMANCE
+  SECURITY
+  ACCESSIBILITY
+  WEBSITE_EXPERIENCE
+  LOCAL_SEO
+  REPUTATION
+  CONTENT
+  TECHNOLOGY
+  COMPETITOR
+}
+
+// Lab vs real-user vs profile data — matters for how a finding may be used.
+enum EvidenceSource {
+  LAB
+  FIELD
+  PROFILE
+  CRAWL
+  DERIVED
+}
+
+enum FindingSeverity {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum FindingKind {
+  FINDING // observable issue
+  OPPORTUNITY // possible service to address a finding
+  HYPOTHESIS // possible business impact, unconfirmed
+}
+
+// Status of the AI reasoning pass for a lead.
+enum AiStatus {
+  PENDING
+  SKIPPED_GATE
+  COMPLETED
+  UNAVAILABLE
+}
+
+enum OpportunityConfidence {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum BriefStatus {
+  DRAFT
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum JobKind {
+  DISCOVER
+  CRAWL
+  AUDIT
+  INTERPRET
+  COMPETITOR
+  REAUDIT
+  EXPORT
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum UsageKind {
+  MAPS_RECORD
+  WEBSITE_PAGE
+  LIGHTHOUSE_RUN
+  LLM_INPUT_TOKEN
+  LLM_OUTPUT_TOKEN
+  FILE_STORED
+}
+
+// Phase 2: review-level signals.
+enum ReviewSentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+  MIXED
+}
+
+// Phase 3: scheduled re-audit cadence.
+enum ReauditCadence {
+  OFF
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+}
+
+enum ChangeKind {
+  SCORE_UP
+  SCORE_DOWN
+  FINDING_RESOLVED
+  FINDING_NEW
+  CONTENT_CHANGED
+  WENT_OFFLINE
+  CAME_ONLINE
+}
+
+// CRM export / integration (product endpoint: hand off, do not run outbound).
+enum CrmProvider {
+  HUBSPOT
+  PIPEDRIVE
+  SALESFORCE
+  ZOHO
+  CSV
+  WEBHOOK
+}
+
+enum CrmSyncStatus {
+  PENDING
+  SYNCED
+  FAILED
+  SKIPPED
+}
+
+enum FileKind {
+  SCREENSHOT
+  PDF_REPORT
+  CSV_EXPORT
+  LOGO
+  OTHER
+}
+
+// ---------------------------------------------------------------------------
+// Auth (Better Auth)
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String   @id @default(cuid())
+  name          String?  @db.VarChar(255)
+  email         String   @unique @db.VarChar(255)
+  emailVerified Boolean  @default(false)
+  image         String?  @db.VarChar(1000)
+  createdAt     DateTime @db.Timestamptz
+  updatedAt     DateTime @db.Timestamptz
+
+  accounts    Account[]
+  sessions    Session[]
+  memberships Membership[]
+
+  @@map("user")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String    @db.VarChar(255)
+  providerId            String    @db.VarChar(255)
+  userId                String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime? @db.Timestamptz
+  refreshTokenExpiresAt DateTime? @db.Timestamptz
+  scope                 String?   @db.VarChar(500)
+  password              String?   @db.VarChar(500)
+  createdAt             DateTime  @db.Timestamptz
+  updatedAt             DateTime  @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
+}
+
+model Session {
+  id                   String   @id @default(cuid())
+  userId               String
+  token                String   @unique @db.VarChar(500)
+  expiresAt            DateTime @db.Timestamptz
+  ipAddress            String?  @db.VarChar(100)
+  userAgent            String?  @db.Text
+  activeOrganizationId String?  @db.VarChar(64)
+  createdAt            DateTime @db.Timestamptz
+  updatedAt            DateTime @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String    @db.VarChar(500)
+  value      String    @db.VarChar(500)
+  expiresAt  DateTime  @db.Timestamptz
+  createdAt  DateTime  @db.Timestamptz
+  updatedAt  DateTime? @updatedAt @db.Timestamptz
+
+  @@map("verification")
+}
+
+// ---------------------------------------------------------------------------
+// Workspace / tenancy
+// ---------------------------------------------------------------------------
+
+model Organization {
+  id   String @id @default(cuid())
+  name String @db.VarChar(255)
+  slug String @unique @db.VarChar(255)
+
+  // Monthly budget ceilings (MVP guardrails). Starting beta values.
+  mapsRecordLimit Int @default(1000)
+  pageFetchLimit  Int @default(2000)
+  llmTokenLimit   Int @default(500000)
+
+  // Agency branding used on published briefs.
+  brandColor   String? @db.VarChar(16)
+  contactEmail String? @db.VarChar(255)
+  contactPhone String? @db.VarChar(40)
+  logoFileId   String?
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  logoFile      StoredFile?     @relation("OrgLogo", fields: [logoFileId], references: [id], onDelete: SetNull)
+  memberships   Membership[]
+  campaigns     Campaign[]
+  businesses    Business[]
+  usageEvents   UsageEvent[]
+  crmConnection CrmConnection[]
+  files         StoredFile[]    @relation("OrgFiles")
+
+  @@map("organization")
+}
+
+model Membership {
+  id             String         @id @default(cuid())
+  userId         String
+  organizationId String
+  role           MembershipRole @default(owner)
+  createdAt      DateTime       @default(now()) @db.Timestamptz
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([userId])
+  @@index([organizationId])
+  @@map("membership")
+}
+
+// ---------------------------------------------------------------------------
+// Discovery: campaigns, businesses, leads
+// A "campaign" here is a research run (lead discovery batch), NOT outbound.
+// ---------------------------------------------------------------------------
+
+model Campaign {
+  id             String        @id @default(cuid())
+  organizationId String
+  name           String?       @db.VarChar(160)
+  niche          String        @db.VarChar(120)
+  serviceType    String        @db.VarChar(120)
+  city           String        @db.VarChar(120)
+  region         String        @db.VarChar(120)
+  country        String        @db.VarChar(120)
+  maxLeads       Int
+  minRating      Float?
+  minReviewCount Int?
+  websiteFilter  WebsiteFilter @default(EITHER)
+
+  // Phase 3: schedule periodic re-audits of this run's leads.
+  reauditCadence ReauditCadence @default(OFF)
+  lastReauditAt  DateTime?      @db.Timestamptz
+
+  status    CampaignStatus @default(DRAFT)
+  createdAt DateTime       @default(now()) @db.Timestamptz
+  updatedAt DateTime       @updatedAt @db.Timestamptz
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  exclusions   ExclusionDomain[]
+  leads        CampaignLead[]
+  jobs         Job[]
+  usageEvents  UsageEvent[]
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, status])
+  @@map("campaign")
+}
+
+model ExclusionDomain {
+  id         String   @id @default(cuid())
+  campaignId String
+  domain     String   @db.VarChar(255)
+  createdAt  DateTime @default(now()) @db.Timestamptz
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, domain])
+  @@map("exclusion_domain")
+}
+
+// A business is owned by one organization (no cross-tenant sharing).
+model Business {
+  id               String       @id @default(cuid())
+  organizationId   String
+  provider         String       @db.VarChar(40)
+  providerId       String       @db.VarChar(255)
+  name             String       @db.VarChar(255)
+  normalizedName   String       @db.VarChar(255)
+  category         String?      @db.VarChar(160)
+  phone            String?      @db.VarChar(40)
+  normalizedPhone  String?      @db.VarChar(40)
+  email            String?      @db.VarChar(255)
+  address          String?      @db.VarChar(500)
+  city             String?      @db.VarChar(120)
+  region           String?      @db.VarChar(120)
+  country          String?      @db.VarChar(120)
+  latitude         Float?
+  longitude        Float?
+  rating           Float?
+  reviewCount      Int?
+  websiteUrl       String?      @db.VarChar(1000)
+  normalizedDomain String?      @db.VarChar(255)
+  websiteClass     WebsiteClass
+
+  // Raw provider payload for traceability (Outscraper record, GBP fields).
+  providerRaw Json?
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  leads        CampaignLead[]
+  snapshots    WebsiteSnapshot[]
+  profile      GbpProfile?
+  reviews      Review[]
+  // Competitor comparison: this business as the *subject* of a comparison set.
+  comparisons  CompetitorSet[]   @relation("ComparisonSubject")
+
+  @@unique([organizationId, provider, providerId])
+  @@index([organizationId, normalizedName, normalizedPhone, city])
+  @@index([organizationId, normalizedDomain])
+  @@map("business")
+}
+
+model CampaignLead {
+  id                  String              @id @default(cuid())
+  campaignId          String
+  businessId          String
+  qualificationStatus QualificationStatus @default(NEW)
+  auditStatus         AuditStatus         @default(PENDING)
+  aiStatus            AiStatus            @default(PENDING)
+
+  // Deterministic opportunity score (0-100), computed before AI reasoning.
+  opportunityScore Int?
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  campaign      Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  audits        TechnicalAudit[]
+  brief         Brief?
+  competitorSet CompetitorSet?
+  crmExports    CrmExport[]
+
+  @@unique([campaignId, businessId])
+  @@index([campaignId])
+  @@index([campaignId, opportunityScore])
+  @@map("campaign_lead")
+}
+
+// ---------------------------------------------------------------------------
+// Evidence: website snapshots + audits + normalized findings
+// ---------------------------------------------------------------------------
+
+// A crawl snapshot of a business website. Reusable inside the same org when
+// contentHash is unchanged. Never shared across organizations.
+model WebsiteSnapshot {
+  id             String   @id @default(cuid())
+  organizationId String
+  businessId     String
+  fetchedUrl     String   @db.VarChar(1000)
+  finalUrl       String?  @db.VarChar(1000)
+  httpStatus     Int?
+  contentHash    String   @db.VarChar(64)
+  pageCount      Int      @default(0)
+  robotsOutcome  String?  @db.VarChar(40)
+
+  // Extracted structural signals the deterministic score needs.
+  title       String? @db.VarChar(500)
+  headings    Json? // {h1: [...], h2: [...]}
+  techStack   Json? // detected CMS/analytics/frameworks fingerprints
+  rawTextSize Int? // bytes of visible text
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  business Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  pages    SnapshotPage[]
+  audits   TechnicalAudit[]
+
+  @@unique([organizationId, businessId, contentHash])
+  @@index([businessId, createdAt])
+  @@map("website_snapshot")
+}
+
+model SnapshotPage {
+  id         String  @id @default(cuid())
+  snapshotId String
+  url        String  @db.VarChar(1000)
+  httpStatus Int?
+  role       String? @db.VarChar(40) // home | services | contact | about | location
+  // Screenshot captured by the browser worker, stored in R2.
+  screenshotFileId String?
+  extracted  Json? // CTAs, contact links, forms, images, alt coverage
+
+  snapshot       WebsiteSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  screenshotFile StoredFile?     @relation(fields: [screenshotFileId], references: [id], onDelete: SetNull)
+
+  @@index([snapshotId])
+  @@map("snapshot_page")
+}
+
+// One audit = one module run against one snapshot for one lead.
+model TechnicalAudit {
+  id             String         @id @default(cuid())
+  organizationId String
+  leadId         String
+  snapshotId     String?
+  module         AuditModule
+  status         AuditStatus    @default(PENDING)
+  // Module-level deterministic sub-score and raw metrics.
+  score          Int?
+  metrics        Json? // e.g. {lighthouse_performance, lcp_ms, cls}
+  toolName       String?        @db.VarChar(80)
+  toolVersion    String?        @db.VarChar(40)
+  deviceProfile  String?        @db.VarChar(40) // mobile | desktop
+  observedAt     DateTime       @db.Timestamptz
+  failureReason  String?        @db.VarChar(500)
+  createdAt      DateTime       @default(now()) @db.Timestamptz
+
+  lead     CampaignLead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  snapshot WebsiteSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
+  findings AuditFinding[]
+
+  @@index([leadId, module])
+  @@index([organizationId, module])
+  @@map("technical_audit")
+}
+
+// Normalized evidence record (MVP section 4). code = stable finding code.
+model AuditFinding {
+  id         String          @id @default(cuid())
+  auditId    String
+  code       String          @db.VarChar(80) // e.g. SLOW_LCP, MISSING_TITLE
+  kind       FindingKind     @default(FINDING)
+  severity   FindingSeverity @default(INFO)
+  source     EvidenceSource  @default(DERIVED)
+  confidence Float           @default(1.0)
+  message    String          @db.VarChar(1000)
+  evidence   Json? // {metric, value, selector, url}
+  createdAt  DateTime        @default(now()) @db.Timestamptz
+
+  audit TechnicalAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
+
+  @@index([auditId])
+  @@index([code])
+  @@map("audit_finding")
+}
+
+// ---------------------------------------------------------------------------
+// Google Business Profile + reviews (local SEO & reputation audits)
+// ---------------------------------------------------------------------------
+
+model GbpProfile {
+  id             String   @id @default(cuid())
+  organizationId String
+  businessId     String   @unique
+  primaryCategory String? @db.VarChar(160)
+  categories     Json? // secondary categories
+  completeness   Int? // 0-100 deterministic completeness score
+  hoursPresent   Boolean  @default(false)
+  photosCount    Int?
+  postsPresent   Boolean  @default(false)
+  ownerResponses Int?
+  napConsistent  Boolean? // name/address/phone consistent across sources
+  observedAt     DateTime @db.Timestamptz
+  raw            Json?
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("gbp_profile")
+}
+
+model Review {
+  id             String          @id @default(cuid())
+  organizationId String
+  businessId     String
+  provider       String          @db.VarChar(40)
+  providerReviewId String?       @db.VarChar(120)
+  rating         Int?
+  text           String?         @db.Text
+  authorHash     String?         @db.VarChar(64) // never store raw author PII
+  sentiment      ReviewSentiment?
+  themes         Json? // extracted complaint/praise themes
+  ownerResponded Boolean         @default(false)
+  reviewedAt     DateTime?       @db.Timestamptz
+  createdAt      DateTime        @default(now()) @db.Timestamptz
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, provider, providerReviewId])
+  @@index([businessId, reviewedAt])
+  @@map("review")
+}
+
+// ---------------------------------------------------------------------------
+// Competitor & market intelligence (MVP section 2.G)
+// ---------------------------------------------------------------------------
+
+// A comparison set anchored on the subject lead/business, with a snapshot of
+// comparator businesses and the observation context (geography, category, date).
+model CompetitorSet {
+  id               String   @id @default(cuid())
+  organizationId   String
+  leadId           String   @unique
+  subjectBusinessId String
+  geography        String   @db.VarChar(160)
+  category         String   @db.VarChar(160)
+  observedAt       DateTime @db.Timestamptz
+  summary          Json? // deterministic comparison aggregates
+  createdAt        DateTime @default(now()) @db.Timestamptz
+
+  lead            CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  subjectBusiness Business     @relation("ComparisonSubject", fields: [subjectBusinessId], references: [id], onDelete: Cascade)
+  comparators     Competitor[]
+
+  @@index([organizationId])
+  @@map("competitor_set")
+}
+
+model Competitor {
+  id            String  @id @default(cuid())
+  competitorSetId String
+  name          String  @db.VarChar(255)
+  websiteUrl    String? @db.VarChar(1000)
+  rating        Float?
+  reviewCount   Int?
+  recentReviews Int?
+  signals       Json? // website quality / booking / contact observations
+  createdAt     DateTime @default(now()) @db.Timestamptz
+
+  competitorSet CompetitorSet @relation(fields: [competitorSetId], references: [id], onDelete: Cascade)
+
+  @@index([competitorSetId])
+  @@map("competitor")
+}
+
+// ---------------------------------------------------------------------------
+// AI reasoning output: the sales-ready opportunity brief
+// (research output only — not an outbound engine)
+// ---------------------------------------------------------------------------
+
+model Brief {
+  id             String      @id @default(cuid())
+  organizationId String
+  leadId         String      @unique
+  status         BriefStatus @default(DRAFT)
+  aiStatus       AiStatus    @default(PENDING)
+
+  // Structured, Zod-validated content produced by the reasoning agent.
+  content Json // {opportunities[], evidence refs, value propositions}
+
+  // The single highlighted opportunity + confidence (MVP section 5 table).
+  headlineOpportunity String?               @db.VarChar(300)
+  suggestedService    String?               @db.VarChar(200)
+  confidence          OpportunityConfidence @default(MEDIUM)
+
+  // Research-grade outreach *text* (not sent by us; exported to CRM).
+  valueProposition String? @db.Text
+  outreachAngle    String? @db.Text
+  coldEmailDraft   String? @db.Text
+  callScriptDraft  String? @db.Text
+
+  // Public share of the brief (logged-out viewing). Token is unguessable.
+  publicToken String? @unique @db.VarChar(64)
+  pdfFileId   String?
+
+  modelName   String?  @db.VarChar(80)
+  createdAt   DateTime @default(now()) @db.Timestamptz
+  updatedAt   DateTime @updatedAt @db.Timestamptz
+  publishedAt DateTime? @db.Timestamptz
+
+  lead    CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  pdfFile StoredFile?  @relation(fields: [pdfFileId], references: [id], onDelete: SetNull)
+  events  BriefEvent[]
+
+  @@index([organizationId, status])
+  @@map("brief")
+}
+
+// Analytics for a published brief view. No raw IP; visitor is a salted hash.
+model BriefEvent {
+  id           String   @id @default(cuid())
+  briefId      String
+  kind         String   @db.VarChar(40) // VIEW | UNIQUE_VIEW | CTA_CLICK
+  visitorHash  String?  @db.VarChar(64)
+  suspectedBot Boolean  @default(false)
+  createdAt    DateTime @default(now()) @db.Timestamptz
+
+  brief Brief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+
+  @@index([briefId, kind])
+  @@map("brief_event")
+}
+
+// ---------------------------------------------------------------------------
+// Phase 3: re-audit change detection
+// ---------------------------------------------------------------------------
+
+model AuditChange {
+  id             String     @id @default(cuid())
+  organizationId String
+  leadId         String
+  kind           ChangeKind
+  previousScore  Int?
+  currentScore   Int?
+  detail         Json?
+  detectedAt     DateTime   @default(now()) @db.Timestamptz
+
+  @@index([organizationId, detectedAt])
+  @@index([leadId, detectedAt])
+  @@map("audit_change")
+}
+
+// ---------------------------------------------------------------------------
+// CRM export / integration (the product's "execution" endpoint — hand off only)
+// ---------------------------------------------------------------------------
+
+model CrmConnection {
+  id             String      @id @default(cuid())
+  organizationId String
+  provider       CrmProvider
+  label          String?     @db.VarChar(120)
+  // Secrets (OAuth tokens / API keys) are encrypted at rest by the app layer.
+  credentials    Json?
+  webhookUrl     String?     @db.VarChar(1000)
+  active         Boolean     @default(true)
+  createdAt      DateTime    @default(now()) @db.Timestamptz
+  updatedAt      DateTime    @updatedAt @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  exports      CrmExport[]
+
+  @@index([organizationId])
+  @@map("crm_connection")
+}
+
+model CrmExport {
+  id              String        @id @default(cuid())
+  organizationId  String
+  crmConnectionId String?
+  leadId          String
+  provider        CrmProvider
+  status          CrmSyncStatus @default(PENDING)
+  externalId      String?       @db.VarChar(255) // id returned by the CRM
+  payload         Json? // what was pushed, for traceability
+  error           String?       @db.VarChar(1000)
+  exportedAt      DateTime?     @db.Timestamptz
+  createdAt       DateTime      @default(now()) @db.Timestamptz
+
+  connection CrmConnection? @relation(fields: [crmConnectionId], references: [id], onDelete: SetNull)
+  lead       CampaignLead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status])
+  @@index([leadId])
+  @@map("crm_export")
+}
+
+// ---------------------------------------------------------------------------
+// Files (Cloudflare R2) — DB stores object keys + metadata only
+// ---------------------------------------------------------------------------
+
+model StoredFile {
+  id             String   @id @default(cuid())
+  organizationId String
+  kind           FileKind
+  bucket         String   @db.VarChar(120)
+  objectKey      String   @db.VarChar(500)
+  contentType    String?  @db.VarChar(120)
+  sizeBytes      Int?
+  checksum       String?  @db.VarChar(64)
+  createdAt      DateTime @default(now()) @db.Timestamptz
+
+  organization  Organization   @relation("OrgFiles", fields: [organizationId], references: [id], onDelete: Cascade)
+  orgLogos      Organization[]  @relation("OrgLogo")
+  snapshotPages SnapshotPage[]
+  briefs        Brief[]
+
+  @@unique([bucket, objectKey])
+  @@index([organizationId, kind])
+  @@map("stored_file")
+}
+
+// ---------------------------------------------------------------------------
+// Jobs + usage metering
+// ---------------------------------------------------------------------------
+
+// Domain-visible job row (what the campaign screen shows). pg-boss handles
+// delivery/retry/backoff separately; this row stays PROCESSING across retries.
+model Job {
+  id             String    @id @default(cuid())
+  campaignId     String
+  organizationId String
+  kind           JobKind   @default(DISCOVER)
+  status         JobStatus @default(PENDING)
+  attemptCount   Int       @default(0)
+  queueJobId     String?   @db.VarChar(64)
+  error          String?   @db.VarChar(1000)
+  createdAt      DateTime  @default(now()) @db.Timestamptz
+  updatedAt      DateTime  @updatedAt @db.Timestamptz
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId, createdAt])
+  @@index([organizationId, status])
+  @@map("job")
+}
+
+model UsageEvent {
+  id             String    @id @default(cuid())
+  organizationId String
+  campaignId     String?
+  kind           UsageKind
+  quantity       Int       @default(1)
+  providerCost   Decimal?  @db.Decimal(12, 6) // when the provider returns it
+  createdAt      DateTime  @default(now()) @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campaign     Campaign?    @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, kind, createdAt])
+  @@map("usage_event")
+}
