@@ -16,10 +16,16 @@ export function attachSession(deps: { auth: Auth; prisma: PrismaClient }) {
         return;
       }
 
-      const memberships = await deps.prisma.membership.findMany({
-        where: { userId: session.user.id },
-        select: { organizationId: true, role: true },
-      });
+      const [memberships, account] = await Promise.all([
+        deps.prisma.membership.findMany({
+          where: { userId: session.user.id },
+          select: { organizationId: true, role: true },
+        }),
+        deps.prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { isSuperAdmin: true },
+        }),
+      ]);
 
       const activeOrganizationId = session.session.activeOrganizationId ?? null;
       req.auth = {
@@ -27,6 +33,7 @@ export function attachSession(deps: { auth: Auth; prisma: PrismaClient }) {
         email: session.user.email,
         name: session.user.name ?? null,
         emailVerified: session.user.emailVerified ?? false,
+        isSuperAdmin: account?.isSuperAdmin ?? false,
         sessionId: session.session.id,
         activeOrganizationId,
         memberships: memberships.map((membership) => ({

@@ -2,6 +2,7 @@ export interface AuthUser {
   id: string
   email: string
   name: string | null
+  isSuperAdmin: boolean
 }
 
 export interface AuthOrganization {
@@ -13,7 +14,7 @@ export interface AuthOrganization {
 export interface MeResponse {
   user: AuthUser
   organization: AuthOrganization | null
-  role: "owner" | "member" | null
+  role: "owner" | "admin" | "member" | null
 }
 
 export interface SignInInput {

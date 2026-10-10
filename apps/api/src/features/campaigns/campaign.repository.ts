@@ -205,7 +205,7 @@ export class CampaignRepository {
 
   async createJob(campaignId: string, organizationId: string): Promise<JobView> {
     const job = await this.prisma.job.create({
-      data: { campaignId, organizationId, kind: "discover", status: "PENDING" },
+      data: { campaignId, organizationId, kind: "DISCOVER", status: "PENDING" },
     });
     return { id: job.id, status: job.status, attemptCount: job.attemptCount };
   }

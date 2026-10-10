@@ -13,6 +13,7 @@ import { attachSession } from "./middleware/session";
 import { healthRouter } from "@features/health/health.routes";
 import { createAuth } from "@features/auth/better-auth";
 import { meRouter } from "@features/me/me.routes";
+import { adminRouter } from "@features/admin/admin.routes";
 import { organizationsRouter } from "@features/organizations/organization.routes";
 import { workspaceRouter } from "@features/workspaces/workspace.routes";
 import { campaignsRouter } from "@features/campaigns/campaign.routes";
@@ -57,6 +58,7 @@ export async function buildApp(): Promise<{ app: Express; registry: PluginRegist
   app.use(attachSession({ auth, prisma }));
   app.use(healthRouter({ prisma: prismaPlugin, queue: queuePlugin }));
   app.use("/api/me", meRouter({ prisma }));
+  app.use("/api/admin", adminRouter({ prisma }));
   app.use("/api/workspaces", workspaceRouter({ prisma }));
   app.use("/api/organizations", organizationsRouter({ prisma }));
   app.use("/api/organizations/:organizationId/campaigns", campaignsRouter({ prisma, queue: queuePlugin }));

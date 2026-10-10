@@ -1,6 +1,8 @@
+export type OrgRole = "owner" | "admin" | "member";
+
 export interface MembershipSummary {
   organizationId: string;
-  role: "owner" | "member";
+  role: OrgRole;
 }
 
 export interface AuthPrincipal {
@@ -8,6 +10,7 @@ export interface AuthPrincipal {
   email: string;
   name: string | null;
   emailVerified: boolean;
+  isSuperAdmin: boolean;
   sessionId: string;
   activeOrganizationId: string | null;
   memberships: MembershipSummary[];

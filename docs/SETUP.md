@@ -93,6 +93,18 @@ docker run --name rove-pg -e POSTGRES_PASSWORD=postgres \
 # DIRECT_URL=postgresql://postgres:postgres@localhost:5432/rove?schema=public
 ```
 
+## 4b. Create a platform super admin
+
+Super admins oversee all organizations. There is no self-signup — sign up a normal
+account through the app first, then promote it by email:
+
+```bash
+pnpm --filter @rove/api db:promote-admin -- you@example.com
+```
+
+Super admins get a **Platform admin** link in the dashboard sidebar and access to
+`/api/admin/*`. Normal signup still creates an agency workspace with an `owner`.
+
 ## 5. Run
 
 ### Everything at once (Turborepo)

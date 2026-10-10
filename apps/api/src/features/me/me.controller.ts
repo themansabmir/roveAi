@@ -25,6 +25,7 @@ export class MeController {
           id: req.auth.userId,
           email: req.auth.email,
           name: req.auth.name,
+          isSuperAdmin: req.auth.isSuperAdmin,
         },
         organization,
         role: workspace?.role ?? null,

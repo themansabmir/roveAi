@@ -12,6 +12,16 @@ Rove **researches** local-business prospects and turns evidence into sales-ready
 
 > Note on "ignore phase 1 and 2": we are not limiting the build to the MVP's Phase-1 MVP cut. The schema below covers all phases now; features are implemented incrementally against this one schema.
 
+## Auth & roles (built)
+
+- **Email/password** signup + login via Better Auth (`/api/auth/*`). Session cookie, `req.auth` populated by `attachSession`.
+- **Organization onboarding:** signup provisions one agency `Organization` + an `owner` `Membership` and sets the active org (`POST /api/workspaces`).
+- **Org roles** (`MembershipRole`): `owner`, `admin`, `member` — scoped to one organization.
+- **Platform super admin:** `User.isSuperAdmin` boolean (not an org role). Oversees all organizations via `/api/admin/*` behind `requireSuperAdmin()`. No self-signup — promote with `pnpm --filter @rove/api db:promote-admin -- <email>`.
+- `/api/me` returns the user (incl. `isSuperAdmin`), active organization, and org role.
+
+> Billing note: subscription / credit model is intentionally **not** modeled yet. It will likely add tables (plan, subscription, credit ledger) and columns on `Organization`/`UsageEvent` later. The monthly-ceiling columns already on `Organization` are the seam it will build on.
+
 ## The pipeline (MVP section 1)
 
 ```mermaid

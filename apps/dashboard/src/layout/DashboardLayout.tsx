@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { NavLink, Outlet } from "react-router-dom"
-import { LayoutDashboard, LogOut } from "lucide-react"
+import { LayoutDashboard, LogOut, Shield } from "lucide-react"
 import { useAuth } from "@/features/auth/application/useAuth"
 import { cn } from "@rove/ui/lib/cn"
 import { Button } from "@rove/ui/components/button"
@@ -27,20 +27,17 @@ export function DashboardLayout() {
           <p className="mt-1 truncate text-xs text-muted-foreground">{agencyName}</p>
         </div>
         <Separator />
-        <nav className="flex-1 px-3 py-3">
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) =>
-              cn(
-                "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
-                isActive ? "bg-accent font-medium text-accent-foreground" : "text-muted-foreground hover:bg-accent/60",
-              )
-            }
-          >
+        <nav className="flex-1 space-y-1 px-3 py-3">
+          <NavLink to="/" end className={navLinkClass}>
             <LayoutDashboard className="size-4" aria-hidden="true" />
             Dashboard
           </NavLink>
+          {me?.user.isSuperAdmin ? (
+            <NavLink to="/admin" className={navLinkClass}>
+              <Shield className="size-4" aria-hidden="true" />
+              Platform admin
+            </NavLink>
+          ) : null}
         </nav>
         <div className="p-3">
           <DropdownMenu>
@@ -70,5 +67,12 @@ export function DashboardLayout() {
         <Outlet />
       </main>
     </div>
+  )
+}
+
+function navLinkClass({ isActive }: { isActive: boolean }) {
+  return cn(
+    "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
+    isActive ? "bg-accent font-medium text-accent-foreground" : "text-muted-foreground hover:bg-accent/60",
   )
 }

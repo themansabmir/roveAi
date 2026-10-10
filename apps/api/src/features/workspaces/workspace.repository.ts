@@ -1,10 +1,11 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import type { OrgRole } from "@features/auth/auth.types";
 
 export interface WorkspaceView {
   id: string;
   name: string;
   slug: string;
-  role: "owner" | "member";
+  role: OrgRole;
 }
 
 export class WorkspaceRepository {
