@@ -47,15 +47,16 @@ Locked stack (impacts how each piece deploys). Source of truth for product scope
 
 - **`@rove/api`**: Express server (`node dist/app.js`), port 3000. Build with `pnpm --filter @rove/api build`.
 - **Worker**: `node dist/worker.js` as a **separate process/service** (systemd unit or PM2). It consumes pg-boss queues (`discover`, `crawl`, `audit`, `interpret`, `competitor`, `reaudit`, `export`).
-- **Browser worker** (Phase 1+): Lighthouse / Playwright / sitespeed audits run browser jobs. These need more CPU + shared memory. Keep them on their own process (and ideally their own instance or container with `shm_size`) so a heavy crawl doesn't starve the API.
+- **Browser worker** (Phase 1+): Lighthouse and Playwright run in `apps/api/Dockerfile` target `browser` (`mcr.microsoft.com/playwright:v1.64.0-noble`). `WORKER_ROLE=browser` so this process does not consume discovery jobs. Shared memory is 1 GB, memory is capped at 2 GB, and the container sits on its own Compose network. Pin the `playwright` npm package to `1.64.0` when the audit plugin installs it, so it finds the browsers baked into that image.
 - Put the API behind a reverse proxy (Caddy/nginx) terminating TLS, or an ALB. Health checks: `/healthz`, `/readyz`.
+- **Compose:** `compose.yaml` is local Postgres only (apps stay on the host). `compose.prod.yaml` runs `api`, `worker`, and `browser-worker` on the VPS. Neon and R2 stay outside Compose. There is no Redis service; the queue is pg-boss on Postgres.
 - **SSRF boundary (MVP section 7):** the fetch/browser workers crawl third-party sites. Block private IP ranges, loopback, link-local, and cloud-metadata endpoints; revalidate after DNS + redirects. Run browser/scan containers non-root, with CPU/memory limits, timeouts, and concurrency caps. This is a hard requirement, not optional.
 
 ### Database — Neon (Postgres)
 
 - Postgres 17. Two URLs: **pooler** (`DATABASE_URL`, app/worker/pg-boss) and **direct** (`DIRECT_URL`, Prisma CLI/migrations).
 - pg-boss uses the same database for the job queue.
-- Migrations: `pnpm --filter @rove/api prisma:migrate:deploy` in the API's release step on the VPS.
+- Migrations: `docker compose -f compose.prod.yaml --profile migrate run --rm migrate`, or `pnpm --filter @rove/api prisma:migrate:deploy` on the host. Run this before restarting the API.
 - Prisma 7 keeps the connection URL in `apps/api/prisma.config.ts` (reads `DIRECT_URL`).
 
 ### Files — Cloudflare R2

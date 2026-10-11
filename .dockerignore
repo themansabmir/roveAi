@@ -1,0 +1,13 @@
+.git
+.turbo
+**/.turbo
+**/node_modules
+**/dist
+**/.next
+**/coverage
+**/.env
+**/.env.*
+!**/.env.example
+*.log
+.DS_Store
+Thumbs.db

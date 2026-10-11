@@ -1,0 +1,45 @@
+name: rove
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rove
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d rove"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    restart: unless-stopped
+
+  browser-worker:
+    profiles: ["audit"]
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: browser
+    shm_size: "1gb"
+    mem_limit: 2g
+    cpus: 1.5
+    init: true
+    env_file:
+      - apps/api/.env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/rove
+      DIRECT_URL: postgresql://postgres:postgres@postgres:5432/rove
+      WORKER_ROLE: browser
+      WORKER_CONCURRENCY: "1"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

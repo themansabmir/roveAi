@@ -17,6 +17,7 @@ const ConfigSchema = z.object({
   DIRECT_URL: z.string().min(1).optional(),
   CORS_ORIGINS: z.string().default("http://localhost:5173"),
   WORKER_ENABLED: envFlag(false),
+  WORKER_ROLE: z.enum(["general", "browser"]).default("general"),
   REQUEST_BODY_LIMIT: z.string().default("1mb"),
   HTTP_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
   GRACEFUL_SHUTDOWN_MS: z.coerce.number().int().positive().default(10_000),

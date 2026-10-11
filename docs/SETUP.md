@@ -86,11 +86,23 @@ The schema lives at `apps/api/prisma/schema.prisma`. Prisma 7 keeps connection U
 
 ### Quick local Postgres with Docker (optional)
 
+From the repo root:
+
 ```bash
-docker run --name rove-pg -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=rove -p 5432:5432 -d postgres:17
-# DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rove?schema=public
-# DIRECT_URL=postgresql://postgres:postgres@localhost:5432/rove?schema=public
+docker compose up -d postgres
+```
+
+```
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rove
+DIRECT_URL=postgresql://postgres:postgres@localhost:5432/rove
+```
+
+Stop an older `rove-pg` container first if it already holds port 5432. The web, dashboard, and API processes stay on the host (`pnpm dev`).
+
+The browser image is opt-in and does not start with the database. It needs `apps/api/.env`:
+
+```bash
+docker compose --profile audit up -d --build browser-worker
 ```
 
 ## 4b. Create a platform super admin
