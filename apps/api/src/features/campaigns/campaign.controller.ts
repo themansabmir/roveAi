@@ -4,7 +4,7 @@ import { CreateCampaignInput } from "./campaign.schemas";
 import { CampaignService } from "./campaign.service";
 
 export class CampaignController {
-  constructor(private readonly service: CampaignService) {}
+  constructor(private readonly service: CampaignService) { }
 
   list = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -29,6 +29,7 @@ export class CampaignController {
       const organizationId = requiredOrg(req);
       const campaign = await this.service.create(organizationId, req.body as CreateCampaignInput);
       res.status(201).json(campaign);
+      // console.log("cAMPIGN CREATE OUTPUT", campaign);
     } catch (err) {
       next(err);
     }

@@ -1,6 +1,5 @@
 import { AuditStatus, QualificationStatus, WebsiteClass } from "@prisma/client";
 import { MapsBusiness, MapsProvider, MapsQuotaError } from "@plugins/maps/maps.types";
-import { logger } from "@core/logger";
 import { CampaignRepository, DiscoveryCampaign } from "./campaign.repository";
 import { classifyWebsite, exclusionMatches, normalizeName, normalizePhone } from "./normalize";
 import { expandQueries } from "./queries";
@@ -9,18 +8,27 @@ export class DiscoveryService {
   constructor(
     private readonly repository: CampaignRepository,
     private readonly maps: MapsProvider
-  ) {}
+  ) { }
 
   async run(
     campaignId: string,
     jobId: string,
     meta: { retrycount: number; retrylimit: number }
   ): Promise<void> {
+
+    console.log({ campaignId, jobId }, "🚀 Discovery started");
+
     const ready = await this.repository.beginJob(jobId);
+
+    console.log({ jobId }, " 🔧 Job marked PROCESSING");
+
     if (ready === "done") return;
 
     const campaign = await this.repository.loadForDiscovery(campaignId);
     if (!campaign) {
+
+      console.log({ campaignId }, "❓ Campaign not found for discovery");
+
       await this.repository.setJobStatus(jobId, "FAILED");
       return;
     }
@@ -28,6 +36,9 @@ export class DiscoveryService {
       await this.repository.setJobStatus(jobId, "CANCELLED");
       return;
     }
+
+
+    console.log({ campaignId, status: campaign.status }, "📦 Loaded campaign");
 
     const started = await this.repository.markDiscovering(campaignId);
     if (!started) {
@@ -60,13 +71,13 @@ export class DiscoveryService {
       if (saved > 0) {
         await this.repository.setCampaignStatus(campaignId, "PAUSED");
         await this.repository.setJobStatus(jobId, "COMPLETED");
-        logger.warn({ err, campaignId }, "Discovery stopped after saving leads");
+        console.warn({ err, campaignId }, "Discovery stopped after saving leads");
         return;
       }
       if (meta.retrycount >= meta.retrylimit) {
         await this.repository.setCampaignStatus(campaignId, "FAILED");
         await this.repository.setJobStatus(jobId, "FAILED");
-        logger.error({ err, campaignId }, "Discovery failed before any lead was saved");
+        console.error({ err, campaignId }, "Discovery failed before any lead was saved");
         return;
       }
       throw err;
@@ -93,13 +104,13 @@ export class DiscoveryService {
       if (err instanceof MapsQuotaError || saved > 0) {
         await this.repository.setCampaignStatus(campaign.id, "PAUSED");
         await this.repository.setJobStatus(jobId, "COMPLETED");
-        logger.warn({ err, campaignId: campaign.id }, "Discovery paused");
+        console.warn({ err, campaignId: campaign.id }, "Discovery paused");
         return null;
       }
       if (meta.retrycount >= meta.retrylimit) {
         await this.repository.setCampaignStatus(campaign.id, "FAILED");
         await this.repository.setJobStatus(jobId, "FAILED");
-        logger.error({ err, campaignId: campaign.id }, "Discovery failed before any lead was saved");
+        console.error({ err, campaignId: campaign.id }, "Discovery failed before any lead was saved");
         return null;
       }
       throw err;

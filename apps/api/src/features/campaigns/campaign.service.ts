@@ -9,7 +9,7 @@ export class CampaignService {
   constructor(
     private readonly repository: CampaignRepository,
     private readonly queue: IQueueService
-  ) {}
+  ) { }
 
   list(organizationId: string): Promise<CampaignSummary[]> {
     return this.repository.list(organizationId);
@@ -54,13 +54,18 @@ export class CampaignService {
     }
 
     const job = await this.repository.createJob(campaignId, organizationId);
+
+    console.log("📤 Publishing DISCOVER_QUEUE job");
     const queueJobId = await this.queue.publish(
       DISCOVER_QUEUE,
       { campaignId, jobId: job.id },
       { singletonKey: `discover:${campaignId}` }
     );
+
     if (queueJobId) {
       await this.repository.setQueueJobId(job.id, queueJobId);
+
+      console.log("Stored Queue job in db")
     }
     return this.get(organizationId, campaignId);
   }

@@ -28,6 +28,23 @@ const ConfigSchema = z.object({
   JOB_TIMEOUT_MS: z.coerce.number().int().positive().default(120_000),
   BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
   BETTER_AUTH_URL: z.string().url().default("http://localhost:3000"),
+  // Apify Google Maps Scraper
+  APIFY_TOKEN: z
+    .string()
+    .optional()
+    .transform((value) => {
+      const trimmed = value?.trim();
+      return trimmed ? trimmed : undefined;
+    }),
+  APIFY_ACTOR: z
+    .string()
+    .optional()
+    .default("scraperlink/google-maps-scraper")
+    .transform((value) => {
+      const trimmed = value?.trim();
+      return trimmed ? trimmed : "scraperlink/google-maps-scraper";
+    }),
+  // Outscraper (legacy — Apify is preferred)
   OUTSCRAPER_API_KEY: z
     .string()
     .optional()

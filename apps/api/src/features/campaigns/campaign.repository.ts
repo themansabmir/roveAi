@@ -9,7 +9,8 @@ import {
 } from "@prisma/client";
 import { hostOf } from "./normalize";
 
-export const MAPS_PROVIDER = "outscraper";
+// export const MAPS_PROVIDER = "outscraper";
+export const MAPS_PROVIDER = "apify";
 export const DISCOVER_QUEUE = "campaign.discover";
 
 const IN_FLIGHT: CampaignStatus[] = ["QUEUED", "DISCOVERING", "PROCESSING"];
@@ -93,7 +94,7 @@ const detailInclude = {
 type DetailRow = Prisma.CampaignGetPayload<{ include: typeof detailInclude }>;
 
 export class CampaignRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaClient) { }
 
   async list(organizationId: string): Promise<CampaignSummary[]> {
     const rows = await this.prisma.campaign.findMany({
@@ -334,15 +335,15 @@ export class CampaignRepository {
     const existingByIdentity = existingByProvider
       ? existingByProvider
       : await this.prisma.business.findFirst({
-          where: {
-            organizationId: input.organizationId,
-            normalizedName: input.normalizedName,
-            normalizedPhone: input.normalizedPhone,
-            ...(input.identityCity
-              ? { city: { equals: input.identityCity, mode: "insensitive" } }
-              : { city: null }),
-          },
-        });
+        where: {
+          organizationId: input.organizationId,
+          normalizedName: input.normalizedName,
+          normalizedPhone: input.normalizedPhone,
+          ...(input.identityCity
+            ? { city: { equals: input.identityCity, mode: "insensitive" } }
+            : { city: null }),
+        },
+      });
 
     let business = existingByIdentity;
     if (!business) {

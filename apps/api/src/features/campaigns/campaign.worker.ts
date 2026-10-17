@@ -18,5 +18,9 @@ export async function registerCampaignWorker(pluginRegistry: IPluginRegistry): P
 
   await queue.subscribe<DiscoverPayload>(DISCOVER_QUEUE, async (payload, _jobId, meta) => {
     await discovery.run(payload.campaignId, payload.jobId, meta);
+    console.log({ payload, jobId: _jobId, meta },
+      "🔔 pg‑boss delivered DISCOVER_QUEUE job")
   });
+
+  console.log("✅ Campaign worker registered for DISCOVER_QUEUE");
 }
