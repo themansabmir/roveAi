@@ -19,3 +19,16 @@ export interface AdminOrganizationsResponse {
   pageSize: number
   organizations: AdminOrganization[]
 }
+
+export type DiscoveryProviderKey = "OUTSCRAPER" | "SERPAPI" | "GOOGLE_PLACES" | "FIXTURE"
+
+export interface DiscoveryProviderInfo {
+  key: DiscoveryProviderKey
+  label: string
+  configured: boolean
+}
+
+export interface ProvidersResponse {
+  default: DiscoveryProviderKey
+  providers: DiscoveryProviderInfo[]
+}

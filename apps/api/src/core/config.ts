@@ -28,14 +28,23 @@ const ConfigSchema = z.object({
   JOB_TIMEOUT_MS: z.coerce.number().int().positive().default(120_000),
   BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
   BETTER_AUTH_URL: z.string().url().default("http://localhost:3000"),
-  OUTSCRAPER_API_KEY: z
+  OUTSCRAPER_API_KEY: optionalTrimmed(),
+  SERPAPI_API_KEY: optionalTrimmed(),
+  GOOGLE_PLACES_API_KEY: optionalTrimmed(),
+  RESEND_API_KEY: optionalTrimmed(),
+  EMAIL_FROM: z.string().min(1).default("Rove <onboarding@resend.dev>"),
+  APP_WEB_URL: z.string().url().default("http://localhost:5173"),
+});
+
+function optionalTrimmed() {
+  return z
     .string()
     .optional()
     .transform((value) => {
       const trimmed = value?.trim();
       return trimmed ? trimmed : undefined;
-    }),
-});
+    });
+}
 
 export type AppConfig = z.infer<typeof ConfigSchema>;
 

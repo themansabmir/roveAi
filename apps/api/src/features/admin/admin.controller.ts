@@ -1,9 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import { listOrganizationsQuerySchema } from "./admin.schemas";
+import { BadRequestError, UnauthorizedError } from "@core/errors";
+import { IMapsService } from "@plugins/maps/maps.plugin";
+import { listOrganizationsQuerySchema, setDefaultProviderSchema } from "./admin.schemas";
 import { AdminRepository } from "./admin.repository";
 
 export class AdminController {
-  constructor(private readonly repository: AdminRepository) {}
+  constructor(
+    private readonly repository: AdminRepository,
+    private readonly maps: IMapsService
+  ) {}
 
   overview = async (_req: Request, res: Response, next: NextFunction) => {
     try {
@@ -22,6 +27,34 @@ export class AdminController {
         skip: (page - 1) * pageSize,
       });
       res.json({ page, pageSize, organizations });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  listProviders = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const providers = this.maps.listProviders();
+      const current = await this.maps.getDefaultProvider();
+      res.json({ default: current, providers });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  setDefaultProvider = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.auth?.userId;
+      if (!userId) throw new UnauthorizedError();
+
+      const { provider } = setDefaultProviderSchema.parse(req.body);
+      const configured = this.maps.listProviders().find((p) => p.key === provider);
+      if (!configured?.configured) {
+        throw new BadRequestError(`Provider ${provider} is not configured (missing API key)`);
+      }
+
+      const current = await this.maps.setDefaultProvider(provider, userId);
+      res.json({ default: current, providers: this.maps.listProviders() });
     } catch (err) {
       next(err);
     }

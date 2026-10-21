@@ -5,7 +5,8 @@ import { Input } from "@rove/ui/components/input"
 import { Label } from "@rove/ui/components/label"
 import { getErrorMessage } from "@/features/auth/domain/auth-error"
 import { useAuth } from "@/features/auth/application/useAuth"
-import { CampaignListPage } from "@/features/campaigns/presentation/CampaignListPage"
+import { PageHeader } from "@/shared/ui/PageHeader"
+import { RunListPage } from "@/features/campaigns/presentation/RunListPage"
 
 export function DashboardPage() {
   const { me, createAgency } = useAuth()
@@ -18,7 +19,7 @@ export function DashboardPage() {
       <Card className="mx-auto max-w-lg">
         <CardHeader>
           <CardTitle>Name your agency</CardTitle>
-          <CardDescription>This becomes the workspace for your campaigns and proposals.</CardDescription>
+          <CardDescription>This becomes the workspace for your research runs and briefs.</CardDescription>
         </CardHeader>
         <CardContent>
           <form
@@ -52,12 +53,12 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6">
-      <div>
-        <h1 className="text-lg font-semibold tracking-tight">{me.organization.name}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">local business opportunity briefs for agencies</p>
-      </div>
-      <CampaignListPage organizationId={me.organization.id} />
+    <div className="space-y-8">
+      <PageHeader
+        title={me.organization.name}
+        description="Research local-business prospects, audit their web presence, and hand off the best opportunities."
+      />
+      <RunListPage organizationId={me.organization.id} />
     </div>
   )
 }

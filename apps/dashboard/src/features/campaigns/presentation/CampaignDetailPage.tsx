@@ -1,10 +1,16 @@
 import { Link, useParams } from "react-router-dom"
+import { ArrowLeft } from "lucide-react"
 import { getErrorMessage } from "@/features/auth/domain/auth-error"
 import { useAuth } from "@/features/auth/application/useAuth"
 import { useCampaign, useCancelCampaign, useRunCampaign } from "@/features/campaigns/application/useCampaigns"
-import { isActiveRun } from "@/features/campaigns/domain/campaign"
+import { isActiveRun, statusLabel, statusTone } from "@/features/campaigns/domain/campaign"
 import { Button } from "@rove/ui/components/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@rove/ui/components/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@rove/ui/components/card"
+import { Skeleton } from "@rove/ui/components/skeleton"
+import { ToneBadge } from "@/features/campaigns/presentation/ToneBadge"
+import { RunPipeline } from "@/features/campaigns/presentation/RunPipeline"
+import { OpportunityQueue } from "@/features/campaigns/presentation/OpportunityQueue"
+import { HandoffPanel } from "@/features/campaigns/presentation/HandoffPanel"
 
 export function CampaignDetailPage() {
   const { campaignId } = useParams()
@@ -15,7 +21,7 @@ export function CampaignDetailPage() {
   const cancel = useCancelCampaign(organizationId ?? "", campaignId ?? "")
 
   if (isLoading) {
-    return <p className="text-sm text-muted-foreground">Loading campaign…</p>
+    return <Skeleton className="h-48 w-full" />
   }
 
   if (!organizationId || !campaignId) {
@@ -25,91 +31,92 @@ export function CampaignDetailPage() {
   const data = campaign.data
   const pending = run.isPending || cancel.isPending
   const actionError = run.error ?? cancel.error
+  const active = data ? isActiveRun(data.status) : false
+  const hasLeads = Boolean(data && data.leads.length > 0)
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6">
-      <div>
-        <Link className="text-xs text-muted-foreground hover:underline" to="/">
-          Campaigns
-        </Link>
-        {campaign.isPending ? <p className="mt-3 text-sm text-muted-foreground">Loading campaign…</p> : null}
-        {campaign.isError ? <p className="mt-3 text-sm text-destructive">{getErrorMessage(campaign.error)}</p> : null}
-        {data ? (
-          <>
-            <h1 className="mt-2 text-lg font-semibold tracking-tight">{data.niche}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {data.serviceType} · {data.city}, {data.region}, {data.country}
-            </p>
-          </>
-        ) : null}
-      </div>
+    <div className="space-y-6">
+      <Link
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        to="/"
+      >
+        <ArrowLeft className="size-4" />
+        Research runs
+      </Link>
+
+      {campaign.isPending ? <Skeleton className="h-48 w-full" /> : null}
+      {campaign.isError ? (
+        <p className="text-sm text-destructive">{getErrorMessage(campaign.error)}</p>
+      ) : null}
 
       {data ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>{data.status}</CardTitle>
-            <CardDescription>
-              {data.leadCount} of {data.maxLeads} leads
-              {data.job ? ` · job ${data.job.status}` : ""}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            {data.status === "PAUSED" ? (
-              <Button size="sm" disabled={pending} onClick={() => void run.mutate()}>
-                {run.isPending ? "Retrying…" : "Retry"}
-              </Button>
-            ) : null}
-            {!isActiveRun(data.status) && data.status !== "PAUSED" ? (
-              <Button size="sm" disabled={pending} onClick={() => void run.mutate()}>
-                {run.isPending ? "Starting…" : "Run"}
-              </Button>
-            ) : null}
-            {isActiveRun(data.status) || data.status === "PAUSED" ? (
-              <Button size="sm" variant="outline" disabled={pending} onClick={() => void cancel.mutate()}>
-                {cancel.isPending ? "Cancelling…" : "Cancel"}
-              </Button>
-            ) : null}
-            {actionError ? <p className="w-full text-sm text-destructive">{getErrorMessage(actionError)}</p> : null}
-          </CardContent>
-        </Card>
-      ) : null}
+        <>
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b pb-5">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl font-semibold tracking-tight">{data.niche}</h1>
+                <ToneBadge tone={statusTone(data.status)}>{statusLabel(data.status)}</ToneBadge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {data.serviceType} · {data.city}, {data.region}, {data.country} ·{" "}
+                <span className="tabular-nums">
+                  {data.leadCount}/{data.maxLeads} leads
+                </span>
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {data.status === "PAUSED" ? (
+                <Button size="sm" disabled={pending} onClick={() => void run.mutate()}>
+                  {run.isPending ? "Retrying…" : "Retry"}
+                </Button>
+              ) : null}
+              {!active && data.status !== "PAUSED" ? (
+                <Button size="sm" disabled={pending} onClick={() => void run.mutate()}>
+                  {run.isPending ? "Starting…" : hasLeads ? "Run again" : "Run"}
+                </Button>
+              ) : null}
+              {active || data.status === "PAUSED" ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={pending}
+                  onClick={() => void cancel.mutate()}
+                >
+                  {cancel.isPending ? "Cancelling…" : "Cancel"}
+                </Button>
+              ) : null}
+            </div>
+          </div>
 
-      {data && data.leads.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No leads yet</CardTitle>
-            <CardDescription>Run the campaign to discover businesses on Maps.</CardDescription>
-          </CardHeader>
-        </Card>
-      ) : null}
+          {actionError ? (
+            <p className="text-sm text-destructive">{getErrorMessage(actionError)}</p>
+          ) : null}
 
-      {data && data.leads.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border bg-card">
-          <table className="w-full text-sm">
-            <thead className="border-b text-left text-muted-foreground">
-              <tr>
-                <th className="px-3 py-2 font-medium">Business</th>
-                <th className="px-3 py-2 font-medium">Website</th>
-                <th className="px-3 py-2 font-medium">Qualification</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.leads.map((lead) => (
-                <tr key={lead.id} className="border-b last:border-0">
-                  <td className="px-3 py-2">
-                    <p className="font-medium">{lead.business.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {lead.business.city ?? data.city}
-                      {lead.business.rating != null ? ` · ${lead.business.rating}` : ""}
-                    </p>
-                  </td>
-                  <td className="px-3 py-2">{lead.business.websiteClass}</td>
-                  <td className="px-3 py-2">{lead.qualificationStatus}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          {/* Step 2: live pipeline — show while running or before any leads exist. */}
+          {active || !hasLeads ? <RunPipeline campaign={data} /> : null}
+
+          {/* Step 3 + 4: opportunity queue with per-lead brief drawer. */}
+          {hasLeads ? (
+            <section className="space-y-3">
+              <h2 className="text-sm font-medium text-muted-foreground">Opportunity queue</h2>
+              <OpportunityQueue leads={data.leads} />
+            </section>
+          ) : !active ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">No leads yet</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Run this research to discover local businesses and build the opportunity queue.
+                </p>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {/* Step 5: hand off. */}
+          {hasLeads ? <HandoffPanel /> : null}
+        </>
       ) : null}
     </div>
   )

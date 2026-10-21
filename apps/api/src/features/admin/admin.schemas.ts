@@ -6,3 +6,9 @@ export const listOrganizationsQuerySchema = z.object({
 });
 
 export type ListOrganizationsQuery = z.infer<typeof listOrganizationsQuerySchema>;
+
+export const setDefaultProviderSchema = z.object({
+  provider: z.enum(["OUTSCRAPER", "SERPAPI", "GOOGLE_PLACES", "FIXTURE"]),
+});
+
+export type SetDefaultProviderInput = z.infer<typeof setDefaultProviderSchema>;

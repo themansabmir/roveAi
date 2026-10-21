@@ -1,0 +1,32 @@
+{
+  "name": "@rove/cms",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    "./schema": "./src/schema/index.ts",
+    "./queries": "./src/queries/index.ts",
+    "./seo": "./src/seo/metadata.ts",
+    "./seo/metadata": "./src/seo/metadata.ts",
+    "./constants": "./src/constants.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "typegen": "sanity typegen generate"
+  },
+  "dependencies": {
+    "@sanity/image-url": "^1.1.0",
+    "groq": "^3.88.1"
+  },
+  "devDependencies": {
+    "@rove/config-ts": "workspace:*",
+    "next": "^15.1.0",
+    "sanity": "^3.88.1",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "next": ">=15"
+  }
+}

@@ -7,9 +7,16 @@ Locked stack (impacts how each piece deploys). Source of truth for product scope
 ```
                  ┌──────────────────────────┐
    Browser  ───▶ │ Vercel                    │
-                 │  • @rove/web (Next.js)     │  marketing site      :443
-                 │  • @rove/dashboard (SPA)   │  agency dashboard    :443
+                 │  • @rove/web (Next.js)     │  Rove SaaS marketing :443
+                 │  • @rove/agency-web        │  agency marketing    :443
+                 │  • @rove/dashboard (SPA)   │  product dashboard   :443
                  └─────────────┬────────────┘
+                               │
+                 ┌─────────────▼────────────┐
+                 │ Sanity (Content Lake)     │
+                 │  • Studio (sanity deploy) │
+                 │  • datasets: rove/agency  │
+                 └──────────────────────────┘
                                │ HTTPS (axios, withCredentials)
                                ▼
                  ┌──────────────────────────┐
@@ -37,9 +44,13 @@ Locked stack (impacts how each piece deploys). Source of truth for product scope
 
 ### Frontend — Vercel
 
-- **`@rove/web`** (Next.js): marketing site. Native Vercel target. Set `NEXT_PUBLIC_API_BASE_URL` to the API's public URL. Root directory `apps/web`, `transpilePackages: ["@rove/ui"]` is already configured so the shared package builds.
+- **`@rove/web`** (Next.js): Rove SaaS marketing. Root `apps/web`. Sanity dataset `production-rove`. See [`docs/MARKETING-CMS.md`](./MARKETING-CMS.md).
+- **`@rove/agency-web`** (Next.js): separate agency/services marketing site. Root `apps/agency-web`. Sanity dataset `production-agency`.
 - **`@rove/dashboard`** (Vite SPA): static build (`dist/`) served by Vercel. Set `VITE_API_BASE_URL` to the API URL. Because it's an SPA, add a catch-all rewrite to `index.html`.
-- Monorepo on Vercel: create **two projects** pointing at the same repo, each with its own root directory (`apps/web`, `apps/dashboard`). Build command `pnpm build`, install `pnpm install`, with the repo root as the workspace. Turborepo remote caching optional.
+- **`@rove/studio`**: Sanity Studio; deploy with `sanity deploy` (hosted on `*.sanity.studio`), not on Vercel by default.
+- Monorepo on Vercel: create **one project per app** (`apps/web`, `apps/agency-web`, `apps/dashboard`) in the same repo. Install at repo root (`pnpm install`), set each project's root directory, build with `pnpm build` (or `turbo run build --filter=...`). `transpilePackages` includes `@rove/ui` and `@rove/cms`.
+
+**Marketing env (Vercel):** `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `SANITY_API_READ_TOKEN`, `SANITY_REVALIDATE_SECRET`, `SANITY_PREVIEW_SECRET`. Optional on Rove web: `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_DASHBOARD_URL`.
 
 **Auth/cookies:** the dashboard calls the API with `withCredentials`. For cookie auth across origins, serve the API on a subdomain of the same site (e.g. `api.rove.app` + `app.rove.app`) and set the auth cookie `Domain=.rove.app`, `SameSite=None; Secure`. `CORS_ORIGINS` on the API must list both Vercel origins.
 
@@ -73,8 +84,10 @@ The product researches and exports. It does **not** send cold email or run seque
 
 | Service        | Key vars                                                                                 |
 | -------------- | ---------------------------------------------------------------------------------------- |
-| web (Vercel)   | `NEXT_PUBLIC_API_BASE_URL`                                                                |
+| web (Vercel)   | `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SANITY_*`, `SANITY_*`, `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_DASHBOARD_URL` |
+| agency-web     | `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SANITY_*`, `SANITY_*` (agency dataset)               |
 | dashboard      | `VITE_API_BASE_URL`                                                                       |
+| studio (CLI)   | `SANITY_STUDIO_PROJECT_ID`, optional dataset overrides                                    |
 | api / worker   | `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `CORS_ORIGINS`, `OUTSCRAPER_API_KEY`, `R2_*`, `OPENAI_API_KEY` (LLM), `PROPOSAL_EVENT_SALT` (brief analytics), CRM provider secrets |
 
 ## CI/CD outline
