@@ -68,6 +68,7 @@ export function useAuth() {
     me: session.data ?? null,
     isAuthenticated: session.data != null,
     isLoading: session.isPending,
+    refresh,
     signIn,
     signUp,
     createAgency,

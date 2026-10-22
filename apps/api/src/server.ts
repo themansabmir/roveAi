@@ -20,6 +20,10 @@ import { campaignsRouter } from "@features/campaigns/campaign.routes";
 import { registerAllPlugins } from "@plugins/register-all";
 import { IPrismaService, PRISMA_PLUGIN } from "@plugins/prisma/prisma.plugin";
 import { IQueueService, QUEUE_PLUGIN } from "@plugins/queue/queue.types";
+import { IMapsService, MAPS_PLUGIN } from "@plugins/maps/maps.plugin";
+import { IEmailService, EMAIL_PLUGIN } from "@plugins/email/email.plugin";
+import { teamRouter, invitationsRouter } from "@features/invitations/invitation.routes";
+import { ensureDefaultSuperAdmin } from "@features/auth/default-superadmin";
 
 export interface BootResult {
   app: Express;
@@ -47,8 +51,12 @@ export async function buildApp(): Promise<{ app: Express; registry: PluginRegist
 
   const prismaPlugin = registry.get<IPrismaService>(PRISMA_PLUGIN);
   const queuePlugin = registry.get<IQueueService>(QUEUE_PLUGIN);
+  const mapsPlugin = registry.get<IMapsService>(MAPS_PLUGIN);
+  const emailPlugin = registry.get<IEmailService>(EMAIL_PLUGIN);
   const prisma = prismaPlugin.client;
   const auth = createAuth(prisma);
+
+  await ensureDefaultSuperAdmin({ prisma, auth, config });
 
   // Better Auth reads the raw request body. JSON parsing must come after this handler.
   app.all("/api/auth/*splat", toNodeHandler(auth));
@@ -58,9 +66,14 @@ export async function buildApp(): Promise<{ app: Express; registry: PluginRegist
   app.use(attachSession({ auth, prisma }));
   app.use(healthRouter({ prisma: prismaPlugin, queue: queuePlugin }));
   app.use("/api/me", meRouter({ prisma }));
-  app.use("/api/admin", adminRouter({ prisma }));
+  app.use("/api/admin", adminRouter({ prisma, maps: mapsPlugin }));
   app.use("/api/workspaces", workspaceRouter({ prisma }));
   app.use("/api/organizations", organizationsRouter({ prisma }));
+  app.use(
+    "/api/organizations/:organizationId/team",
+    teamRouter({ prisma, email: emailPlugin, appWebUrl: config.APP_WEB_URL })
+  );
+  app.use("/api/invitations", invitationsRouter({ prisma, email: emailPlugin, appWebUrl: config.APP_WEB_URL }));
   app.use("/api/organizations/:organizationId/campaigns", campaignsRouter({ prisma, queue: queuePlugin }));
   app.use(notFoundHandler());
   app.use(errorHandler());

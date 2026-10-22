@@ -1,10 +1,9 @@
 import type { Metadata } from "next"
+import { getSiteUrl } from "@/lib/env"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Rove — Automated opportunity engine for local businesses",
-  description:
-    "Rove turns business prospects into researched, sales-ready opportunity briefs with evidence-based audits and AI reasoning.",
+  metadataBase: new URL(getSiteUrl()),
 }
 
 export default function RootLayout({
@@ -13,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>{children}</body>
     </html>
   )

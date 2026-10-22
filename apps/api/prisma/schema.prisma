@@ -27,6 +27,12 @@ datasource db {
 // Enums
 // ---------------------------------------------------------------------------
 
+enum PlatformRole {
+  SUPER_ADMIN
+  MEMBER
+  SUPPORT
+}
+
 enum MembershipRole {
   owner
   admin
@@ -221,6 +227,96 @@ enum FileKind {
   OTHER
 }
 
+// Discovery data sources. Chosen by the super admin as a single platform-wide
+// default; organizations and end users never see or pick a provider. New runs
+// resolve the active provider at dispatch time. Adapters normalize every vendor
+// to the canonical MapsBusiness shape, so swapping providers is invisible.
+enum DiscoveryProvider {
+  APIFY
+  OUTSCRAPER
+  SERPAPI
+  GOOGLE_PLACES
+  FIXTURE
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+}
+
+enum InstructionStatus {
+  PENDING
+  PARSED
+  NEEDS_CLARIFICATION
+  FAILED
+  CONFIRMED
+}
+
+// Closed vocabulary for agency services so matching stays stable.
+enum ServiceCode {
+  WEBSITE
+  TECHNICAL_SEO
+  LOCAL_SEO
+  PERFORMANCE
+  CONTENT
+  REPUTATION
+  BOOKING_CONVERSION
+  ADS
+  OTHER
+}
+
+enum IdentityKind {
+  PHONE
+  DOMAIN
+  PROVIDER_PLACE
+}
+
+enum CreditTxKind {
+  GRANT
+  PURCHASE
+  RESERVE
+  COMMIT
+  RELEASE
+  REFUND
+  ADJUST
+}
+
+enum ReservationStatus {
+  OPEN
+  CAPTURED
+  RELEASED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum NotificationKind {
+  TASK_COMPLETED
+  TASK_FAILED
+  REVIEW_NEEDED
+  CREDITS_LOW
+}
+
+enum ReviewReason {
+  LOW_CONFIDENCE
+  CONFLICTING_EVIDENCE
+  AI_UNAVAILABLE
+  NEEDS_CLARIFICATION
+}
+
+enum ReviewItemStatus {
+  OPEN
+  DISMISSED
+  APPROVED
+}
+
 // ---------------------------------------------------------------------------
 // Auth (Better Auth)
 // ---------------------------------------------------------------------------
@@ -231,15 +327,23 @@ model User {
   email         String   @unique @db.VarChar(255)
   emailVerified Boolean  @default(false)
   image         String?  @db.VarChar(1000)
+  // Internal platform team role (null for external customer agency users).
+  platformRole  PlatformRole?
   // Platform-level super admin (oversees all organizations). Not an org role.
   // Promote via the seed CLI (apps/api/prisma/seed.ts). No self-signup.
   isSuperAdmin  Boolean  @default(false)
   createdAt     DateTime @db.Timestamptz
   updatedAt     DateTime @db.Timestamptz
 
-  accounts    Account[]
-  sessions    Session[]
-  memberships Membership[]
+  accounts            Account[]
+  sessions            Session[]
+  memberships         Membership[]
+  invitationsSent     Invitation[]     @relation("InvitationInvitedBy")
+  invitationsAccepted Invitation[]     @relation("InvitationAcceptedBy")
+  instructions        Instruction[]
+  savedLeads          CampaignLead[]   @relation("LeadSavedBy")
+  notifications       Notification[]
+  reviewItemsResolved ReviewItem[]     @relation("ReviewItemResolvedBy")
 
   @@map("user")
 }
@@ -295,6 +399,22 @@ model Verification {
 }
 
 // ---------------------------------------------------------------------------
+// Platform settings
+// Single-row table (id = "platform") holding super-admin controlled, platform-
+// wide configuration. Currently the default discovery provider.
+// ---------------------------------------------------------------------------
+
+model PlatformSetting {
+  id                String            @id @default("platform")
+  discoveryProvider DiscoveryProvider @default(FIXTURE)
+  updatedByUserId   String?
+  createdAt         DateTime          @default(now()) @db.Timestamptz
+  updatedAt         DateTime          @updatedAt @db.Timestamptz
+
+  @@map("platform_setting")
+}
+
+// ---------------------------------------------------------------------------
 // Workspace / tenancy
 // ---------------------------------------------------------------------------
 
@@ -318,13 +438,26 @@ model Organization {
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt @db.Timestamptz
 
-  logoFile      StoredFile?     @relation("OrgLogo", fields: [logoFileId], references: [id], onDelete: SetNull)
-  memberships   Membership[]
-  campaigns     Campaign[]
-  businesses    Business[]
-  usageEvents   UsageEvent[]
-  crmConnection CrmConnection[]
-  files         StoredFile[]    @relation("OrgFiles")
+  logoFile           StoredFile?        @relation("OrgLogo", fields: [logoFileId], references: [id], onDelete: SetNull)
+  memberships        Membership[]
+  invitations        Invitation[]
+  campaigns          Campaign[]
+  businesses         Business[]
+  usageEvents        UsageEvent[]
+  crmConnection      CrmConnection[]
+  files              StoredFile[]       @relation("OrgFiles")
+  instructions       Instruction[]
+  serviceProfile     ServiceProfile?
+  serviceOffers      ServiceOffer[]
+  creditAccount      CreditAccount?
+  creditReservations CreditReservation[]
+  creditLedger       CreditLedger[]
+  payments           Payment[]
+  prospectTags       ProspectTag[]
+  savedViews         SavedView[]
+  notifications      Notification[]
+  reviewItems        ReviewItem[]
+  analyticsEvents    AnalyticsEvent[]
 
   @@map("organization")
 }
@@ -343,6 +476,108 @@ model Membership {
   @@index([userId])
   @@index([organizationId])
   @@map("membership")
+}
+
+model Invitation {
+  id               String           @id @default(cuid())
+  organizationId   String
+  email            String           @db.VarChar(255)
+  role             MembershipRole   @default(member)
+  status           InvitationStatus @default(PENDING)
+  // Opaque single-use token delivered in the invite link.
+  token            String           @unique @db.VarChar(128)
+  invitedByUserId  String
+  acceptedByUserId String?
+  expiresAt        DateTime         @db.Timestamptz
+  acceptedAt       DateTime?        @db.Timestamptz
+  createdAt        DateTime         @default(now()) @db.Timestamptz
+  updatedAt        DateTime         @updatedAt @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation("InvitationInvitedBy", fields: [invitedByUserId], references: [id], onDelete: Cascade)
+  acceptedBy   User?        @relation("InvitationAcceptedBy", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+
+  // Only one live (PENDING) invite per email per org; enforced in app logic.
+  @@index([organizationId])
+  @@index([email])
+  @@map("invitation")
+}
+
+// ---------------------------------------------------------------------------
+// NL task interpretation (EP-02). Parses into a structured campaign draft.
+// Does not run discovery.
+// ---------------------------------------------------------------------------
+
+model Instruction {
+  id              String            @id @default(cuid())
+  organizationId  String
+  createdByUserId String
+  rawText         String            @db.Text
+  status          InstructionStatus @default(PENDING)
+  // Zod-validated: { niche, serviceType, city, region, country, maxLeads, filters }
+  parsed          Json?
+  // Optional research plan: { modules[], maxPages, topKForAi }
+  plan            Json?
+  missingFields   Json? // ["city", "maxLeads"]
+  modelName       String?           @db.VarChar(80)
+  error           String?           @db.VarChar(500)
+  createdAt       DateTime          @default(now()) @db.Timestamptz
+  updatedAt       DateTime          @updatedAt @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+  campaigns    Campaign[]
+
+  @@index([organizationId, createdAt])
+  @@map("instruction")
+}
+
+// ---------------------------------------------------------------------------
+// Agency service profile (EP-04). Skills belong to the org, not each member.
+// ---------------------------------------------------------------------------
+
+model ServiceProfile {
+  id             String   @id @default(cuid())
+  organizationId String   @unique
+  positioning    String?  @db.VarChar(500)
+  updatedAt      DateTime @updatedAt @db.Timestamptz
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  offers       ServiceOffer[]
+  idealClient  IdealClient?
+
+  @@map("service_profile")
+}
+
+model ServiceOffer {
+  id             String        @id @default(cuid())
+  organizationId String
+  profileId      String
+  name           String        @db.VarChar(160)
+  description    String?       @db.VarChar(1000)
+  codes          ServiceCode[]
+  active         Boolean       @default(true)
+  createdAt      DateTime      @default(now()) @db.Timestamptz
+
+  profile      ServiceProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  matches      LeadMatch[]
+
+  @@index([organizationId, active])
+  @@map("service_offer")
+}
+
+model IdealClient {
+  id          String        @id @default(cuid())
+  profileId   String        @unique
+  niches      String[]
+  locations   String[]
+  minRating   Float?
+  websitePref WebsiteFilter @default(EITHER)
+
+  profile ServiceProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("ideal_client")
 }
 
 // ---------------------------------------------------------------------------
@@ -364,6 +599,9 @@ model Campaign {
   minReviewCount Int?
   websiteFilter  WebsiteFilter @default(EITHER)
 
+  // Optional NL instruction that produced this run. Structured form leaves this null.
+  instructionId String?
+
   // Phase 3: schedule periodic re-audits of this run's leads.
   reauditCadence ReauditCadence @default(OFF)
   lastReauditAt  DateTime?      @db.Timestamptz
@@ -373,6 +611,7 @@ model Campaign {
   updatedAt DateTime       @updatedAt @db.Timestamptz
 
   organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  instruction  Instruction?      @relation(fields: [instructionId], references: [id], onDelete: SetNull)
   exclusions   ExclusionDomain[]
   leads        CampaignLead[]
   jobs         Job[]
@@ -380,6 +619,7 @@ model Campaign {
 
   @@index([organizationId, createdAt])
   @@index([organizationId, status])
+  @@index([instructionId])
   @@map("campaign")
 }
 
@@ -419,6 +659,9 @@ model Business {
   normalizedDomain String?      @db.VarChar(255)
   websiteClass     WebsiteClass
 
+  // Canonical row for intra-org duplicates. Losers point here.
+  duplicateOfBusinessId String?
+
   // Raw provider payload for traceability (Outscraper record, GBP fields).
   providerRaw Json?
 
@@ -426,6 +669,9 @@ model Business {
   updatedAt DateTime @updatedAt @db.Timestamptz
 
   organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  duplicateOf  Business?         @relation("BusinessDuplicates", fields: [duplicateOfBusinessId], references: [id], onDelete: SetNull)
+  duplicates   Business[]        @relation("BusinessDuplicates")
+  identities   BusinessIdentity[]
   leads        CampaignLead[]
   snapshots    WebsiteSnapshot[]
   profile      GbpProfile?
@@ -436,7 +682,22 @@ model Business {
   @@unique([organizationId, provider, providerId])
   @@index([organizationId, normalizedName, normalizedPhone, city])
   @@index([organizationId, normalizedDomain])
+  @@index([duplicateOfBusinessId])
   @@map("business")
+}
+
+model BusinessIdentity {
+  id             String       @id @default(cuid())
+  organizationId String
+  businessId     String
+  kind           IdentityKind
+  value          String       @db.VarChar(255)
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, kind, value])
+  @@index([businessId])
+  @@map("business_identity")
 }
 
 model CampaignLead {
@@ -448,22 +709,33 @@ model CampaignLead {
   aiStatus            AiStatus            @default(PENDING)
 
   // Deterministic opportunity score (0-100), computed before AI reasoning.
+  // Denormalized from LeadScore.total for list sorting.
   opportunityScore Int?
+
+  savedAt       DateTime? @db.Timestamptz
+  savedByUserId String?
 
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt @db.Timestamptz
 
-  campaign      Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  campaign      Campaign                 @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  business      Business                 @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  savedBy       User?                    @relation("LeadSavedBy", fields: [savedByUserId], references: [id], onDelete: SetNull)
   audits        TechnicalAudit[]
   brief         Brief?
   competitorSet CompetitorSet?
   crmExports    CrmExport[]
   jobs          Job[]
+  tags          LeadTag[]
+  opportunities LeadOpportunity[]
+  matches       LeadMatch[]
+  score         LeadScore?
+  reviewItems   ReviewItem[]
 
   @@unique([campaignId, businessId])
   @@index([campaignId])
   @@index([campaignId, opportunityScore])
+  @@index([savedByUserId])
   @@map("campaign_lead")
 }
 
@@ -492,7 +764,7 @@ model WebsiteSnapshot {
 
   createdAt DateTime @default(now()) @db.Timestamptz
 
-  business Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  business Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
   pages    SnapshotPage[]
   audits   TechnicalAudit[]
 
@@ -522,12 +794,12 @@ model SnapshotPage {
 
 // One audit = one module run against one snapshot for one lead.
 model TechnicalAudit {
-  id             String         @id @default(cuid())
+  id             String      @id @default(cuid())
   organizationId String
   leadId         String
   snapshotId     String?
   module         AuditModule
-  status         AuditStatus    @default(PENDING)
+  status         AuditStatus @default(PENDING)
   // Module-level deterministic sub-score and raw metrics.
   score          Int?
   metrics        Json? // e.g. {lighthouse_performance, lcp_ms, cls}
@@ -564,7 +836,8 @@ model AuditFinding {
   evidence   Json? // {metric, value, selector, url}
   createdAt  DateTime        @default(now()) @db.Timestamptz
 
-  audit TechnicalAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  audit               TechnicalAudit             @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  opportunityEvidence LeadOpportunityEvidence[]
 
   @@index([auditId])
   @@index([code])
@@ -576,19 +849,19 @@ model AuditFinding {
 // ---------------------------------------------------------------------------
 
 model GbpProfile {
-  id             String   @id @default(cuid())
-  organizationId String
-  businessId     String   @unique
-  primaryCategory String? @db.VarChar(160)
-  categories     Json? // secondary categories
-  completeness   Int? // 0-100 deterministic completeness score
-  hoursPresent   Boolean  @default(false)
-  photosCount    Int?
-  postsPresent   Boolean  @default(false)
-  ownerResponses Int?
-  napConsistent  Boolean? // name/address/phone consistent across sources
-  observedAt     DateTime @db.Timestamptz
-  raw            Json?
+  id              String   @id @default(cuid())
+  organizationId  String
+  businessId      String   @unique
+  primaryCategory String?  @db.VarChar(160)
+  categories      Json? // secondary categories
+  completeness    Int? // 0-100 deterministic completeness score
+  hoursPresent    Boolean  @default(false)
+  photosCount     Int?
+  postsPresent    Boolean  @default(false)
+  ownerResponses  Int?
+  napConsistent   Boolean? // name/address/phone consistent across sources
+  observedAt      DateTime @db.Timestamptz
+  raw             Json?
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
@@ -597,19 +870,19 @@ model GbpProfile {
 }
 
 model Review {
-  id             String          @id @default(cuid())
-  organizationId String
-  businessId     String
-  provider       String          @db.VarChar(40)
-  providerReviewId String?       @db.VarChar(120)
-  rating         Int?
-  text           String?         @db.Text
-  authorHash     String?         @db.VarChar(64) // never store raw author PII
-  sentiment      ReviewSentiment?
-  themes         Json? // extracted complaint/praise themes
-  ownerResponded Boolean         @default(false)
-  reviewedAt     DateTime?       @db.Timestamptz
-  createdAt      DateTime        @default(now()) @db.Timestamptz
+  id               String           @id @default(cuid())
+  organizationId   String
+  businessId       String
+  provider         String           @db.VarChar(40)
+  providerReviewId String?          @db.VarChar(120)
+  rating           Int?
+  text             String?          @db.Text
+  authorHash       String?          @db.VarChar(64) // never store raw author PII
+  sentiment        ReviewSentiment?
+  themes           Json? // extracted complaint/praise themes
+  ownerResponded   Boolean          @default(false)
+  reviewedAt       DateTime?        @db.Timestamptz
+  createdAt        DateTime         @default(now()) @db.Timestamptz
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
@@ -625,15 +898,15 @@ model Review {
 // A comparison set anchored on the subject lead/business, with a snapshot of
 // comparator businesses and the observation context (geography, category, date).
 model CompetitorSet {
-  id               String   @id @default(cuid())
-  organizationId   String
-  leadId           String   @unique
+  id                String   @id @default(cuid())
+  organizationId    String
+  leadId            String   @unique
   subjectBusinessId String
-  geography        String   @db.VarChar(160)
-  category         String   @db.VarChar(160)
-  observedAt       DateTime @db.Timestamptz
-  summary          Json? // deterministic comparison aggregates
-  createdAt        DateTime @default(now()) @db.Timestamptz
+  geography         String   @db.VarChar(160)
+  category          String   @db.VarChar(160)
+  observedAt        DateTime @db.Timestamptz
+  summary           Json? // deterministic comparison aggregates
+  createdAt         DateTime @default(now()) @db.Timestamptz
 
   lead            CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
   subjectBusiness Business     @relation("ComparisonSubject", fields: [subjectBusinessId], references: [id], onDelete: Cascade)
@@ -644,20 +917,134 @@ model CompetitorSet {
 }
 
 model Competitor {
-  id            String  @id @default(cuid())
+  id              String   @id @default(cuid())
   competitorSetId String
-  name          String  @db.VarChar(255)
-  websiteUrl    String? @db.VarChar(1000)
-  rating        Float?
-  reviewCount   Int?
-  recentReviews Int?
-  signals       Json? // website quality / booking / contact observations
-  createdAt     DateTime @default(now()) @db.Timestamptz
+  name            String   @db.VarChar(255)
+  websiteUrl      String?  @db.VarChar(1000)
+  rating          Float?
+  reviewCount     Int?
+  recentReviews   Int?
+  signals         Json? // website quality / booking / contact observations
+  createdAt       DateTime @default(now()) @db.Timestamptz
 
   competitorSet CompetitorSet @relation(fields: [competitorSetId], references: [id], onDelete: Cascade)
 
   @@index([competitorSetId])
   @@map("competitor")
+}
+
+// ---------------------------------------------------------------------------
+// Lead opportunities, skill match, and score (EP-07 / EP-08 / EP-09)
+// AuditFinding stays the observable evidence. These are the product layer.
+// ---------------------------------------------------------------------------
+
+model LeadOpportunity {
+  id                   String                @id @default(cuid())
+  organizationId       String
+  leadId               String
+  code                 String                @db.VarChar(80) // IMPROVE_MOBILE_BOOKING
+  title                String                @db.VarChar(300)
+  suggestedService     ServiceCode?
+  confidence           OpportunityConfidence @default(MEDIUM)
+  verificationNeeded   String?               @db.VarChar(500)
+  conflictingEvidence  String?               @db.VarChar(500)
+  rank                 Int                   @default(0)
+  createdAt            DateTime              @default(now()) @db.Timestamptz
+
+  lead     CampaignLead               @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  evidence LeadOpportunityEvidence[]
+  matches  LeadMatch[]
+
+  @@index([leadId, rank])
+  @@index([organizationId])
+  @@map("lead_opportunity")
+}
+
+model LeadOpportunityEvidence {
+  opportunityId String
+  findingId     String
+
+  opportunity LeadOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  finding     AuditFinding    @relation(fields: [findingId], references: [id], onDelete: Cascade)
+
+  @@id([opportunityId, findingId])
+  @@map("lead_opportunity_evidence")
+}
+
+model LeadMatch {
+  id             String @id @default(cuid())
+  organizationId String
+  leadId         String
+  offerId        String
+  opportunityId  String
+  fit            Int // 0-100
+  reasons        Json // ["offer.codes includes LOCAL_SEO"]
+
+  lead        CampaignLead    @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  offer       ServiceOffer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  opportunity LeadOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, offerId, opportunityId])
+  @@index([leadId])
+  @@index([organizationId])
+  @@map("lead_match")
+}
+
+model LeadScore {
+  id             String                @id @default(cuid())
+  leadId         String                @unique
+  total          Int
+  evidenceScore  Int
+  fitScore       Int
+  relevanceScore Int
+  confidence     OpportunityConfidence @default(MEDIUM)
+  breakdown      Json
+  computedAt     DateTime              @default(now()) @db.Timestamptz
+
+  lead CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@map("lead_score")
+}
+
+// ---------------------------------------------------------------------------
+// Prospect tags and saved views (EP-10). Prospects = CampaignLead + Business.
+// ---------------------------------------------------------------------------
+
+model ProspectTag {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String   @db.VarChar(60)
+  createdAt      DateTime @default(now()) @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  leads        LeadTag[]
+
+  @@unique([organizationId, name])
+  @@map("prospect_tag")
+}
+
+model LeadTag {
+  leadId String
+  tagId  String
+
+  lead CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  tag  ProspectTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([leadId, tagId])
+  @@map("lead_tag")
+}
+
+model SavedView {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String   @db.VarChar(80)
+  filters        Json // { city, minScore, auditStatus, tagIds, savedOnly }
+  createdAt      DateTime @default(now()) @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("saved_view")
 }
 
 // ---------------------------------------------------------------------------
@@ -690,9 +1077,9 @@ model Brief {
   publicToken String? @unique @db.VarChar(64)
   pdfFileId   String?
 
-  modelName   String?  @db.VarChar(80)
-  createdAt   DateTime @default(now()) @db.Timestamptz
-  updatedAt   DateTime @updatedAt @db.Timestamptz
+  modelName   String?   @db.VarChar(80)
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @db.Timestamptz
   publishedAt DateTime? @db.Timestamptz
 
   lead    CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
@@ -796,7 +1183,7 @@ model StoredFile {
   checksum       String?  @db.VarChar(64)
   createdAt      DateTime @default(now()) @db.Timestamptz
 
-  organization  Organization   @relation("OrgFiles", fields: [organizationId], references: [id], onDelete: Cascade)
+  organization  Organization    @relation("OrgFiles", fields: [organizationId], references: [id], onDelete: Cascade)
   orgLogos      Organization[]  @relation("OrgLogo")
   snapshotPages SnapshotPage[] @relation("PageScreenshot")
   htmlPages     SnapshotPage[] @relation("PageHtml")
@@ -813,21 +1200,24 @@ model StoredFile {
 
 // Domain-visible job row (what the campaign screen shows). The queue driver
 // handles delivery and retry; this row stays PROCESSING across those retries.
+// DISCOVER / campaign-wide EXPORT keep leadId null. CRAWL / AUDIT / INTERPRET
+// set leadId. AUDIT also sets module.
 model Job {
-  id             String    @id @default(cuid())
+  id             String          @id @default(cuid())
   campaignId     String
   organizationId String
   leadId         String?
-  kind           JobKind   @default(DISCOVER)
-  status         JobStatus @default(PENDING)
-  attemptCount   Int       @default(0)
-  queueJobId     String?   @db.VarChar(64)
-  error          String?   @db.VarChar(1000)
-  createdAt      DateTime  @default(now()) @db.Timestamptz
-  updatedAt      DateTime  @updatedAt @db.Timestamptz
+  kind           JobKind         @default(DISCOVER)
+  module         AuditModule?
+  status         JobStatus       @default(PENDING)
+  attemptCount   Int             @default(0)
+  queueJobId     String?         @db.VarChar(64)
+  error          String?         @db.VarChar(1000)
+  createdAt      DateTime        @default(now()) @db.Timestamptz
+  updatedAt      DateTime        @updatedAt @db.Timestamptz
 
-  campaign Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  lead     CampaignLead? @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  campaign Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  lead     CampaignLead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
   audits   TechnicalAudit[]
 
   @@index([campaignId, createdAt])
@@ -845,9 +1235,171 @@ model UsageEvent {
   providerCost   Decimal?  @db.Decimal(12, 6) // when the provider returns it
   createdAt      DateTime  @default(now()) @db.Timestamptz
 
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  campaign     Campaign?    @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campaign     Campaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  ledger       CreditLedger[]
 
   @@index([organizationId, kind, createdAt])
   @@map("usage_event")
+}
+
+// ---------------------------------------------------------------------------
+// Credits (EP-14). UsageEvent meters units; these tables are the purchasable
+// balance. Monthly ceilings on Organization remain a second guardrail.
+// ---------------------------------------------------------------------------
+
+model CreditAccount {
+  id              String   @id @default(cuid())
+  organizationId  String   @unique
+  balance         Int      @default(0) // available
+  reserved        Int      @default(0)
+  lifetimeGranted Int      @default(0)
+  updatedAt       DateTime @updatedAt @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("credit_account")
+}
+
+model CreditReservation {
+  id             String            @id @default(cuid())
+  organizationId String
+  campaignId     String?
+  jobId          String?
+  estimated      Int
+  captured       Int               @default(0)
+  status         ReservationStatus @default(OPEN)
+  createdAt      DateTime          @default(now()) @db.Timestamptz
+  updatedAt      DateTime          @updatedAt @db.Timestamptz
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  ledger       CreditLedger[]
+
+  @@index([organizationId, status])
+  @@index([jobId])
+  @@map("credit_reservation")
+}
+
+model CreditLedger {
+  id             String       @id @default(cuid())
+  organizationId String
+  kind           CreditTxKind
+  amount         Int // signed: +grant, -commit
+  balanceAfter   Int
+  reservationId  String?
+  usageEventId   String?
+  paymentId      String?
+  reason         String       @db.VarChar(200)
+  createdAt      DateTime     @default(now()) @db.Timestamptz
+
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  reservation  CreditReservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+  usageEvent   UsageEvent?        @relation(fields: [usageEventId], references: [id], onDelete: SetNull)
+  payment      Payment?           @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@map("credit_ledger")
+}
+
+// ---------------------------------------------------------------------------
+// Payments (EP-15). Credit packs only — no subscription table yet.
+// ---------------------------------------------------------------------------
+
+model CreditPack {
+  id         String  @id @default(cuid())
+  name       String  @db.VarChar(80)
+  credits    Int
+  priceCents Int
+  currency   String  @default("usd") @db.VarChar(8)
+  active     Boolean @default(true)
+  sortOrder  Int     @default(0)
+
+  payments Payment[]
+
+  @@map("credit_pack")
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  organizationId String
+  packId         String?
+  provider       String        @db.VarChar(40) // stripe
+  providerRef    String        @unique @db.VarChar(255)
+  amountCents    Int
+  currency       String        @db.VarChar(8)
+  creditsGranted Int
+  status         PaymentStatus @default(PENDING)
+  raw            Json?
+  createdAt      DateTime      @default(now()) @db.Timestamptz
+  updatedAt      DateTime      @updatedAt @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  pack         CreditPack?  @relation(fields: [packId], references: [id], onDelete: SetNull)
+  ledger       CreditLedger[]
+
+  @@index([organizationId, createdAt])
+  @@map("payment")
+}
+
+// ---------------------------------------------------------------------------
+// Notifications & review queue (EP-16)
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String?
+  kind           NotificationKind
+  title          String           @db.VarChar(200)
+  body           String?          @db.VarChar(1000)
+  entityType     String?          @db.VarChar(40) // campaign | lead | job
+  entityId       String?
+  readAt         DateTime?        @db.Timestamptz
+  createdAt      DateTime         @default(now()) @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([userId, readAt])
+  @@map("notification")
+}
+
+model ReviewItem {
+  id               String           @id @default(cuid())
+  organizationId   String
+  leadId           String
+  reason           ReviewReason
+  status           ReviewItemStatus @default(OPEN)
+  detail           String?          @db.VarChar(500)
+  resolvedByUserId String?
+  resolvedAt       DateTime?        @db.Timestamptz
+  createdAt        DateTime         @default(now()) @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lead         CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  resolvedBy   User?        @relation("ReviewItemResolvedBy", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status])
+  @@index([leadId])
+  @@map("review_item")
+}
+
+// ---------------------------------------------------------------------------
+// Product analytics (EP-17). Do not reuse BriefEvent (public brief views).
+// Entity ids live in properties so this table cannot block deletes.
+// ---------------------------------------------------------------------------
+
+model AnalyticsEvent {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String?
+  name           String   @db.VarChar(80) // run_created | discover_completed | brief_generated
+  properties     Json?
+  createdAt      DateTime @default(now()) @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, name, createdAt])
+  @@map("analytics_event")
 }

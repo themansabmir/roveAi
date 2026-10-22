@@ -1,0 +1,28 @@
+import { defineField, defineType } from "sanity"
+
+export const link = defineType({
+  name: "link",
+  title: "Link",
+  type: "object",
+  fields: [
+    defineField({
+      name: "label",
+      title: "Label",
+      type: "string",
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "href",
+      title: "URL",
+      type: "url",
+      validation: (rule) =>
+        rule.uri({ allowRelative: true, scheme: ["http", "https", "mailto"] }),
+    }),
+    defineField({
+      name: "openInNewTab",
+      title: "Open in new tab",
+      type: "boolean",
+      initialValue: false,
+    }),
+  ],
+})

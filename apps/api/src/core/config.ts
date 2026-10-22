@@ -50,13 +50,7 @@ const ConfigSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
   BETTER_AUTH_URL: z.string().url().default("http://localhost:3000"),
   // Apify Google Maps Scraper
-  APIFY_TOKEN: z
-    .string()
-    .optional()
-    .transform((value) => {
-      const trimmed = value?.trim();
-      return trimmed ? trimmed : undefined;
-    }),
+  APIFY_TOKEN: optionalText(),
   APIFY_ACTOR: z
     .string()
     .optional()
@@ -65,14 +59,21 @@ const ConfigSchema = z.object({
       const trimmed = value?.trim();
       return trimmed ? trimmed : "scraperlink/google-maps-scraper";
     }),
-  // Outscraper (legacy — Apify is preferred)
-  OUTSCRAPER_API_KEY: z
-    .string()
-    .optional()
-    .transform((value) => {
-      const trimmed = value?.trim();
-      return trimmed ? trimmed : undefined;
-    }),
+  // Discovery provider keys
+  OUTSCRAPER_API_KEY: optionalText(),
+  SERPAPI_API_KEY: optionalText(),
+  GOOGLE_PLACES_API_KEY: optionalText(),
+  // Email & URLs
+  RESEND_API_KEY: optionalText(),
+  EMAIL_FROM: z.string().min(1).default("Rove <onboarding@resend.dev>"),
+  APP_WEB_URL: z.string().url().default("http://localhost:5173"),
+  // Super admin credentials
+  SUPERADMIN_EMAIL: optionalText(),
+  SUPERADMIN_PASSWORD: optionalText(),
+  SUPERADMIN_NAME: optionalText(),
+  DEFAULT_SUPERADMIN_EMAIL: optionalText(),
+  DEFAULT_SUPERADMIN_PASSWORD: optionalText(),
+  DEFAULT_SUPERADMIN_NAME: optionalText(),
 }).superRefine((value, ctx) => {
   if (value.QUEUE_DRIVER === "pubsub" && !value.GCP_PROJECT_ID) {
     ctx.addIssue({

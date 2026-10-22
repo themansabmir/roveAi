@@ -20,7 +20,7 @@ Rove **researches** local-business prospects and turns evidence into sales-ready
 - **Platform super admin:** `User.isSuperAdmin` boolean (not an org role). Oversees all organizations via `/api/admin/*` behind `requireSuperAdmin()`. No self-signup — promote with `pnpm --filter @rove/api db:promote-admin -- <email>`.
 - `/api/me` returns the user (incl. `isSuperAdmin`), active organization, and org role.
 
-> Billing note: subscription / credit model is intentionally **not** modeled yet. It will likely add tables (plan, subscription, credit ledger) and columns on `Organization`/`UsageEvent` later. The monthly-ceiling columns already on `Organization` are the seam it will build on.
+> Billing: credit packs + ledger are modeled (`CreditAccount`, `CreditReservation`, `CreditLedger`, `CreditPack`, `Payment`). Monthly ceilings on `Organization` remain a second guardrail. Subscriptions / SaaS plans are still out of scope.
 
 ## The pipeline (MVP section 1)
 
@@ -118,9 +118,25 @@ Reasoning gate (MVP): only the top-K scored leads above a threshold go to the mo
 
 | Model | Role |
 | --- | --- |
-| `Job` | Domain-visible job row (`DISCOVER`/`CRAWL`/`AUDIT`/`INTERPRET`/`COMPETITOR`/`REAUDIT`/`EXPORT`), decoupled from pg-boss retries. |
+| `Job` | Domain-visible job row (`DISCOVER`/`CRAWL`/`AUDIT`/`INTERPRET`/`COMPETITOR`/`REAUDIT`/`EXPORT`), decoupled from pg-boss retries. Optional `leadId` + `module` for per-lead work. |
 | `UsageEvent` | Metered units: Maps records, pages fetched, Lighthouse runs, LLM in/out tokens, files stored; optional provider cost. |
 | `Organization.{mapsRecordLimit,pageFetchLimit,llmTokenLimit}` | Monthly ceilings, refused before the next unit of work. |
+
+### 11. Instruction, service profile, opportunities, credits (product layer)
+
+| Model | Role |
+| --- | --- |
+| `Instruction` | NL task text → structured campaign draft. Does not run discovery. |
+| `ServiceProfile` / `ServiceOffer` / `IdealClient` | Org-level skills and ideal-client defaults. `ServiceCode[]` is the matching vocabulary. |
+| `BusinessIdentity` / `Business.duplicateOfBusinessId` | Intra-org dedupe keys (phone, domain, provider place). |
+| `LeadOpportunity` / `LeadOpportunityEvidence` | Ranked, reasoned opportunities linked to `AuditFinding`s. |
+| `LeadMatch` | Offer ↔ opportunity fit (0–100) with reasons. |
+| `LeadScore` | Evidence / fit / relevance breakdown; `CampaignLead.opportunityScore` is the denormalized sort key. |
+| `ProspectTag` / `LeadTag` / `SavedView` / `CampaignLead.savedAt` | Prospect organization. No second prospect table. |
+| `CreditAccount` / `CreditReservation` / `CreditLedger` | Purchasable balance. Enqueue → reserve; success → commit; fail → release. |
+| `CreditPack` / `Payment` | Catalog + gateway transactions. `providerRef` is webhook idempotency. |
+| `Notification` / `ReviewItem` | Task alerts and human review queue. |
+| `AnalyticsEvent` | Product usage. Do not reuse `BriefEvent` (public brief views). |
 
 ## Status fields (kept separate — one enum can't mean everything)
 

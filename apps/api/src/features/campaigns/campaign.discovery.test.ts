@@ -81,7 +81,11 @@ async function createCampaign(
   return response.body as { id: string };
 }
 
-describe("campaign discovery", () => {
+const hasRealDb = Boolean(
+  process.env.DATABASE_URL && !process.env.DATABASE_URL.includes("HOST-pooler.REGION.aws.neon.tech")
+);
+
+describe.skipIf(!hasRealDb)("campaign discovery", () => {
   const emails: string[] = [];
   const organizationIds: string[] = [];
   let app: Express.Application;

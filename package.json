@@ -12,6 +12,8 @@
     "test": "turbo run test",
     "clean": "turbo run clean && rimraf node_modules",
     "dev:web": "turbo run dev --filter=@rove/web",
+    "dev:studio": "turbo run dev --filter=@rove/studio",
+    "dev:agency-web": "turbo run dev --filter=@rove/agency-web",
     "dev:dashboard": "turbo run dev --filter=@rove/dashboard",
     "dev:api": "turbo run dev --filter=@rove/api",
     "dev:worker": "pnpm --filter @rove/api dev:worker"
