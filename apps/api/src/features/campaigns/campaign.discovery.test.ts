@@ -5,6 +5,8 @@ import { buildApp } from "../../server";
 import { IPrismaService, PRISMA_PLUGIN } from "@plugins/prisma/prisma.plugin";
 import { registry } from "@core/registry";
 import { MapsBusiness, MapsProvider, MapsQuotaError } from "@plugins/maps/maps.types";
+import { loadConfig } from "@core/config";
+import { AuditScheduler } from "@features/audits/audit-scheduler";
 import { CampaignRepository } from "./campaign.repository";
 import { DiscoveryService } from "./discovery.service";
 
@@ -79,7 +81,11 @@ async function createCampaign(
   return response.body as { id: string };
 }
 
-describe("campaign discovery", () => {
+const hasRealDb = Boolean(
+  process.env.DATABASE_URL && !process.env.DATABASE_URL.includes("HOST-pooler.REGION.aws.neon.tech")
+);
+
+describe.skipIf(!hasRealDb)("campaign discovery", () => {
   const emails: string[] = [];
   const organizationIds: string[] = [];
   let app: Express.Application;
@@ -111,7 +117,18 @@ describe("campaign discovery", () => {
   }
 
   async function discover(campaignId: string, jobId: string, maps: MapsProvider) {
-    const discovery = new DiscoveryService(new CampaignRepository(prisma), maps);
+    const published: string[] = [];
+    const queue = {
+      async publish(queueName: string): Promise<string> {
+        published.push(queueName);
+        return `test-${published.length}`;
+      },
+    };
+    const discovery = new DiscoveryService(
+      new CampaignRepository(prisma),
+      maps,
+      new AuditScheduler(prisma, queue, loadConfig().CRAWL_MAX_PAGES)
+    );
     await discovery.run(campaignId, jobId, { retrycount: 0, retrylimit: 2 });
   }
 

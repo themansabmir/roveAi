@@ -81,6 +81,7 @@ enum AuditStatus {
   SKIPPED_NO_WEBSITE
   SKIPPED_NOT_OWNED_SITE
   SKIPPED_BY_ROBOTS
+  SKIPPED_BUDGET
   UNREACHABLE
   BLOCKED
   LOW_TEXT
@@ -221,6 +222,8 @@ enum FileKind {
   PDF_REPORT
   CSV_EXPORT
   LOGO
+  HTML
+  PSI_JSON
   OTHER
 }
 
@@ -229,6 +232,7 @@ enum FileKind {
 // resolve the active provider at dispatch time. Adapters normalize every vendor
 // to the canonical MapsBusiness shape, so swapping providers is invisible.
 enum DiscoveryProvider {
+  APIFY
   OUTSCRAPER
   SERPAPI
   GOOGLE_PLACES
@@ -420,9 +424,10 @@ model Organization {
   slug String @unique @db.VarChar(255)
 
   // Monthly budget ceilings (MVP guardrails). Starting beta values.
-  mapsRecordLimit Int @default(1000)
-  pageFetchLimit  Int @default(2000)
-  llmTokenLimit   Int @default(500000)
+  mapsRecordLimit     Int @default(1000)
+  pageFetchLimit      Int @default(2000)
+  lighthouseRunLimit  Int @default(300)
+  llmTokenLimit       Int @default(500000)
 
   // Agency branding used on published briefs.
   brandColor   String? @db.VarChar(16)
@@ -769,17 +774,19 @@ model WebsiteSnapshot {
 }
 
 model SnapshotPage {
-  id               String  @id @default(cuid())
-  snapshotId       String
-  url              String  @db.VarChar(1000)
-  httpStatus       Int?
-  role             String? @db.VarChar(40) // home | services | contact | about | location
-  // Screenshot captured by the browser worker, stored in R2.
+  id         String  @id @default(cuid())
+  snapshotId String
+  url        String  @db.VarChar(1000)
+  httpStatus Int?
+  role       String? @db.VarChar(40) // home | services | contact | about | location
+  // Screenshot captured by a browser worker, stored in object storage.
   screenshotFileId String?
+  htmlFileId       String?
   extracted        Json? // CTAs, contact links, forms, images, alt coverage
 
   snapshot       WebsiteSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
-  screenshotFile StoredFile?     @relation(fields: [screenshotFileId], references: [id], onDelete: SetNull)
+  screenshotFile StoredFile?     @relation("PageScreenshot", fields: [screenshotFileId], references: [id], onDelete: SetNull)
+  htmlFile       StoredFile?     @relation("PageHtml", fields: [htmlFileId], references: [id], onDelete: SetNull)
 
   @@index([snapshotId])
   @@map("snapshot_page")
@@ -796,17 +803,21 @@ model TechnicalAudit {
   // Module-level deterministic sub-score and raw metrics.
   score          Int?
   metrics        Json? // e.g. {lighthouse_performance, lcp_ms, cls}
-  toolName       String?     @db.VarChar(80)
-  toolVersion    String?     @db.VarChar(40)
-  deviceProfile  String?     @db.VarChar(40) // mobile | desktop
-  observedAt     DateTime    @db.Timestamptz
-  failureReason  String?     @db.VarChar(500)
-  createdAt      DateTime    @default(now()) @db.Timestamptz
+  toolName       String?        @db.VarChar(80)
+  toolVersion    String?        @db.VarChar(40)
+  deviceProfile  String?        @db.VarChar(40) // mobile | desktop
+  observedAt     DateTime       @db.Timestamptz
+  failureReason  String?        @db.VarChar(500)
+  createdAt      DateTime       @default(now()) @db.Timestamptz
+  // One crawl job writes two modules, so uniqueness is the pair, not jobId alone.
+  jobId          String?
 
   lead     CampaignLead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   snapshot WebsiteSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
+  job      Job?             @relation(fields: [jobId], references: [id], onDelete: SetNull)
   findings AuditFinding[]
 
+  @@unique([jobId, module])
   @@index([leadId, module])
   @@index([organizationId, module])
   @@map("technical_audit")
@@ -1158,7 +1169,7 @@ model CrmExport {
 }
 
 // ---------------------------------------------------------------------------
-// Files (Cloudflare R2) — DB stores object keys + metadata only
+// Files (GCS, or the local dev store) — DB stores object keys + metadata only
 // ---------------------------------------------------------------------------
 
 model StoredFile {
@@ -1174,7 +1185,8 @@ model StoredFile {
 
   organization  Organization    @relation("OrgFiles", fields: [organizationId], references: [id], onDelete: Cascade)
   orgLogos      Organization[]  @relation("OrgLogo")
-  snapshotPages SnapshotPage[]
+  snapshotPages SnapshotPage[] @relation("PageScreenshot")
+  htmlPages     SnapshotPage[] @relation("PageHtml")
   briefs        Brief[]
 
   @@unique([bucket, objectKey])
@@ -1186,26 +1198,27 @@ model StoredFile {
 // Jobs + usage metering
 // ---------------------------------------------------------------------------
 
-// Domain-visible job row (what the campaign screen shows). pg-boss handles
-// delivery/retry/backoff separately; this row stays PROCESSING across retries.
+// Domain-visible job row (what the campaign screen shows). The queue driver
+// handles delivery and retry; this row stays PROCESSING across those retries.
 // DISCOVER / campaign-wide EXPORT keep leadId null. CRAWL / AUDIT / INTERPRET
 // set leadId. AUDIT also sets module.
 model Job {
-  id             String       @id @default(cuid())
+  id             String          @id @default(cuid())
   campaignId     String
   organizationId String
   leadId         String?
-  kind           JobKind      @default(DISCOVER)
+  kind           JobKind         @default(DISCOVER)
   module         AuditModule?
-  status         JobStatus    @default(PENDING)
-  attemptCount   Int          @default(0)
-  queueJobId     String?      @db.VarChar(64)
-  error          String?      @db.VarChar(1000)
-  createdAt      DateTime     @default(now()) @db.Timestamptz
-  updatedAt      DateTime     @updatedAt @db.Timestamptz
+  status         JobStatus       @default(PENDING)
+  attemptCount   Int             @default(0)
+  queueJobId     String?         @db.VarChar(64)
+  error          String?         @db.VarChar(1000)
+  createdAt      DateTime        @default(now()) @db.Timestamptz
+  updatedAt      DateTime        @updatedAt @db.Timestamptz
 
-  campaign Campaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  lead     CampaignLead? @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  campaign Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  lead     CampaignLead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  audits   TechnicalAudit[]
 
   @@index([campaignId, createdAt])
   @@index([organizationId, status])
