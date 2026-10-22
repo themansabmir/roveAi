@@ -32,11 +32,12 @@ const NAV_ITEMS: NavItem[] = [
 export function DashboardLayout() {
   const { me, signOut } = useAuth()
   const [signingOut, setSigningOut] = useState(false)
-  const agencyName = me?.organization?.name ?? "Workspace"
+  const isPlatformStaff = Boolean(me?.user.isSuperAdmin || me?.user.platformRole)
+  const agencyName = me?.organization?.name ?? (isPlatformStaff ? "Platform Console" : "Workspace")
   const email = me?.user.email ?? ""
   const initials = (me?.user.name ?? email).slice(0, 2).toUpperCase()
 
-  const items = NAV_ITEMS.filter((item) => !item.superAdmin || me?.user.isSuperAdmin)
+  const items = NAV_ITEMS.filter((item) => !item.superAdmin || isPlatformStaff)
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">

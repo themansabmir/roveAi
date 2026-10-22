@@ -1,3 +1,5 @@
+export type PlatformRole = "SUPER_ADMIN" | "MEMBER" | "SUPPORT";
+
 export type OrgRole = "owner" | "admin" | "member";
 
 export interface MembershipSummary {
@@ -10,6 +12,7 @@ export interface AuthPrincipal {
   email: string;
   name: string | null;
   emailVerified: boolean;
+  platformRole: PlatformRole | null;
   isSuperAdmin: boolean;
   sessionId: string;
   activeOrganizationId: string | null;

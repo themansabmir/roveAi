@@ -23,6 +23,7 @@ import { IQueueService, QUEUE_PLUGIN } from "@plugins/queue/pgboss.plugin";
 import { IMapsService, MAPS_PLUGIN } from "@plugins/maps/maps.plugin";
 import { IEmailService, EMAIL_PLUGIN } from "@plugins/email/email.plugin";
 import { teamRouter, invitationsRouter } from "@features/invitations/invitation.routes";
+import { ensureDefaultSuperAdmin } from "@features/auth/default-superadmin";
 
 export interface BootResult {
   app: Express;
@@ -54,6 +55,8 @@ export async function buildApp(): Promise<{ app: Express; registry: PluginRegist
   const emailPlugin = registry.get<IEmailService>(EMAIL_PLUGIN);
   const prisma = prismaPlugin.client;
   const auth = createAuth(prisma);
+
+  await ensureDefaultSuperAdmin({ prisma, auth, config });
 
   // Better Auth reads the raw request body. JSON parsing must come after this handler.
   app.all("/api/auth/*splat", toNodeHandler(auth));

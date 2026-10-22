@@ -27,6 +27,12 @@ datasource db {
 // Enums
 // ---------------------------------------------------------------------------
 
+enum PlatformRole {
+  SUPER_ADMIN
+  MEMBER
+  SUPPORT
+}
+
 enum MembershipRole {
   owner
   admin
@@ -317,6 +323,8 @@ model User {
   email         String   @unique @db.VarChar(255)
   emailVerified Boolean  @default(false)
   image         String?  @db.VarChar(1000)
+  // Internal platform team role (null for external customer agency users).
+  platformRole  PlatformRole?
   // Platform-level super admin (oversees all organizations). Not an org role.
   // Promote via the seed CLI (apps/api/prisma/seed.ts). No self-signup.
   isSuperAdmin  Boolean  @default(false)

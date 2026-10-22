@@ -34,6 +34,12 @@ const ConfigSchema = z.object({
   RESEND_API_KEY: optionalTrimmed(),
   EMAIL_FROM: z.string().min(1).default("Rove <onboarding@resend.dev>"),
   APP_WEB_URL: z.string().url().default("http://localhost:5173"),
+  SUPERADMIN_EMAIL: optionalTrimmed(),
+  SUPERADMIN_PASSWORD: optionalTrimmed(),
+  SUPERADMIN_NAME: optionalTrimmed(),
+  DEFAULT_SUPERADMIN_EMAIL: optionalTrimmed(),
+  DEFAULT_SUPERADMIN_PASSWORD: optionalTrimmed(),
+  DEFAULT_SUPERADMIN_NAME: optionalTrimmed(),
 });
 
 function optionalTrimmed() {
