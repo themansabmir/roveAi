@@ -1,6 +1,6 @@
 import { WebsiteFilter } from "@prisma/client";
 import { BadRequestError, NotFoundError } from "@core/errors";
-import { IQueueService } from "@plugins/queue/pgboss.plugin";
+import { IQueueService } from "@plugins/queue/queue.types";
 import { hostOf } from "./normalize";
 import { CampaignDetail, CampaignRepository, CampaignSummary, DISCOVER_QUEUE } from "./campaign.repository";
 import { CreateCampaignInput } from "./campaign.schemas";

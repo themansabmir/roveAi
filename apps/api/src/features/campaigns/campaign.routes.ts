@@ -3,7 +3,7 @@ import { Router } from "express";
 import { requireOrgAccess } from "../../middleware/rbac";
 import { requireAuth } from "../../middleware/session";
 import { validate } from "../../middleware/validate";
-import { IQueueService } from "@plugins/queue/pgboss.plugin";
+import { IQueueService } from "@plugins/queue/queue.types";
 import { CampaignController } from "./campaign.controller";
 import { CampaignRepository } from "./campaign.repository";
 import { createCampaignSchema } from "./campaign.schemas";

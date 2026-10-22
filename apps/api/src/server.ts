@@ -19,7 +19,7 @@ import { workspaceRouter } from "@features/workspaces/workspace.routes";
 import { campaignsRouter } from "@features/campaigns/campaign.routes";
 import { registerAllPlugins } from "@plugins/register-all";
 import { IPrismaService, PRISMA_PLUGIN } from "@plugins/prisma/prisma.plugin";
-import { IQueueService, QUEUE_PLUGIN } from "@plugins/queue/pgboss.plugin";
+import { IQueueService, QUEUE_PLUGIN } from "@plugins/queue/queue.types";
 
 export interface BootResult {
   app: Express;

@@ -7,11 +7,14 @@ import {
   WebsiteClass,
   WebsiteFilter,
 } from "@prisma/client";
+import { claimJob, JobClaim, releaseJob as releaseJobLock } from "@features/jobs/job-lock";
+import { DISCOVER_QUEUE } from "@plugins/queue/queue.types";
+import { loadConfig } from "@core/config";
 import { hostOf } from "./normalize";
 
 // export const MAPS_PROVIDER = "outscraper";
 export const MAPS_PROVIDER = "apify";
-export const DISCOVER_QUEUE = "campaign.discover";
+export { DISCOVER_QUEUE };
 
 const IN_FLIGHT: CampaignStatus[] = ["QUEUED", "DISCOVERING", "PROCESSING"];
 
@@ -84,7 +87,7 @@ export function isUniqueViolation(err: unknown): boolean {
 
 const detailInclude = {
   exclusions: true,
-  jobs: { orderBy: { createdAt: "desc" as const }, take: 1 },
+  jobs: { where: { kind: "DISCOVER" }, orderBy: { createdAt: "desc" as const }, take: 1 },
   leads: {
     orderBy: { createdAt: "asc" as const },
     include: { business: true },
@@ -282,16 +285,12 @@ export class CampaignRepository {
     });
   }
 
-  async beginJob(jobId: string): Promise<"ready" | "done"> {
-    const job = await this.prisma.job.findUnique({ where: { id: jobId } });
-    if (!job || job.status === "CANCELLED" || job.status === "COMPLETED" || job.status === "FAILED") {
-      return "done";
-    }
-    await this.prisma.job.update({
-      where: { id: jobId },
-      data: { status: "PROCESSING", attemptCount: { increment: 1 } },
-    });
-    return "ready";
+  async beginJob(jobId: string): Promise<JobClaim> {
+    return claimJob(this.prisma, jobId, loadConfig().JOB_TIMEOUT_MS);
+  }
+
+  async releaseJob(jobId: string): Promise<void> {
+    await releaseJobLock(this.prisma, jobId);
   }
 
   async setJobStatus(jobId: string, status: "COMPLETED" | "FAILED" | "CANCELLED"): Promise<void> {

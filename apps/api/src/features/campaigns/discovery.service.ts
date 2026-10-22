@@ -1,5 +1,6 @@
 import { AuditStatus, QualificationStatus, WebsiteClass } from "@prisma/client";
 import { MapsBusiness, MapsProvider, MapsQuotaError } from "@plugins/maps/maps.types";
+import { AuditScheduler } from "@features/audits/audit-scheduler";
 import { CampaignRepository, DiscoveryCampaign } from "./campaign.repository";
 import { classifyWebsite, exclusionMatches, normalizeName, normalizePhone } from "./normalize";
 import { expandQueries } from "./queries";
@@ -7,7 +8,8 @@ import { expandQueries } from "./queries";
 export class DiscoveryService {
   constructor(
     private readonly repository: CampaignRepository,
-    private readonly maps: MapsProvider
+    private readonly maps: MapsProvider,
+    private readonly audits: AuditScheduler
   ) { }
 
   async run(
@@ -22,7 +24,21 @@ export class DiscoveryService {
 
     console.log({ jobId }, " 🔧 Job marked PROCESSING");
 
-    if (ready === "done") return;
+    if (ready !== "ready") return;
+
+    try {
+      await this.discover(campaignId, jobId, meta);
+    } catch (err) {
+      await this.repository.releaseJob(jobId);
+      throw err;
+    }
+  }
+
+  private async discover(
+    campaignId: string,
+    jobId: string,
+    meta: { retrycount: number; retrylimit: number }
+  ): Promise<void> {
 
     const campaign = await this.repository.loadForDiscovery(campaignId);
     if (!campaign) {
@@ -85,7 +101,7 @@ export class DiscoveryService {
 
     const status = await this.repository.campaignStatus(campaignId);
     if (status === "DISCOVERING") {
-      await this.repository.setCampaignStatus(campaignId, "COMPLETED");
+      await this.audits.schedule(campaignId);
     }
     await this.repository.setJobStatus(jobId, "COMPLETED");
   }
