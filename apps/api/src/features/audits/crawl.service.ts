@@ -26,8 +26,11 @@ export class CrawlService {
   ) {}
 
   async run(payload: AuditJobPayload, meta: { retrycount: number; retrylimit: number }): Promise<void> {
+    console.log(`[CrawlService.run] 🕷️ Crawl job started for lead: ${payload.leadId} (${payload.url})`);
     const claim = await claimJob(this.prisma, payload.jobId, this.limits.jobTimeoutMs);
+    console.log(`[CrawlService.run] 🔒 Job claim result: "${claim}" for jobId: ${payload.jobId}`);
     if (claim === "done") {
+      console.log(`[CrawlService.run] ⏩ Job already done, calling publishIfReady()`);
       await publishIfReady(this.prisma, this.queue, payload);
       return;
     }
@@ -37,6 +40,7 @@ export class CrawlService {
       await this.execute(payload);
     } catch (err) {
       if (meta.retrycount >= meta.retrylimit) {
+        console.error(`[CrawlService.run] ❌ Crawl terminal failure:`, err);
         await this.failModules(payload, "FAILED", errorMessage(err));
         await publishIfReady(this.prisma, this.queue, payload);
         await finishJob(this.prisma, payload.jobId, "FAILED", errorMessage(err));
@@ -45,6 +49,7 @@ export class CrawlService {
       await releaseJob(this.prisma, payload.jobId);
       throw err;
     }
+    console.log(`[CrawlService.run] ✅ Crawl completed for lead: ${payload.leadId}. Triggering publishIfReady()`);
     await publishIfReady(this.prisma, this.queue, payload);
     await finishJob(this.prisma, payload.jobId, "COMPLETED");
   }
@@ -55,18 +60,21 @@ export class CrawlService {
       include: { campaign: true, business: true },
     });
     if (!lead || lead.campaign.status === "CANCELLED") {
+      console.log(`[CrawlService.execute] 🛑 Campaign lead missing or cancelled`);
       await finishJob(this.prisma, payload.jobId, "CANCELLED");
       return;
     }
 
     const reused = await this.reuseRecent(payload);
     if (reused) {
+      console.log(`[CrawlService.execute] ♻️ Reusing cached snapshot from last 24h: ${reused.snapshotId}`);
       await this.writeCompleted(payload, reused.snapshotId, reused.pages);
       return;
     }
 
     const home = parseHttpUrl(payload.url);
     if (!home) {
+      console.log(`[CrawlService.execute] 🚫 URL is not valid public http(s): ${payload.url}`);
       await this.failModules(payload, "BLOCKED", "website url is not public http(s)");
       return;
     }
@@ -85,13 +93,17 @@ export class CrawlService {
 
     let homepage;
     try {
+      console.log(`[CrawlService.execute] 🌐 Fetching homepage: ${payload.url}`);
       homepage = await this.fetcher.fetch(payload.url);
+      console.log(`[CrawlService.execute] 📥 Fetched homepage: status=${homepage.httpStatus}, finalUrl=${homepage.finalUrl}`);
     } catch (err) {
       if (err instanceof FetchError && err.code === "blocked") {
+        console.warn(`[CrawlService.execute] 🚫 SSRF blocked URL: ${payload.url}`);
         await this.failModules(payload, "BLOCKED", err.message);
         return;
       }
       if (err instanceof FetchError) {
+        console.warn(`[CrawlService.execute] ⚠️ Site unreachable: ${payload.url}`);
         await this.failModules(payload, "UNREACHABLE", err.message);
         return;
       }
@@ -108,6 +120,7 @@ export class CrawlService {
       sitemapXml: sitemap.outcome === "ok" ? sitemap.text : null,
       maxPages: this.limits.maxPages,
     });
+    console.log(`[CrawlService.execute] 🎯 Discovered ${targets.length} pages from sitemap/links to crawl`);
 
     const documents = [homepage];
     for (const target of targets) {
@@ -119,12 +132,15 @@ export class CrawlService {
         if (!robotsAllows(robotsBody, path)) continue;
       }
       try {
-        documents.push(await this.fetcher.fetch(target));
+        const doc = await this.fetcher.fetch(target);
+        documents.push(doc);
+        console.log(`[CrawlService.execute] 📄 Crawled sub-page: ${target} (status: ${doc.httpStatus})`);
       } catch (err) {
         logger.warn({ err, target }, "Skipped a page that could not be fetched");
       }
     }
 
+    console.log(`[CrawlService.execute] 🔍 Analyzing ${documents.length} pages and computing content hash...`);
     const pages = documents.map((document) =>
       inspectPage(document.finalUrl, document.httpStatus, document.body.toString("utf8"), document.contentType)
     );
@@ -136,6 +152,7 @@ export class CrawlService {
       }))
     );
     const snapshotId = await this.storeSnapshot(payload, homepage.finalUrl, homepage.httpStatus, hash, robotsBody ? "checked" : "unavailable", pages, documents);
+    console.log(`[CrawlService.execute] 💾 Stored WebsiteSnapshot ID: ${snapshotId}`);
     await this.writeCompleted(payload, snapshotId, pages);
     await this.prisma.usageEvent.create({
       data: {
@@ -145,11 +162,15 @@ export class CrawlService {
         quantity: documents.length,
       },
     });
+    console.log(`[CrawlService.execute] 📊 Recorded WEBSITE_PAGE usage (+${documents.length})`);
   }
 
   private async writeCompleted(payload: AuditJobPayload, snapshotId: string, pages: PageInspect[]): Promise<void> {
     const { seo, experience } = analyzePages(pages);
     const home = pages.find((page) => page.role === "home") ?? pages[0];
+    const seoScore = scoreFromFindings(seo);
+    const expScore = scoreFromFindings(experience);
+    console.log(`[CrawlService.writeCompleted] ✍️ Writing audits -> TECHNICAL_SEO score: ${seoScore} (${seo.length} findings), WEBSITE_EXPERIENCE score: ${expScore} (${experience.length} findings)`);
     await replaceAudit(this.prisma, payload.jobId, moduleWrite(payload, snapshotId, "TECHNICAL_SEO", seo, home, pages.length));
     await replaceAudit(this.prisma, payload.jobId, moduleWrite(payload, snapshotId, "WEBSITE_EXPERIENCE", experience, home, pages.length));
   }

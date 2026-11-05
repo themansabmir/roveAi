@@ -24,10 +24,52 @@ export interface CampaignSummary {
   createdAt: string
 }
 
+export interface AuditFindingView {
+  id: string
+  code: string
+  severity: string
+  source: string
+  confidence: number
+  message: string
+  evidence?: Record<string, unknown> | null
+}
+
+export interface TechnicalAuditView {
+  id: string
+  module: string
+  status: string
+  score: number | null
+  metrics?: Record<string, unknown> | null
+  toolName?: string | null
+  deviceProfile?: string | null
+  observedAt: string
+  findings: AuditFindingView[]
+}
+
+export interface BriefView {
+  id: string
+  status: string
+  aiStatus: string
+  headlineOpportunity: string | null
+  suggestedService: string | null
+  confidence: string
+  valueProposition: string | null
+  outreachAngle: string | null
+  coldEmailDraft: string | null
+  callScriptDraft: string | null
+  content?: {
+    keyFindings?: string[]
+    metricsSummary?: Record<string, unknown>
+  } | null
+  modelName?: string | null
+}
+
 export interface CampaignLead {
   id: string
   qualificationStatus: string
   auditStatus: string
+  aiStatus?: string
+  opportunityScore?: number | null
   business: {
     id: string
     name: string
@@ -37,6 +79,8 @@ export interface CampaignLead {
     websiteUrl: string | null
     websiteClass: string
   }
+  audits?: TechnicalAuditView[]
+  brief?: BriefView | null
 }
 
 export interface CampaignDetail extends CampaignSummary {
@@ -125,6 +169,9 @@ export function auditStatusLabel(status: string): string {
 /** A short, human headline describing why a lead might be an opportunity. */
 export function primarySignal(lead: CampaignLead): string {
   if (lead.qualificationStatus === "EXCLUDED_EXISTING_CLIENT") return "Existing client — excluded"
+  if (lead.brief?.headlineOpportunity) return lead.brief.headlineOpportunity
+  const perf = lead.audits?.find((a) => a.module === "PERFORMANCE")
+  if (perf?.score != null && perf.score < 50) return `Slow mobile site (${perf.score}/100)`
   switch (lead.business.websiteClass) {
     case "MISSING":
       return "No website — high need"
@@ -142,12 +189,12 @@ export function primarySignal(lead: CampaignLead): string {
 }
 
 /**
- * Heuristic opportunity indicator (0–100) from available fields. This is a
- * placeholder for the real evidence-based score. Higher = more likely to need
- * the agency's service. Returns null when the lead is excluded.
+ * Opportunity indicator (0–100). Returns the real database opportunityScore
+ * when available, or falls back to the heuristic indicator.
  */
 export function heuristicScore(lead: CampaignLead): number | null {
   if (lead.qualificationStatus === "EXCLUDED_EXISTING_CLIENT") return null
+  if (lead.opportunityScore != null) return lead.opportunityScore
   if (lead.auditStatus === "FAILED") return 0
 
   let score = 40

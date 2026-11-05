@@ -49,8 +49,12 @@ export class ApifyMapsProvider implements MapsProvider {
       throw new MapsQuotaError();
     }
     if (!response.ok) {
+      let errorBody = "(could not read body)";
+      try {
+        errorBody = await response.text();
+      } catch (_) { /* ignore */ }
       throw new MapsProviderError(
-        `Apify actor "${this.actorSlug}" responded with HTTP ${response.status}`
+        `Apify actor "${this.actorSlug}" responded with HTTP ${response.status}: ${errorBody}`
       );
     }
 
@@ -58,6 +62,10 @@ export class ApifyMapsProvider implements MapsProvider {
     return normalizeApify(data);
   }
 }
+
+// scraperlink/google-maps-scraper enforces a minimum of 10 results per call.
+// Asking for fewer returns HTTP 400 "Field input.num must be >= 10".
+const SCRAPERLINK_MIN_RESULTS = 10;
 
 /** Build the correct actor input depending on which actor is used. */
 function buildActorInput(
@@ -74,10 +82,12 @@ function buildActorInput(
     };
   }
 
-  // scraperlink/google-maps-scraper and similar actors
+  // scraperlink/google-maps-scraper: clamp num to the actor's minimum.
+  // DiscoveryService's maxLeads ceiling and deduplication ensure we never
+  // persist more records than the user requested.
   return {
     query: [input.query],
-    num: input.limit,
+    num: Math.max(input.limit, SCRAPERLINK_MIN_RESULTS),
   };
 }
 

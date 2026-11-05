@@ -1213,8 +1213,19 @@ model Job {
   attemptCount   Int             @default(0)
   queueJobId     String?         @db.VarChar(64)
   error          String?         @db.VarChar(1000)
-  createdAt      DateTime        @default(now()) @db.Timestamptz
-  updatedAt      DateTime        @updatedAt @db.Timestamptz
+  // Outbox dispatch lifecycle & lease management:
+  // - dispatchedAt: confirmed accepted by queue broker
+  // - dispatchLockedAt: lease acquisition timestamp for crash recovery
+  // - dispatchLockedBy: unique worker instance identifier
+  // - dispatchAttempts: counter for queue publishing attempts
+  // - nextDispatchAt: timestamp for exponential backoff retries
+  dispatchedAt     DateTime?       @db.Timestamptz
+  dispatchLockedAt DateTime?       @db.Timestamptz
+  dispatchLockedBy String?         @db.VarChar(64)
+  dispatchAttempts Int             @default(0)
+  nextDispatchAt   DateTime?       @db.Timestamptz
+  createdAt        DateTime        @default(now()) @db.Timestamptz
+  updatedAt        DateTime        @updatedAt @db.Timestamptz
 
   campaign Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   lead     CampaignLead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
@@ -1223,6 +1234,9 @@ model Job {
   @@index([campaignId, createdAt])
   @@index([organizationId, status])
   @@index([leadId, kind])
+  // Fast lookup for outbox dispatch candidate queries
+  @@index([status, dispatchedAt, nextDispatchAt])
+  @@index([dispatchLockedAt])
   @@map("job")
 }
 

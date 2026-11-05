@@ -38,7 +38,12 @@ export class CampaignController {
   run = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const organizationId = requiredOrg(req);
-      res.json(await this.service.run(organizationId, requiredParam(req, "campaignId")));
+      const campaignId = requiredParam(req, "campaignId");
+      console.log(`\n======================================================`);
+      console.log(`[HTTP TRIGGER] 🚀 POST /api/organizations/${organizationId}/campaigns/${campaignId}/run`);
+      console.log(`======================================================`);
+      const result = await this.service.run(organizationId, campaignId);
+      res.json(result);
     } catch (err) {
       next(err);
     }

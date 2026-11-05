@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { robotsAllows, sitemapLocs } from "./robots";
 
 describe("robots and sitemap", () => {

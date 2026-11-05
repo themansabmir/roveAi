@@ -1,4 +1,5 @@
 import {
+  AiStatus,
   AuditStatus,
   CampaignStatus,
   Prisma,
@@ -31,10 +32,49 @@ export interface CampaignSummary {
   createdAt: string;
 }
 
+export interface AuditFindingView {
+  id: string;
+  code: string;
+  severity: string;
+  source: string;
+  confidence: number;
+  message: string;
+  evidence: unknown;
+}
+
+export interface TechnicalAuditView {
+  id: string;
+  module: string;
+  status: string;
+  score: number | null;
+  metrics: unknown;
+  toolName: string | null;
+  deviceProfile: string | null;
+  observedAt: string;
+  findings: AuditFindingView[];
+}
+
+export interface BriefView {
+  id: string;
+  status: string;
+  aiStatus: string;
+  headlineOpportunity: string | null;
+  suggestedService: string | null;
+  confidence: string;
+  valueProposition: string | null;
+  outreachAngle: string | null;
+  coldEmailDraft: string | null;
+  callScriptDraft: string | null;
+  content: unknown;
+  modelName: string | null;
+}
+
 export interface LeadView {
   id: string;
   qualificationStatus: QualificationStatus;
   auditStatus: AuditStatus;
+  aiStatus: AiStatus;
+  opportunityScore: number | null;
   business: {
     id: string;
     name: string;
@@ -44,6 +84,8 @@ export interface LeadView {
     websiteUrl: string | null;
     websiteClass: WebsiteClass;
   };
+  audits: TechnicalAuditView[];
+  brief: BriefView | null;
 }
 
 export interface JobView {
@@ -90,14 +132,21 @@ const detailInclude = {
   jobs: { where: { kind: "DISCOVER" }, orderBy: { createdAt: "desc" as const }, take: 1 },
   leads: {
     orderBy: { createdAt: "asc" as const },
-    include: { business: true },
+    include: {
+      business: true,
+      audits: {
+        include: { findings: true },
+        orderBy: { createdAt: "asc" as const },
+      },
+      brief: true,
+    },
   },
 } satisfies Prisma.CampaignInclude;
 
 type DetailRow = Prisma.CampaignGetPayload<{ include: typeof detailInclude }>;
 
 export class CampaignRepository {
-  constructor(private readonly prisma: PrismaClient) { }
+  constructor(public readonly prisma: PrismaClient) { }
 
   async list(organizationId: string): Promise<CampaignSummary[]> {
     const rows = await this.prisma.campaign.findMany({
@@ -215,7 +264,7 @@ export class CampaignRepository {
   }
 
   async setQueueJobId(jobId: string, queueJobId: string): Promise<void> {
-    await this.prisma.job.update({ where: { id: jobId }, data: { queueJobId } });
+    await this.prisma.job.update({ where: { id: jobId }, data: { queueJobId, dispatchedAt: new Date() } });
   }
 
   async cancel(organizationId: string, campaignId: string): Promise<CampaignDetail | null> {
@@ -431,6 +480,8 @@ function toDetail(row: DetailRow): CampaignDetail {
       id: lead.id,
       qualificationStatus: lead.qualificationStatus,
       auditStatus: lead.auditStatus,
+      aiStatus: lead.aiStatus,
+      opportunityScore: lead.opportunityScore,
       business: {
         id: lead.business.id,
         name: lead.business.name,
@@ -440,6 +491,41 @@ function toDetail(row: DetailRow): CampaignDetail {
         websiteUrl: lead.business.websiteUrl,
         websiteClass: lead.business.websiteClass,
       },
+      audits: lead.audits.map((a) => ({
+        id: a.id,
+        module: a.module,
+        status: a.status,
+        score: a.score,
+        metrics: a.metrics,
+        toolName: a.toolName,
+        deviceProfile: a.deviceProfile,
+        observedAt: a.observedAt.toISOString(),
+        findings: a.findings.map((f) => ({
+          id: f.id,
+          code: f.code,
+          severity: f.severity,
+          source: f.source,
+          confidence: f.confidence,
+          message: f.message,
+          evidence: f.evidence,
+        })),
+      })),
+      brief: lead.brief
+        ? {
+            id: lead.brief.id,
+            status: lead.brief.status,
+            aiStatus: lead.brief.aiStatus,
+            headlineOpportunity: lead.brief.headlineOpportunity,
+            suggestedService: lead.brief.suggestedService,
+            confidence: lead.brief.confidence,
+            valueProposition: lead.brief.valueProposition,
+            outreachAngle: lead.brief.outreachAngle,
+            coldEmailDraft: lead.brief.coldEmailDraft,
+            callScriptDraft: lead.brief.callScriptDraft,
+            content: lead.brief.content,
+            modelName: lead.brief.modelName,
+          }
+        : null,
     })),
   };
 }

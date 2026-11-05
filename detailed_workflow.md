@@ -60,22 +60,59 @@ Here is the exact technical flow from a user signing up to running a campaign.
    * `campaign.repository.ts` uses Prisma to create a `Campaign` record in the DB linked to the `organizationId`.
    * The campaign starts in the `DRAFT` status.
 
-### Step E: Running Discovery (Queue & Background Jobs)
+### Step E: Running Discovery & Audits (Multi-Stage Worker Pipeline)
 1. **Frontend**: The user clicks the "Run Campaign" button.
 2. **API Call**: `POST /api/organizations/:orgId/campaigns/:campaignId/run`
 3. **Backend Engine (Synchronous)**:
-   * The API updates the `Campaign` status to `QUEUED`.
-   * It creates a `Job` record in the database (`kind: DISCOVER`).
-   * It pushes a job payload to **pg-boss** (the PostgreSQL-based background queue).
-   * It immediately responds `200 OK` to the frontend.
-4. **Backend Engine (Asynchronous Worker)**:
-   * A background worker process (`campaign.worker.ts`) picks up the job from pg-boss.
-   * It hands off to `discovery.service.ts` to fetch data from **Outscraper** (or returns sample local data if no API key is set).
-   * **Normalization**: It checks if these businesses already exist using `normalize.ts` (deduplicating by domain/phone).
-   * **Database Mapping**: 
-     * Creates new `Business` records for newly discovered companies.
-     * Creates `CampaignLead` records. This is a join-table that links the discovered `Business` to the `Campaign`.
-   * It updates the `Campaign` status to `COMPLETED`.
+   * Handled by `CampaignController.run` and `CampaignService.run`.
+   * Checks organization limits via `usage_event` (`MAPS_RECORD`).
+   * Atomically marks `Campaign.status = 'QUEUED'`.
+   * Creates a `Job` record in the database (`kind: DISCOVER`, `status: PENDING`).
+   * Pushes a job payload to **pg-boss** (`DISCOVER_QUEUE` = `campaign.discovery`).
+   * Updates `job.queueJobId` with the queue message ID.
+   * Immediately responds `200 OK` to the frontend with the campaign details.
+
+4. **Background Discovery Worker (`campaign.discovery`)**:
+   * A worker process running `runRole("discover")` consumes from `campaign.discovery`.
+   * `DiscoveryService.run()` marks `job.status = 'PROCESSING'` and `Campaign.status = 'DISCOVERING'`.
+   * Queries Google Maps data via the configured provider (`Apify`, `Outscraper`, `SerpApi`, etc.).
+   * Classifies websites (`OWNED_SITE`, `SOCIAL_OR_DIRECTORY`, `MISSING`), filters by rating/reviews, and checks exclusion domains.
+   * **Deduplication & Ingestion**:
+     * Deduplicates and creates or reuses `Business` records.
+     * Inserts `CampaignLead` rows linking each business to the campaign (`auditStatus: PENDING`).
+     * Records usage events (`usage_event` with `kind: MAPS_RECORD`).
+   * Calls `AuditScheduler.schedule(campaignId)` and marks the discovery job `COMPLETED`.
+
+5. **Audit Scheduling & Parallel Queue Dispatch (`AuditScheduler`)**:
+   * Transitions `Campaign.status = 'PROCESSING'`.
+   * Validates monthly quota limits (`pageFetchLimit` and `lighthouseRunLimit`).
+   * For each qualified `CampaignLead`, dispatches two parallel jobs:
+     * **Crawl Job**: Queued to `CRAWL_QUEUE` (`audit.crawl`) with `kind: CRAWL`.
+     * **PSI Job**: Queued to `PSI_QUEUE` (`audit.psi`) with `kind: AUDIT`.
+
+6. **Parallel Audit Workers**:
+   * **Crawl Worker (`CrawlService`)**:
+     * Fetches robots.txt, sitemaps, homepage, and subpages up to `CRAWL_MAX_PAGES`.
+     * Saves raw page HTML to Object Storage (`.data/objects` or GCS) and records `StoredFile` (`kind: HTML`).
+     * Saves `WebsiteSnapshot` and `SnapshotPage` rows.
+     * Analyzes SEO and Website Experience; creates 2 `TechnicalAudit` records (`TECHNICAL_SEO` & `WEBSITE_EXPERIENCE`) and associated `AuditFinding` rows.
+     * Records `UsageEvent` (`WEBSITE_PAGE`).
+     * Calls `publishIfReady()`.
+   * **PSI Worker (`PsiService`)**:
+     * Runs Google Lighthouse mobile audit (concurrency: 1).
+     * Saves raw Lighthouse report to Object Storage (`StoredFile` with `kind: PSI_JSON`).
+     * Creates 1 `TechnicalAudit` record (`PERFORMANCE`) with Core Web Vitals (`lcp_ms`, `cls`, etc.) and `AuditFinding` rows.
+     * Records `UsageEvent` (`LIGHTHOUSE_RUN`).
+     * Calls `publishIfReady()`.
+
+7. **Join Barrier & Downstream AI Pipeline (`publishIfReady`)**:
+   * Acquires a Postgres advisory transaction lock on `leadId`.
+   * Once all 3 required audit modules (`TECHNICAL_SEO`, `WEBSITE_EXPERIENCE`, `PERFORMANCE`) are finished:
+     * Updates `CampaignLead.auditStatus` to `COMPLETED` (or error state).
+     * Creates an `INTERPRET` job and publishes to `AUDIT_READY_QUEUE` (`audit.ready`) for AI Opportunity Scoring and Brief Generation.
+     * Checks if all leads in the campaign are finished; if so, updates `Campaign.status` to `COMPLETED`.
+
+> 💡 **For full technical details, diagrams, and exact database table traces, see [campaign_execution_flow.md](file:///Users/apple/Documents/roveAi/campaign_execution_flow.md).**
 
 ### Step F: Dashboard Polling & Health Checks
 * **Frontend**: While the campaign is running, the frontend refetches the campaign details periodically.
@@ -96,3 +133,5 @@ Whenever you view a lead in the dashboard, here is how the database stitched it 
 5. Each **`CampaignLead`** points to a specific **`Business`** record (which holds the physical address, website URL, and Google rating).
 
 Because of this strict relational mapping enforced by Prisma, data is completely isolated between different agencies using the platform.
+
+

@@ -77,17 +77,33 @@ export function OpportunityQueue({ leads }: { leads: CampaignLead[] }) {
             {visible.map(({ lead, score }) => (
               <TableRow
                 key={lead.id}
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => openLead(lead)}
               >
-                <TableCell className="font-medium">{lead.business.name}</TableCell>
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    <span>{lead.business.name}</span>
+                    {lead.brief && (
+                      <span className="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                        Brief ready
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
                 <TableCell className="text-right">
-                  <ToneBadge tone={scoreTone(score)}>{score == null ? "—" : score}</ToneBadge>
+                  <div className="inline-flex flex-col items-end">
+                    <ToneBadge tone={scoreTone(score)}>{score == null ? "—" : score}</ToneBadge>
+                    {lead.opportunityScore != null && (
+                      <span className="text-[10px] text-muted-foreground font-normal">audited</span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {websiteClassLabel(lead.business.websiteClass)}
                 </TableCell>
-                <TableCell className="text-muted-foreground">{primarySignal(lead)}</TableCell>
+                <TableCell className="text-muted-foreground max-w-xs truncate" title={primarySignal(lead)}>
+                  {primarySignal(lead)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -95,8 +111,7 @@ export function OpportunityQueue({ leads }: { leads: CampaignLead[] }) {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Sorted by opportunity. Score is a heuristic from web presence and reviews until evidence-based
-        audits come online. Click a row to open the brief.
+        Sorted by commercial opportunity. Leads with completed audits reflect real Lighthouse performance and technical evidence. Click any row to open the full findings and AI outreach brief.
       </p>
 
       <LeadBriefDrawer lead={activeLead} open={open} onOpenChange={setOpen} />

@@ -31,3 +31,15 @@ export class PagespeedError extends Error {
     this.name = "PagespeedError";
   }
 }
+
+/**
+ * PSI returned HTTP 400 with a Lighthouse FAILED_DOCUMENT_REQUEST error,
+ * meaning the target site itself is down or unreachable — not a bug in our code.
+ * Callers should record UNREACHABLE and skip retries.
+ */
+export class PagespeedUnreachableError extends Error {
+  constructor(url: string, detail: string) {
+    super(`PSI could not load ${url}: ${detail}`);
+    this.name = "PagespeedUnreachableError";
+  }
+}

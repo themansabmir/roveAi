@@ -1,5 +1,6 @@
 import { AuditModule, AuditStatus, PrismaClient } from "@prisma/client";
-import { AUDIT_READY_QUEUE, AuditJobPayload } from "@plugins/queue/queue.types";
+import { AuditJobPayload } from "@plugins/queue/queue.types";
+import { JobDispatcher } from "@features/jobs/job-dispatcher";
 import { JobPublisher } from "./audit-scheduler";
 import { campaignOutcome, leadAuditStatus, REQUIRED_MODULES } from "./join";
 
@@ -8,6 +9,7 @@ export async function publishIfReady(
   queue: JobPublisher,
   payload: AuditJobPayload
 ): Promise<void> {
+  console.log(`[JoinBarrier.publishIfReady] 🔀 Evaluating lead completion for lead: ${payload.leadId} (jobId: ${payload.jobId})`);
   const interpretJobId = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${payload.leadId}, ${0}::bigint))`;
     const audits = await tx.technicalAudit.findMany({
@@ -19,9 +21,16 @@ export async function publishIfReady(
     for (const audit of audits) {
       if (!latest.has(audit.module)) latest.set(audit.module, audit.status);
     }
-    const status = leadAuditStatus([...latest.entries()].map(([module, moduleStatus]) => ({ module, status: moduleStatus })));
-    if (!status) return null;
+    const moduleSummary = [...latest.entries()].map(([mod, st]) => `${mod}: ${st}`).join(", ");
+    console.log(`[JoinBarrier.publishIfReady] 📋 Module states for lead ${payload.leadId} -> [${moduleSummary || "none"}]`);
 
+    const status = leadAuditStatus([...latest.entries()].map(([module, moduleStatus]) => ({ module, status: moduleStatus })));
+    if (!status) {
+      console.log(`[JoinBarrier.publishIfReady] ⏳ Sibling audit module still running for lead ${payload.leadId}. Exiting lock.`);
+      return null;
+    }
+
+    console.log(`[JoinBarrier.publishIfReady] 🎉 All modules reached terminal state! Updating lead ${payload.leadId} auditStatus -> "${status}"`);
     await tx.campaignLead.updateMany({
       where: { id: payload.leadId, auditStatus: "PENDING" },
       data: { auditStatus: status },
@@ -41,8 +50,12 @@ export async function publishIfReady(
           status: "PENDING",
         },
       });
+      console.log(`[JoinBarrier.publishIfReady] 📋 Created INTERPRET Job row: ${interpret.id}`);
     }
-    if (interpret.queueJobId) return null;
+    if (interpret.dispatchedAt) {
+      console.log(`[JoinBarrier.publishIfReady] ℹ️ INTERPRET job already dispatched (${interpret.queueJobId})`);
+      return null;
+    }
 
     const leads = await tx.campaignLead.findMany({
       where: { campaignId: payload.campaignId },
@@ -50,6 +63,7 @@ export async function publishIfReady(
     });
     const nextCampaign = campaignOutcome(leads.map((lead) => lead.auditStatus));
     if (nextCampaign) {
+      console.log(`[JoinBarrier.publishIfReady] 🏆 All campaign leads evaluated! Campaign status -> "${nextCampaign}"`);
       await tx.campaign.updateMany({
         where: { id: payload.campaignId, status: { in: ["PROCESSING", "DISCOVERING"] } },
         data: { status: nextCampaign },
@@ -59,10 +73,7 @@ export async function publishIfReady(
   });
 
   if (!interpretJobId) return;
-  const messageId = await queue.publish(AUDIT_READY_QUEUE, { ...payload, jobId: interpretJobId });
-  if (!messageId) return;
-  await prisma.job.updateMany({
-    where: { id: interpretJobId, queueJobId: null },
-    data: { queueJobId: messageId, status: "COMPLETED" },
-  });
+  console.log(`[JoinBarrier.publishIfReady] 📤 Dispatching downstream interpret job ${interpretJobId}`);
+  const dispatcher = new JobDispatcher(prisma, queue);
+  await dispatcher.dispatchJob(interpretJobId);
 }

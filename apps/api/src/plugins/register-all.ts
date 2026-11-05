@@ -6,6 +6,7 @@ import { PagespeedPlugin } from "./pagespeed/pagespeed.plugin";
 import { PrismaPlugin } from "./prisma/prisma.plugin";
 import { createQueuePlugin } from "./queue/queue.plugin";
 import { StoragePlugin } from "./storage/storage.plugin";
+import { AiPlugin } from "./ai/ai.plugin";
 
 export async function registerAllPlugins(registry: IPluginRegistry): Promise<void> {
   await registry.register(new PrismaPlugin());
@@ -15,4 +16,5 @@ export async function registerAllPlugins(registry: IPluginRegistry): Promise<voi
   await registry.register(new FetchPlugin());
   await registry.register(new StoragePlugin());
   await registry.register(new PagespeedPlugin());
+  await registry.register(new AiPlugin());
 }

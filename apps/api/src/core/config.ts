@@ -67,6 +67,11 @@ const ConfigSchema = z.object({
   RESEND_API_KEY: optionalText(),
   EMAIL_FROM: z.string().min(1).default("Rove <onboarding@resend.dev>"),
   APP_WEB_URL: z.string().url().default("http://localhost:5173"),
+  // AI reasoning keys (Gemini / OpenAI / Claude)
+  GEMINI_API_KEY: optionalText(),
+  OPENAI_API_KEY: optionalText(),
+  ANTHROPIC_API_KEY: optionalText(),
+  LLM_MODEL: optionalText(),
   // Super admin credentials
   SUPERADMIN_EMAIL: optionalText(),
   SUPERADMIN_PASSWORD: optionalText(),

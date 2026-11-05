@@ -1,43 +1,42 @@
 -- CreateEnum
-CREATE TYPE "InstructionStatus" AS ENUM ('PENDING', 'PARSED', 'NEEDS_CLARIFICATION', 'FAILED', 'CONFIRMED');
+DO $$ BEGIN CREATE TYPE "InstructionStatus" AS ENUM ('PENDING', 'PARSED', 'NEEDS_CLARIFICATION', 'FAILED', 'CONFIRMED'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- CreateEnum
-CREATE TYPE "ServiceCode" AS ENUM ('WEBSITE', 'TECHNICAL_SEO', 'LOCAL_SEO', 'PERFORMANCE', 'CONTENT', 'REPUTATION', 'BOOKING_CONVERSION', 'ADS', 'OTHER');
+DO $$ BEGIN CREATE TYPE "ServiceCode" AS ENUM ('WEBSITE', 'TECHNICAL_SEO', 'LOCAL_SEO', 'PERFORMANCE', 'CONTENT', 'REPUTATION', 'BOOKING_CONVERSION', 'ADS', 'OTHER'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- CreateEnum
-CREATE TYPE "IdentityKind" AS ENUM ('PHONE', 'DOMAIN', 'PROVIDER_PLACE');
+DO $$ BEGIN CREATE TYPE "IdentityKind" AS ENUM ('PHONE', 'DOMAIN', 'PROVIDER_PLACE'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- CreateEnum
-CREATE TYPE "CreditTxKind" AS ENUM ('GRANT', 'PURCHASE', 'RESERVE', 'COMMIT', 'RELEASE', 'REFUND', 'ADJUST');
+DO $$ BEGIN CREATE TYPE "CreditTxKind" AS ENUM ('GRANT', 'PURCHASE', 'RESERVE', 'COMMIT', 'RELEASE', 'REFUND', 'ADJUST'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- CreateEnum
-CREATE TYPE "ReservationStatus" AS ENUM ('OPEN', 'CAPTURED', 'RELEASED', 'EXPIRED');
+DO $$ BEGIN CREATE TYPE "ReservationStatus" AS ENUM ('OPEN', 'CAPTURED', 'RELEASED', 'EXPIRED'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- CreateEnum
-CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'SUCCEEDED', 'FAILED', 'REFUNDED');
+DO $$ BEGIN CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'SUCCEEDED', 'FAILED', 'REFUNDED'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- CreateEnum
-CREATE TYPE "NotificationKind" AS ENUM ('TASK_COMPLETED', 'TASK_FAILED', 'REVIEW_NEEDED', 'CREDITS_LOW');
+DO $$ BEGIN CREATE TYPE "NotificationKind" AS ENUM ('TASK_COMPLETED', 'TASK_FAILED', 'REVIEW_NEEDED', 'CREDITS_LOW'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- CreateEnum
-CREATE TYPE "ReviewReason" AS ENUM ('LOW_CONFIDENCE', 'CONFLICTING_EVIDENCE', 'AI_UNAVAILABLE', 'NEEDS_CLARIFICATION');
+DO $$ BEGIN CREATE TYPE "ReviewReason" AS ENUM ('LOW_CONFIDENCE', 'CONFLICTING_EVIDENCE', 'AI_UNAVAILABLE', 'NEEDS_CLARIFICATION'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- CreateEnum
-CREATE TYPE "ReviewItemStatus" AS ENUM ('OPEN', 'DISMISSED', 'APPROVED');
+DO $$ BEGIN CREATE TYPE "ReviewItemStatus" AS ENUM ('OPEN', 'DISMISSED', 'APPROVED'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- AlterTable
-ALTER TABLE "campaign" ADD COLUMN "instructionId" TEXT;
+ALTER TABLE "campaign" ADD COLUMN IF NOT EXISTS "instructionId" TEXT;
 
 -- AlterTable
-ALTER TABLE "business" ADD COLUMN "duplicateOfBusinessId" TEXT;
+ALTER TABLE "business" ADD COLUMN IF NOT EXISTS "duplicateOfBusinessId" TEXT;
 
 -- AlterTable
-ALTER TABLE "campaign_lead" ADD COLUMN "savedAt" TIMESTAMPTZ,
-ADD COLUMN "savedByUserId" TEXT;
+ALTER TABLE "campaign_lead" ADD COLUMN IF NOT EXISTS "savedAt" TIMESTAMPTZ,
+ADD COLUMN IF NOT EXISTS "savedByUserId" TEXT;
 
 -- AlterTable
-ALTER TABLE "job" ADD COLUMN "leadId" TEXT,
-ADD COLUMN "module" "AuditModule";
+ALTER TABLE "job" ADD COLUMN IF NOT EXISTS "module" "AuditModule";
 
 -- CreateTable
 CREATE TABLE "instruction" (
@@ -387,9 +386,6 @@ CREATE INDEX "business_duplicateOfBusinessId_idx" ON "business"("duplicateOfBusi
 -- CreateIndex
 CREATE INDEX "campaign_lead_savedByUserId_idx" ON "campaign_lead"("savedByUserId");
 
--- CreateIndex
-CREATE INDEX "job_leadId_kind_idx" ON "job"("leadId", "kind");
-
 -- AddForeignKey
 ALTER TABLE "instruction" ADD CONSTRAINT "instruction_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -419,9 +415,6 @@ ALTER TABLE "business_identity" ADD CONSTRAINT "business_identity_businessId_fke
 
 -- AddForeignKey
 ALTER TABLE "campaign_lead" ADD CONSTRAINT "campaign_lead_savedByUserId_fkey" FOREIGN KEY ("savedByUserId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "job" ADD CONSTRAINT "job_leadId_fkey" FOREIGN KEY ("leadId") REFERENCES "campaign_lead"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "lead_opportunity" ADD CONSTRAINT "lead_opportunity_leadId_fkey" FOREIGN KEY ("leadId") REFERENCES "campaign_lead"("id") ON DELETE CASCADE ON UPDATE CASCADE;

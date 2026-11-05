@@ -84,8 +84,13 @@ function requestOnce(target: URL, ip: string, timeoutMs: number, maxBytes: numbe
           "User-Agent": "RoveAudit/0.1",
           Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         },
-        lookup: (_hostname, _options, callback) => {
-          callback(null, ip, family === 6 ? 6 : 4);
+        lookup: (_hostname, options, callback: any) => {
+          const fam = family === 6 ? 6 : 4;
+          if (typeof options === "object" && (options as { all?: boolean })?.all) {
+            callback(null, [{ address: ip, family: fam }]);
+          } else {
+            callback(null, ip, fam);
+          }
         },
         timeout: timeoutMs,
       },

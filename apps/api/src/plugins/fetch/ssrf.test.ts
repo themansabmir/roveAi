@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { isBlockedAddress, isBlockedHostname, registrableDomain, sameRegistrableDomain } from "./ssrf";
 
 describe("ssrf guard", () => {

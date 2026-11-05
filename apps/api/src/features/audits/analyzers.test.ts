@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { analyzePages, inspectPage, scoreFromFindings, selectCrawlUrls } from "./analyzers";
 
 const home = `<!doctype html><html><head>

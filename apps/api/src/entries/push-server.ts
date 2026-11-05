@@ -10,7 +10,7 @@ import { decodeAuditPush, decodeDiscoverPush } from "./push-message";
 
 const authClient = new OAuth2Client();
 
-export async function startPushServer(role: "discover" | "crawl" | "psi"): Promise<Server> {
+export async function startPushServer(role: "discover" | "crawl" | "psi" | "interpret"): Promise<Server> {
   const config = loadConfig();
   await registerAllPlugins(registry);
   const handlers = buildAuditHandlers(registry);
@@ -38,10 +38,14 @@ export async function startPushServer(role: "discover" | "crawl" | "psi"): Promi
         const delivery = decodeAuditPush(req.body);
         meta.retrycount = delivery.retrycount;
         await handlers.crawl(delivery.payload, meta);
-      } else {
+      } else if (role === "psi") {
         const delivery = decodeAuditPush(req.body);
         meta.retrycount = delivery.retrycount;
         await handlers.psi(delivery.payload, meta);
+      } else {
+        const delivery = decodeAuditPush(req.body);
+        meta.retrycount = delivery.retrycount;
+        await handlers.interpret(delivery.payload, meta);
       }
       res.status(204).end();
     } catch (err) {
