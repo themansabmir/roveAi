@@ -17,7 +17,7 @@ export class PrismaPlugin implements IPrismaService {
 
   async initialize(_registry: IPluginRegistry): Promise<void> {
     const config = loadConfig();
-    const adapter = new PrismaPg({ connectionString: config.DATABASE_URL });
+    const adapter = new PrismaPg({ connectionString: config.DATABASE_URL, max: config.DB_POOL_MAX });
     this.client = new PrismaClient({ adapter });
     await this.client.$connect();
     logger.info("Prisma connected");

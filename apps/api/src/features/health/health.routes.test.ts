@@ -2,7 +2,7 @@ import request from "supertest";
 import express from "express";
 import { healthRouter } from "./health.routes";
 import { IPrismaService } from "@plugins/prisma/prisma.plugin";
-import { IQueueService } from "@plugins/queue/pgboss.plugin";
+import { IQueueService } from "@plugins/queue/queue.types";
 
 function buildApp(checks: { database: boolean; queue: boolean }) {
   const app = express();

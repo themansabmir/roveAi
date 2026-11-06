@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { IPrismaService } from "@plugins/prisma/prisma.plugin";
-import { IQueueService } from "@plugins/queue/pgboss.plugin";
+import { IQueueService } from "@plugins/queue/queue.types";
 
 const startedAt = Date.now();
 

@@ -1,6 +1,6 @@
 import { AuditStatus, QualificationStatus, WebsiteClass } from "@prisma/client";
 import { MapsBusiness, MapsProvider, MapsQuotaError } from "@plugins/maps/maps.types";
-import { logger } from "@core/logger";
+import { AuditScheduler } from "@features/audits/audit-scheduler";
 import { CampaignRepository, DiscoveryCampaign } from "./campaign.repository";
 import { classifyWebsite, exclusionMatches, normalizeName, normalizePhone } from "./normalize";
 import { expandQueries } from "./queries";
@@ -8,75 +8,111 @@ import { expandQueries } from "./queries";
 export class DiscoveryService {
   constructor(
     private readonly repository: CampaignRepository,
-    private readonly maps: MapsProvider
-  ) {}
+    private readonly maps: MapsProvider,
+    private readonly audits: AuditScheduler
+  ) { }
 
   async run(
     campaignId: string,
     jobId: string,
     meta: { retrycount: number; retrylimit: number }
   ): Promise<void> {
-    const ready = await this.repository.beginJob(jobId);
-    if (ready === "done") return;
+    console.log(`[DiscoveryService.run] 🚀 Discovery started for campaign ${campaignId}, jobId: ${jobId}`);
 
+    const ready = await this.repository.beginJob(jobId);
+    console.log(`[DiscoveryService.run] 🔒 beginJob status: "${ready}" for jobId: ${jobId}`);
+
+    if (ready !== "ready") return;
+
+    try {
+      await this.discover(campaignId, jobId, meta);
+    } catch (err) {
+      await this.repository.releaseJob(jobId);
+      throw err;
+    }
+  }
+
+  private async discover(
+    campaignId: string,
+    jobId: string,
+    meta: { retrycount: number; retrylimit: number }
+  ): Promise<void> {
     const campaign = await this.repository.loadForDiscovery(campaignId);
     if (!campaign) {
+      console.log(`[DiscoveryService.discover] ❓ Campaign ${campaignId} not found`);
       await this.repository.setJobStatus(jobId, "FAILED");
       return;
     }
     if (campaign.status === "CANCELLED") {
+      console.log(`[DiscoveryService.discover] 🛑 Campaign ${campaignId} is cancelled`);
       await this.repository.setJobStatus(jobId, "CANCELLED");
       return;
     }
+
+    console.log(`[DiscoveryService.discover] 📦 Loaded campaign "${campaign.niche}" in "${campaign.city}" (maxLeads: ${campaign.maxLeads})`);
 
     const started = await this.repository.markDiscovering(campaignId);
     if (!started) {
       await this.repository.setJobStatus(jobId, "CANCELLED");
       return;
     }
+    console.log(`[DiscoveryService.discover] 🔄 Campaign status -> DISCOVERING`);
 
     let saved = await this.repository.countLeads(campaignId);
     const queries = expandQueries(campaign);
+    console.log(`[DiscoveryService.discover] 🔎 Generated ${queries.length} query variations: ${JSON.stringify(queries)}`);
 
     try {
       for (const query of queries) {
         const status = await this.repository.campaignStatus(campaignId);
         if (status === "CANCELLED" || status == null) {
+          console.log(`[DiscoveryService.discover] 🛑 Campaign cancelled while querying`);
           await this.repository.setJobStatus(jobId, "CANCELLED");
           return;
         }
-        if (saved >= campaign.maxLeads) break;
+        if (saved >= campaign.maxLeads) {
+          console.log(`[DiscoveryService.discover] 🎯 Target maxLeads reached (${saved}/${campaign.maxLeads})`);
+          break;
+        }
 
+        console.log(`[DiscoveryService.discover] 🌐 Searching Maps provider for: "${query}" (need ${campaign.maxLeads - saved} more)`);
         const rows = await this.search(campaign, query, campaign.maxLeads - saved, saved, jobId, meta);
         if (rows == null) return;
+        console.log(`[DiscoveryService.discover] 📍 Maps provider returned ${rows.length} results`);
 
         for (const row of rows) {
           if (saved >= campaign.maxLeads) break;
           const inserted = await this.ingest(campaign, row);
-          if (inserted) saved += 1;
+          if (inserted) {
+            saved += 1;
+            console.log(`[DiscoveryService.ingest] ✅ Saved lead #${saved}: "${row.name}" (${row.websiteUrl ?? "No website"})`);
+          }
         }
       }
     } catch (err) {
       if (saved > 0) {
         await this.repository.setCampaignStatus(campaignId, "PAUSED");
         await this.repository.setJobStatus(jobId, "COMPLETED");
-        logger.warn({ err, campaignId }, "Discovery stopped after saving leads");
+        console.warn(`[DiscoveryService.discover] ⚠️ Discovery paused after saving ${saved} leads:`, err);
         return;
       }
       if (meta.retrycount >= meta.retrylimit) {
         await this.repository.setCampaignStatus(campaignId, "FAILED");
         await this.repository.setJobStatus(jobId, "FAILED");
-        logger.error({ err, campaignId }, "Discovery failed before any lead was saved");
+        console.error(`[DiscoveryService.discover] ❌ Discovery failed before saving leads:`, err);
         return;
       }
       throw err;
     }
 
+    console.log(`[DiscoveryService.discover] 🏁 Discovery finished with ${saved}/${campaign.maxLeads} leads saved.`);
     const status = await this.repository.campaignStatus(campaignId);
     if (status === "DISCOVERING") {
-      await this.repository.setCampaignStatus(campaignId, "COMPLETED");
+      console.log(`[DiscoveryService.discover] ⏩ Handoff: Triggering AuditScheduler.schedule(${campaignId})`);
+      await this.audits.schedule(campaignId);
     }
     await this.repository.setJobStatus(jobId, "COMPLETED");
+    console.log(`[DiscoveryService.discover] ✨ DISCOVER Job ${jobId} status -> COMPLETED`);
   }
 
   private async search(
@@ -93,13 +129,13 @@ export class DiscoveryService {
       if (err instanceof MapsQuotaError || saved > 0) {
         await this.repository.setCampaignStatus(campaign.id, "PAUSED");
         await this.repository.setJobStatus(jobId, "COMPLETED");
-        logger.warn({ err, campaignId: campaign.id }, "Discovery paused");
+        console.warn({ err, campaignId: campaign.id }, "Discovery paused");
         return null;
       }
       if (meta.retrycount >= meta.retrylimit) {
         await this.repository.setCampaignStatus(campaign.id, "FAILED");
         await this.repository.setJobStatus(jobId, "FAILED");
-        logger.error({ err, campaignId: campaign.id }, "Discovery failed before any lead was saved");
+        console.error({ err, campaignId: campaign.id }, "Discovery failed before any lead was saved");
         return null;
       }
       throw err;
