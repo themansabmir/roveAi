@@ -1,97 +1,124 @@
-# Rove — Infrastructure & deployment stack
+# Rove — Infrastructure & Deployment Topology
 
-Locked stack (impacts how each piece deploys). Source of truth for product scope: [`apps/api/doc/MVP.md`](../apps/api/doc/MVP.md).
+> **Source of Truth**: [`apps/api/doc/MVP.md`](../apps/api/doc/MVP.md)  
+> **Operational Guide**: [`docs/ARCHITECTURE_AND_WORKERS.md`](./ARCHITECTURE_AND_WORKERS.md)
 
-## Topology
+---
+
+## 1. System Topology
 
 ```
-                 ┌──────────────────────────┐
-   Browser  ───▶ │ Vercel                    │
-                 │  • @rove/web (Next.js)     │  Rove SaaS marketing :443
-                 │  • @rove/agency-web        │  agency marketing    :443
-                 │  • @rove/dashboard (SPA)   │  product dashboard   :443
-                 └─────────────┬────────────┘
-                               │
-                 ┌─────────────▼────────────┐
-                 │ Sanity (Content Lake)     │
-                 │  • Studio (sanity deploy) │
-                 │  • datasets: rove/agency  │
-                 └──────────────────────────┘
-                               │ HTTPS (axios, withCredentials)
-                               ▼
-                 ┌──────────────────────────┐
-                 │ EC2 / VPS                 │
-                 │  • @rove/api (Express)     │  REST API            :3000
-                 │  • worker (pg-boss)        │  discover/crawl/     
-                 │  • browser worker          │  audit/interpret     
-                 └───┬───────────────┬───────┘
-                     │               │
-          Postgres   ▼               ▼  object storage
-         ┌────────────────┐   ┌────────────────────┐
-         │ Neon           │   │ Cloudflare R2       │
-         │  Postgres 17   │   │  screenshots, PDFs, │
-         │  pooler+direct │   │  CSV exports, logos │
-         └────────────────┘   └────────────────────┘
-                     │
-                     ▼  hand-off (no outbound by us)
-         ┌────────────────────────────────────────┐
-         │ CRM: HubSpot / Pipedrive / Salesforce / │
-         │ Zoho / webhook / CSV                     │
-         └────────────────────────────────────────┘
+                  ┌─────────────────────────────────────────┐
+    Browser  ───▶ │ Vercel CDN                              │
+                  │  • @rove/web (Next.js 15)        :443   │  SaaS marketing
+                  │  • @rove/agency-web (Next.js 15) :443   │  Agency marketing
+                  │  • @rove/dashboard (Vite React)  :443   │  Agency dashboard SPA
+                  └────────────────────┬────────────────────┘
+                                       │
+                  ┌────────────────────▼────────────────────┐
+                  │ Sanity (Content Lake)                   │
+                  │  • @rove/studio (sanity deploy)         │
+                  │  • Datasets: production-rove / agency   │
+                  └─────────────────────────────────────────┘
+                                       │ HTTPS (CORS + withCredentials)
+                                       ▼
+                  ┌─────────────────────────────────────────┐
+                  │ Compute Layer (GCP Cloud Run or VPS)    │
+                  │  • @rove/api (Express 5 REST API)       │
+                  │  • Background Workers                   │
+                  │    - Discover (Apify/Outscraper)        │
+                  │    - Crawl (SSRF-protected HTTP fetch) │
+                  │    - PSI (PageSpeed Insights v5)        │
+                  │    - Interpret (Gemini / OpenAI LLM)    │
+                  └────────────┬──────────────────┬─────────┘
+                               │                  │
+                    Postgres   ▼                  ▼  Object Storage
+             ┌─────────────────────┐    ┌──────────────────────────┐
+             │ Neon Database       │    │ Google Cloud Storage     │
+             │  Postgres 17        │    │ or Cloudflare R2         │
+             │  • Pooler (API/app) │    │  - Audit HTML & files    │
+             │  • Direct (Migrate) │    │  - Screenshots & PDFs    │
+             └──────────┬──────────┘    └──────────────────────────┘
+                        │
+                        ▼  Asynchronous Queue Broker
+             ┌─────────────────────────────────────────────────────┐
+             │ Dual Queue Engine                                   │
+             │  • Local / Monolith: pg-boss (Postgres queue)       │
+             │  • Scaled Cloud: GCP Pub/Sub (Push Subscriptions)   │
+             └─────────────────────────────────────────────────────┘
 ```
 
-## Components
+---
+
+## 2. Infrastructure Components
 
 ### Frontend — Vercel
+- **`@rove/web`** (Next.js 15): SaaS marketing site (`apps/web`). Connects to Sanity dataset `production-rove`.
+- **`@rove/agency-web`** (Next.js 15): White-label / agency marketing portal (`apps/agency-web`).
+- **`@rove/dashboard`** (Vite 6 + React 19 SPA): Agency control panel. Deployed as a static SPA with catch-all rewrites (`/* -> /index.html`). Configured via `VITE_API_BASE_URL`.
+- **`@rove/studio`**: Sanity Studio v3. Deployed via `sanity deploy` to `*.sanity.studio`.
+- **Cookie & CORS Architecture**: When hosting across domains (e.g. `app.rove.ai` and `api.rove.ai`), cookies use `SameSite=None; Secure; Domain=.rove.ai`. `CORS_ORIGINS` on the API lists the allowed frontend origins.
 
-- **`@rove/web`** (Next.js): Rove SaaS marketing. Root `apps/web`. Sanity dataset `production-rove`. See [`docs/MARKETING-CMS.md`](./MARKETING-CMS.md).
-- **`@rove/agency-web`** (Next.js): separate agency/services marketing site. Root `apps/agency-web`. Sanity dataset `production-agency`.
-- **`@rove/dashboard`** (Vite SPA): static build (`dist/`) served by Vercel. Set `VITE_API_BASE_URL` to the API URL. Because it's an SPA, add a catch-all rewrite to `index.html`.
-- **`@rove/studio`**: Sanity Studio; deploy with `sanity deploy` (hosted on `*.sanity.studio`), not on Vercel by default.
-- Monorepo on Vercel: create **one project per app** (`apps/web`, `apps/agency-web`, `apps/dashboard`) in the same repo. Install at repo root (`pnpm install`), set each project's root directory, build with `pnpm build` (or `turbo run build --filter=...`). `transpilePackages` includes `@rove/ui` and `@rove/cms`.
+### Backend & Workers — Cloud Run or VPS
+- **`@rove/api`**: Express 5 server listening on port 3000.
+- **Worker Execution Modes**:
+  1. **Monolithic / Local Mode (`QUEUE_DRIVER="pgboss"`)**: Workers subscribe via pg-boss inside a background Node process (`pnpm --filter @rove/api dev:worker`).
+  2. **Cloud Serverless Mode (`QUEUE_DRIVER="pubsub"`)**: Workers run as stateless Cloud Run containers. Google Cloud Pub/Sub pushes incoming messages to dedicated endpoints:
+     - `POST /push/discover`
+     - `POST /push/crawl`
+     - `POST /push/psi`
+     - `POST /push/interpret`
+     Push endpoints validate Google Cloud OIDC Bearer tokens matching `PUBSUB_PUSH_AUDIENCE`.
+- **Outbox Recovery**: Cron-based sweeper (`src/entries/sweep.ts`) runs periodically to re-dispatch unleased jobs older than 30s.
 
-**Marketing env (Vercel):** `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `SANITY_API_READ_TOKEN`, `SANITY_REVALIDATE_SECRET`, `SANITY_PREVIEW_SECRET`. Optional on Rove web: `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_DASHBOARD_URL`.
+### Database — Neon (Postgres 17)
+- Dual connection strings:
+  - **`DATABASE_URL`**: Connects through PgBouncer connection pooler (`-pooler.region.aws.neon.tech`). Used by the API server and worker processes.
+  - **`DIRECT_URL`**: Connects directly to the compute instance. Required by Prisma CLI for schema migrations (`prisma.config.ts`).
+- Migrations: Executed via `pnpm --filter @rove/api prisma:migrate:deploy`.
 
-**Auth/cookies:** the dashboard calls the API with `withCredentials`. For cookie auth across origins, serve the API on a subdomain of the same site (e.g. `api.rove.app` + `app.rove.app`) and set the auth cookie `Domain=.rove.app`, `SameSite=None; Secure`. `CORS_ORIGINS` on the API must list both Vercel origins.
+### Object Storage — GCS / Cloudflare R2
+- The database (`StoredFile` table) tracks object metadata only (`bucket`, `objectKey`, `sizeBytes`, `checksum`, `contentType`).
+- The storage abstraction (`StoragePlugin`) supports:
+  - `LocalStorageProvider`: Writes directly to `.data/objects` for zero-friction local development.
+  - `GcsStorageProvider`: Google Cloud Storage bucket (`GCS_BUCKET`) for production.
 
-### API + workers — EC2 / VPS
+---
 
-- **`@rove/api`**: Express server (`node dist/app.js`), port 3000. Build with `pnpm --filter @rove/api build`.
-- **Worker**: `node dist/worker.js` as a **separate process/service** (systemd unit or PM2). It consumes pg-boss queues (`discover`, `crawl`, `audit`, `interpret`, `competitor`, `reaudit`, `export`).
-- **Browser worker** (Phase 1+): Lighthouse / Playwright / sitespeed audits run browser jobs. These need more CPU + shared memory. Keep them on their own process (and ideally their own instance or container with `shm_size`) so a heavy crawl doesn't starve the API.
-- Put the API behind a reverse proxy (Caddy/nginx) terminating TLS, or an ALB. Health checks: `/healthz`, `/readyz`.
-- **SSRF boundary (MVP section 7):** the fetch/browser workers crawl third-party sites. Block private IP ranges, loopback, link-local, and cloud-metadata endpoints; revalidate after DNS + redirects. Run browser/scan containers non-root, with CPU/memory limits, timeouts, and concurrency caps. This is a hard requirement, not optional.
+## 3. Environment Variable Matrix
 
-### Database — Neon (Postgres)
+| Variable | Scope | Purpose | Example / Default |
+| :--- | :--- | :--- | :--- |
+| `NODE_ENV` | Global | Runtime environment | `development` / `production` |
+| `PORT` | API | HTTP server listen port | `3000` |
+| `DATABASE_URL` | API / Worker | Pooled PostgreSQL connection | `postgresql://user:pass@host-pooler.../db` |
+| `DIRECT_URL` | API / Prisma | Direct PostgreSQL connection for migrations | `postgresql://user:pass@host.../db` |
+| `BETTER_AUTH_SECRET` | API | Auth session signing key (>=32 chars) | `hex-or-base64-random-string` |
+| `BETTER_AUTH_URL` | API | Base URL for auth callbacks | `http://localhost:3000` |
+| `CORS_ORIGINS` | API | Allowed frontend origins (comma-separated) | `http://localhost:5173,http://localhost:3001` |
+| `QUEUE_DRIVER` | API / Worker | Queue backend (`pgboss` or `pubsub`) | `pgboss` |
+| `GCP_PROJECT_ID` | API / Worker | Google Cloud Project ID (if Pub/Sub enabled) | `rove-production` |
+| `PUBSUB_PUSH_AUDIENCE` | API / Worker | Expected OIDC audience for push verification | `https://api.rove.ai/push` |
+| `GCS_BUCKET` | Storage | GCS bucket for files and audit logs | `rove-storage-bucket` |
+| `LOCAL_OBJECT_DIR` | Storage | Local storage fallback folder | `.data/objects` |
+| `APIFY_TOKEN` | Maps | Apify API token for Google Maps scraping | `apify_api_...` |
+| `APIFY_ACTOR` | Maps | Apify actor name | `scraperlink/google-maps-scraper` |
+| `OUTSCRAPER_API_KEY` | Maps | Secondary discovery provider key | Optional in dev |
+| `PAGESPEED_API_KEY` | Audit | Google PageSpeed Insights v5 key | `AIza...` |
+| `RESEND_API_KEY` | Email | Resend email provider key | `re_...` |
+| `SUPERADMIN_EMAIL` | Admin | Boot-time superadmin auto-provision email | `admin@rove.local` |
+| `SUPERADMIN_PASSWORD` | Admin | Boot-time superadmin auto-provision password| `secretpassword123` |
 
-- Postgres 17. Two URLs: **pooler** (`DATABASE_URL`, app/worker/pg-boss) and **direct** (`DIRECT_URL`, Prisma CLI/migrations).
-- pg-boss uses the same database for the job queue.
-- Migrations: `pnpm --filter @rove/api prisma:migrate:deploy` in the API's release step on the VPS.
-- Prisma 7 keeps the connection URL in `apps/api/prisma.config.ts` (reads `DIRECT_URL`).
+---
 
-### Files — Cloudflare R2
+## 4. Production CI/CD Pipeline
 
-- S3-compatible object storage. The DB (`StoredFile`) stores `bucket`, `objectKey`, `contentType`, `sizeBytes`, `checksum` — never the bytes.
-- Used for: audit screenshots (`SnapshotPage.screenshotFileId`), brief PDFs (`Brief.pdfFileId`), CSV exports, agency logos (`Organization.logoFileId`).
-- Serve downloads via short-lived presigned URLs from the API; do not make buckets public.
-- API env (add to `.env.example` when the file plugin lands): `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`.
-
-### CRM — hand-off, not outbound
-
-The product researches and exports. It does **not** send cold email or run sequences. CRM integration is modeled by `CrmConnection` + `CrmExport` (HubSpot, Pipedrive, Salesforce, Zoho, generic webhook, or CSV). OAuth tokens / API keys are encrypted at rest by the app layer before being stored in `CrmConnection.credentials`.
-
-## Environment variables by service
-
-| Service        | Key vars                                                                                 |
-| -------------- | ---------------------------------------------------------------------------------------- |
-| web (Vercel)   | `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SANITY_*`, `SANITY_*`, `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_DASHBOARD_URL` |
-| agency-web     | `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SANITY_*`, `SANITY_*` (agency dataset)               |
-| dashboard      | `VITE_API_BASE_URL`                                                                       |
-| studio (CLI)   | `SANITY_STUDIO_PROJECT_ID`, optional dataset overrides                                    |
-| api / worker   | `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `CORS_ORIGINS`, `OUTSCRAPER_API_KEY`, `R2_*`, `OPENAI_API_KEY` (LLM), `PROPOSAL_EVENT_SALT` (brief analytics), CRM provider secrets |
-
-## CI/CD outline
-
-1. **Frontends:** Vercel builds on push (per-project root dir).
-2. **API/worker:** build artifact (`dist/`) + Prisma client; ship to the VPS; run `prisma migrate deploy`; restart API and worker services.
-3. One Prisma migration per schema change. Never edit an applied migration.
+1. **Frontend Deployment (Vercel)**:
+   - Root Directory set to target app (`apps/web`, `apps/agency-web`, `apps/dashboard`).
+   - Builds triggered on push via Turborepo caching (`turbo run build --filter=<app>`).
+2. **Database Migration Step**:
+   - `pnpm --filter @rove/api prisma:migrate:deploy` runs in release step before container rollout.
+3. **Container Rollout (Cloud Run / VPS)**:
+   - Container built with Node 22 Alpine, compiling TypeScript to `dist/`.
+   - Starts API (`node dist/app.js`) or worker roles (`node dist/entries/run-role.js <role>`).
+   - Health probes query `/readyz` before routing traffic.

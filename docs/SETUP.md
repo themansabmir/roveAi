@@ -1,177 +1,185 @@
-# Rove — Local setup, install & run
+# Rove — Local Setup & Development Guide
 
-How to install, configure, and run all three apps (website, dashboard, API) on your machine.
+> Quick guide to installing, configuring, and running all applications and background workers in the Rove monorepo.
+
+---
 
 ## 1. Prerequisites
 
-| Tool       | Version          | Notes                                        |
-| ---------- | ---------------- | -------------------------------------------- |
-| Node.js    | >= 22            | `node -v`                                    |
-| pnpm       | >= 9             | `npm i -g pnpm` if missing                   |
-| PostgreSQL | 16/17            | Local, Docker, or a Neon dev branch          |
-| Git        | any              |                                              |
+| Tool | Required Version | Verification Command | Notes |
+| :--- | :--- | :--- | :--- |
+| **Node.js** | `>= 22.0.0` | `node -v` | LTS recommended |
+| **pnpm** | `>= 9.0.0` | `pnpm -v` | Install via `npm i -g pnpm` if missing |
+| **PostgreSQL**| `16` or `17` | `psql --version` | Local, Docker, or Neon database |
 
-The monorepo uses **pnpm workspaces** + **Turborepo**.
+The monorepo uses **pnpm workspaces** orchestrated by **Turborepo**:
 
 ```
 rove/
 ├── apps/
-│   ├── web/         @rove/web       Next.js marketing site      → http://localhost:3001
-│   ├── dashboard/   @rove/dashboard React + Vite dashboard SPA  → http://localhost:5173
-│   └── api/         @rove/api       Express + Prisma + worker   → http://localhost:3000
+│   ├── web/         Next.js 15 SaaS Marketing Website       → http://localhost:3001
+│   ├── agency-web/  Next.js 15 Agency Marketing Portal      → http://localhost:3002
+│   ├── dashboard/   Vite 6 + React 19 Dashboard SPA         → http://localhost:5173
+│   ├── studio/      Sanity Studio v3 Content Management     → http://localhost:3333
+│   └── api/         Express 5 + Prisma 7 API & Worker       → http://localhost:3000
 └── packages/
-    ├── ui/          @rove/ui        shared Shadcn UI + Tailwind preset
-    └── config-ts/   @rove/config-ts shared tsconfig bases
+    ├── ui/          Shared Shadcn / Radix / Tailwind components
+    ├── cms/         Shared Sanity schemas and client
+    └── config-ts/   Shared TypeScript configurations
 ```
 
-## 2. Install
+---
 
-From the repo root:
+## 2. Installation
+
+From the monorepo root:
 
 ```bash
 pnpm install
 ```
 
-This installs every workspace package in one pass and links `@rove/ui` / `@rove/config-ts` into the apps.
+This installs dependencies across all workspaces in a single pass and automatically links internal packages (`@rove/ui`, `@rove/cms`, `@rove/config-ts`).
 
-## 3. Configure environment
+---
+
+## 3. Environment Configuration
 
 ### API (`apps/api`)
+
+Copy the template environment file:
 
 ```bash
 cp apps/api/.env.example apps/api/.env
 ```
 
-Fill in:
+Key environment variables:
 
-| Var                   | What                                                                 |
-| --------------------- | -------------------------------------------------------------------- |
-| `DATABASE_URL`        | Postgres **pooler** URL (app + worker + pg-boss)                      |
-| `DIRECT_URL`          | Postgres **direct** URL (Prisma CLI / migrations)                    |
-| `BETTER_AUTH_SECRET`  | Random string, >= 32 chars                                           |
-| `BETTER_AUTH_URL`     | `http://localhost:3000`                                             |
-| `CORS_ORIGINS`        | `http://localhost:5173,http://localhost:3001`                       |
-| `OUTSCRAPER_API_KEY`  | Optional in dev (empty = sample data). Required in prod.             |
+```dotenv
+# Database Connections
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/roveai"
+DIRECT_URL="postgresql://postgres:postgres@localhost:5432/roveai"
 
-> With Neon: `DATABASE_URL` uses the host containing `-pooler`; `DIRECT_URL` is the same URL with `-pooler` removed. With local Postgres, both can be the same URL.
+# Server & Auth
+NODE_ENV="development"
+PORT=3000
+LOG_LEVEL="info"
+CORS_ORIGINS="http://localhost:5173,http://localhost:3001,http://localhost:3002"
+BETTER_AUTH_SECRET="replace-with-a-random-string-at-least-32-chars"
+BETTER_AUTH_URL="http://localhost:3000"
 
-### Website (`apps/web`)
+# Background Worker Settings
+WORKER_ENABLED="false"     # Set to "false" to run workers in separate processes
+QUEUE_DRIVER="pgboss"
+
+# Map Discovery Keys
+APIFY_TOKEN=""             # Recommended for deep Maps discovery
+APIFY_ACTOR="scraperlink/google-maps-scraper"
+OUTSCRAPER_API_KEY=""      # Optional fallback
+
+# Performance Audit (PageSpeed Insights)
+PAGESPEED_API_KEY=""       # Free from Google Cloud Console
+
+# Default Superadmin Auto-Provisioning (created on first server boot)
+SUPERADMIN_EMAIL="admin@rove.local"
+SUPERADMIN_PASSWORD="supersecretpassword123"
+SUPERADMIN_NAME="Super Admin"
+```
+
+### Frontends (`apps/web`, `apps/agency-web`, `apps/dashboard`)
 
 ```bash
+# Web marketing
 cp apps/web/.env.example apps/web/.env
-# NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+
+# Agency marketing
+cp apps/agency-web/.env.example apps/agency-web/.env
 ```
 
-### Dashboard (`apps/dashboard`)
+`apps/dashboard` proxies API calls to `http://localhost:3000` automatically via Vite config.
 
-Create `apps/dashboard/.env` only if you need to override the API base:
+---
 
-```
-VITE_API_BASE_URL=http://localhost:3000
-```
+## 4. Database Initialization & Migrations
 
-The Vite dev server already proxies `/api`, `/healthz`, `/readyz` to `http://localhost:3000`.
-
-## 4. Database (Prisma)
+Ensure your PostgreSQL server is running and a database (e.g. `roveai`) exists:
 
 ```bash
-# generate the Prisma client (safe without a live DB connection)
+# 1. Generate Prisma Client
 pnpm --filter @rove/api prisma:generate
 
-# create / apply migrations against your dev database
-pnpm --filter @rove/api prisma:migrate
+# 2. Apply existing schema migrations
+pnpm --filter @rove/api prisma:migrate:deploy
 ```
 
-The schema lives at `apps/api/prisma/schema.prisma`. Prisma 7 keeps connection URLs in `apps/api/prisma.config.ts` (reads `DIRECT_URL`), not in the schema.
+*(Note: Prisma 7 reads `DIRECT_URL` from `apps/api/prisma.config.ts`)*.
 
-### Quick local Postgres with Docker (optional)
+---
 
-```bash
-docker run --name rove-pg -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=rove -p 5432:5432 -d postgres:17
-# DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rove?schema=public
-# DIRECT_URL=postgresql://postgres:postgres@localhost:5432/rove?schema=public
-```
+## 5. Running the Application
 
-## 4b. Create a platform super admin
-
-Super admins oversee all organizations. There is no self-signup — sign up a normal
-account through the app first, then promote it by email:
-
-```bash
-pnpm --filter @rove/api db:promote-admin -- you@example.com
-```
-
-Super admins get a **Platform admin** link in the dashboard sidebar and access to
-`/api/admin/*`. Normal signup still creates an agency workspace with an `owner`.
-
-## 5. Run
-
-### Everything at once (Turborepo)
+### Option A: Run Everything via Turborepo
+To start all 5 applications in parallel:
 
 ```bash
 pnpm dev
 ```
 
-### Individually
+### Option B: Run Apps Individually
+
+| Command | App | URL |
+| :--- | :--- | :--- |
+| `pnpm dev:api` | Backend API | http://localhost:3000 |
+| `pnpm dev:dashboard` | Agency Dashboard SPA | http://localhost:5173 |
+| `pnpm dev:web` | SaaS Marketing Site | http://localhost:3001 |
+| `pnpm dev:agency-web`| Agency Portal | http://localhost:3002 |
+| `pnpm dev:studio` | Sanity Studio | http://localhost:3333 |
+
+---
+
+## 6. Running Background Workers
+
+When `WORKER_ENABLED="false"` in `apps/api/.env`, queue jobs are queued in PostgreSQL (`pg-boss`) and processed by dedicated worker processes:
 
 ```bash
-pnpm dev:web          # Next.js website   → http://localhost:3001
-pnpm dev:dashboard    # React dashboard   → http://localhost:5173
-pnpm dev:api          # API               → http://localhost:3000
+# Run all-in-one worker (handles discover, crawl, psi, and interpret queues)
+pnpm run dev:worker
+
+# Or run targeted individual workers
+pnpm --filter @rove/api dev:worker:crawl    # Only crawl & SEO audits
+pnpm --filter @rove/api dev:worker:psi      # Only PageSpeed Insights audits
 ```
 
-### API background worker
-
-The queue worker (discovery, crawl, audit, interpret jobs) runs as a separate process:
+### Outbox Recovery Sweep
+If a worker crashes or is stopped with `Ctrl+C` while a job is pending, run the outbox sweeper to reclaim leases:
 
 ```bash
-pnpm --filter @rove/api dev:worker
+node -r tsconfig-paths/register apps/api/src/entries/sweep.ts
 ```
 
-Set `WORKER_ENABLED=false` in `apps/api/.env` to keep the API process from also running the worker inline.
+---
 
-## 6. Build / typecheck / test / lint
+## 7. Build, Typecheck, and Tests
 
 ```bash
-pnpm build        # build all (turbo)
-pnpm typecheck    # typecheck all
-pnpm test         # run tests (api)
-pnpm lint         # lint all
+# Typecheck all packages
+pnpm typecheck
+
+# Run test suites
+pnpm test
+
+# Build all production bundles
+pnpm build
 ```
 
-Scope to one package with `--filter`:
+---
 
-```bash
-pnpm --filter @rove/api test
-pnpm turbo run build --filter @rove/web
-```
+## 8. Ports Reference
 
-## 7. Shared UI (Shadcn)
-
-Shared components live in `packages/ui`. Add new ones there so both frontends get them:
-
-```bash
-pnpm --filter @rove/ui ui:add <component>
-```
-
-Import in any app:
-
-```ts
-import { Button } from "@rove/ui/components/button"
-import { cn } from "@rove/ui/lib/cn"
-```
-
-Both `web` and `dashboard` extend the shared Tailwind preset (`@rove/ui/tailwind-preset`).
-
-## 8. Ports summary
-
-| App       | URL                     |
-| --------- | ----------------------- |
-| web       | http://localhost:3001   |
-| dashboard | http://localhost:5173   |
-| api       | http://localhost:3000   |
-
-## 9. Deployment targets
-
-See [`docs/INFRASTRUCTURE.md`](./INFRASTRUCTURE.md). Short version: website + dashboard on **Vercel**, API + worker on an **EC2/VPS**, database on **Neon**, files on **Cloudflare R2**.
+| Service | Port | Protocol | Description |
+| :--- | :--- | :--- | :--- |
+| `api` | `3000` | HTTP | Express 5 REST API & Better Auth |
+| `web` | `3001` | HTTP | Next.js 15 customer marketing site |
+| `agency-web`| `3002` | HTTP | Next.js 15 agency marketing portal |
+| `dashboard` | `5173` | HTTP | Vite React agency control panel |
+| `studio` | `3333` | HTTP | Sanity Studio CMS |
+| `postgres` | `5432` | TCP | PostgreSQL 16/17 database |
