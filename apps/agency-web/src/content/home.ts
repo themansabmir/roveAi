@@ -138,7 +138,6 @@ type HomeContent = {
       approval: string
       repeats: string
     }[]
-    replyRule: string
     ownershipTitle: string
     ownership: {
       name: string
@@ -556,8 +555,6 @@ export const homeContent = {
         repeats: "Weekly sample; flagged messages are pulled.",
       },
     ],
-    replyRule:
-      "Replies: AI drafts a response, and a person approves it before it sends. Pricing, complaints, legal terms and unsubscribes always go to a person.",
     ownershipTitle: "What you own and what stays with us.",
     ownership: [
       {

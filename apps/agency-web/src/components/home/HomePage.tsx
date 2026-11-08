@@ -21,11 +21,11 @@ import styles from "./HomePage.module.css"
 export function HomePage({ locale }: { locale: Locale }) {
   return (
     <div
-      className={`${styles.home} ${geminiFontClasses} bg-[#F3EEE3] text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white`}
+      className={`${styles.home} ${geminiFontClasses} bg-[#F3EEE3] text-slate-900 font-sans antialiased selection:bg-[var(--site-burnt-orange)] selection:text-[var(--site-ink)]`}
     >
       <SiteHeader locale={locale} showFaq={false} ctaLabel={homeContent.labels.bookCall} />
       <main className="pt-16">
-        <div className="flex flex-col w-full text-slate-900 antialiased overflow-x-clip selection:bg-blue-600 selection:text-white">
+        <div className="flex flex-col w-full text-slate-900 antialiased overflow-x-clip selection:bg-[var(--site-burnt-orange)] selection:text-[var(--site-ink)]">
           <HeroSection locale={locale} />
           <HomeChapterNav />
           <WhoItsForSection />

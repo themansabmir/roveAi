@@ -51,7 +51,7 @@ export function SiteHeader({
         </nav>
         <div className="flex shrink-0 items-center gap-3">
           <Link
-            className="inline-flex items-center rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
+            className="inline-flex items-center rounded-full bg-[var(--site-burnt-orange)] px-4 py-2 text-sm font-semibold text-[var(--site-ink)] transition-colors hover:bg-[var(--site-burnt-orange)]"
             href={localePath(locale, "/contact")}
           >
             {ctaLabel}

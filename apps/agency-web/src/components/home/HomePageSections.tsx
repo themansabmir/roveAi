@@ -9,6 +9,7 @@ import { ClientMarquee } from "@/components/home/ClientMarquee"
 import { HowItWorksTimeline } from "@/components/home/HowItWorksTimeline"
 import { PipelineUpgradeSection } from "@/components/home/PipelineUpgradeSection"
 import { RevenueSystemFlow } from "@/components/home/RevenueSystemFlow"
+import fitStyles from "./WhoItsForSection.module.css"
 
 const sectionClass = "mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8"
 const sectionHeadingClass =
@@ -73,7 +74,6 @@ function SectionHeading({
 export function HeroSection({ locale }: { locale: Locale }) {
   return (
     <section className="relative mx-auto w-full max-w-7xl px-4 pb-20 pt-12 sm:px-6 lg:px-8">
-      <div className="pointer-events-none absolute left-1/2 top-1/4 -z-10 h-[360px] w-[700px] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-tr from-blue-100/60 via-indigo-100/40 to-transparent blur-3xl" />
       <div className="mx-auto flex max-w-4xl flex-col items-center space-y-6 text-center">
         <p className="inline-flex items-center gap-2 rounded-full border border-blue-200/60 bg-blue-50/80 px-3.5 py-1 font-mono text-xs font-medium tracking-wide text-blue-700 shadow-sm">
           <span
@@ -91,7 +91,7 @@ export function HeroSection({ locale }: { locale: Locale }) {
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <Link
-            className="group inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold tracking-wide text-white shadow-sm transition-all duration-200 hover:bg-blue-700 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            className="group inline-flex items-center gap-2 rounded-full bg-[var(--site-burnt-orange)] px-6 py-3 text-sm font-semibold tracking-wide text-[var(--site-ink)] shadow-sm transition-all duration-200 hover:bg-[var(--site-burnt-orange)] hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             href={localePath(locale, "/contact")}
           >
             <span>{homeContent.hero.primaryAction}</span>
@@ -140,11 +140,11 @@ export function WhoItsForSection() {
   const { startingPoints, fit } = homeContent
 
   return (
-    <section className={sectionClass} id="who-its-for">
+    <section className={`${sectionClass} ${fitStyles.section}`} id="who-its-for">
       <SectionHeading centered eyebrow={startingPoints.eyebrow} title={startingPoints.title} />
       <div className="grid gap-3 md:grid-cols-3">
         {startingPoints.items.map((item, index) => (
-          <article className="rounded-xl border border-slate-200 bg-white p-5" key={item.id}>
+          <article className={`${fitStyles.startingCard} rounded-xl border p-5`} key={item.id}>
             <p className="font-mono text-xs font-semibold text-blue-700">
               {String(index + 1).padStart(2, "0")}
             </p>
@@ -155,7 +155,7 @@ export function WhoItsForSection() {
         ))}
       </div>
       <div className="mt-5 grid gap-3 md:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <div className={`${fitStyles.fitCard} ${fitStyles.bestFit} rounded-xl border p-5`}>
           <h3 className="font-display font-bold text-slate-950">{fit.bestFitTitle}</h3>
           <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700">
             {fit.bestFit.map((item) => (
@@ -163,7 +163,7 @@ export function WhoItsForSection() {
             ))}
           </ul>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <div className={`${fitStyles.fitCard} ${fitStyles.notFit} rounded-xl border p-5`}>
           <h3 className="font-display font-bold text-slate-950">{fit.notFitTitle}</h3>
           <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700">
             {fit.notFit.map((item) => (
@@ -253,9 +253,6 @@ export function ControlSection() {
           title={control.title}
         />
         <ApprovalGateFlow />
-        <p className="mx-auto mt-6 max-w-4xl rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-slate-700">
-          {control.replyRule}
-        </p>
         <div className="mt-20">
           <SectionHeading centered eyebrow={control.eyebrow} title={control.ownershipTitle} />
           <div className="grid gap-5 md:grid-cols-3">
@@ -559,7 +556,7 @@ export function FinalCtaSection({ locale }: { locale: Locale }) {
           </p>
           <div className="flex flex-wrap justify-center gap-3 pt-3">
             <Link
-              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-blue-500 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--site-burnt-orange)] px-6 py-3 text-sm font-semibold text-[var(--site-ink)] shadow-md transition-all hover:-translate-y-0.5 hover:bg-[var(--site-burnt-orange)] hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
               href={localePath(locale, "/contact")}
             >
               {homeContent.finalCta.buildAction}

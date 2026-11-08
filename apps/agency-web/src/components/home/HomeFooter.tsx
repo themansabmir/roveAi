@@ -45,7 +45,7 @@ export function HomeFooter({ locale }: { locale: Locale }) {
             ))}
           </nav>
           <Link
-            className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-blue-500 hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+            className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-700 bg-[var(--site-burnt-orange)] px-4 py-2.5 text-sm font-semibold text-[var(--site-ink)] transition-colors hover:border-blue-500 hover:bg-[var(--site-burnt-orange)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
             href={localePath(locale, "/contact")}
           >
             {homeContent.labels.bookCall}

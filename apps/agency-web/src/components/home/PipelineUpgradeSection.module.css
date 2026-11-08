@@ -1,7 +1,12 @@
 .section {
+  position: relative;
+  isolation: isolate;
   width: min(100% - 2rem, 80rem);
   margin-inline: auto;
   padding-block: clamp(3rem, 5vw, 4.5rem);
+  background:
+    radial-gradient(ellipse 32rem 18rem at 92% 18%, rgb(217 84 30 / 12%), transparent 72%),
+    radial-gradient(ellipse 30rem 16rem at 4% 92%, rgb(217 84 30 / 8%), transparent 72%);
 }
 
 .heading {
@@ -67,7 +72,8 @@
   padding: 1rem 1.1rem;
   border: 1px solid var(--site-border);
   border-radius: 0.85rem;
-  background: var(--site-cream);
+  background: linear-gradient(135deg, #fffaf1 0%, #f1e7da 100%);
+  box-shadow: 0 8px 24px rgb(75 52 33 / 6%);
 }
 
 .issueIndex {
