@@ -8,7 +8,17 @@ const links = [
   { label: "About", path: "/about" },
 ]
 
-export function SiteHeader({ locale, faqHref }: { locale: Locale; faqHref?: string }) {
+export function SiteHeader({
+  locale,
+  faqHref,
+  showFaq = true,
+  ctaLabel = "Get started",
+}: {
+  locale: Locale
+  faqHref?: string
+  showFaq?: boolean
+  ctaLabel?: string
+}) {
   const resolvedFaqHref = faqHref ?? localePath(locale, "/how-it-works#faq-section")
 
   return (
@@ -30,19 +40,21 @@ export function SiteHeader({ locale, faqHref }: { locale: Locale; faqHref?: stri
               {label}
             </Link>
           ))}
-          <Link
-            className="font-medium text-slate-600 transition-colors hover:text-slate-950"
-            href={resolvedFaqHref}
-          >
-            FAQ
-          </Link>
+          {showFaq && (
+            <Link
+              className="font-medium text-slate-600 transition-colors hover:text-slate-950"
+              href={resolvedFaqHref}
+            >
+              FAQ
+            </Link>
+          )}
         </nav>
         <div className="flex shrink-0 items-center gap-3">
           <Link
             className="inline-flex items-center rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
             href={localePath(locale, "/contact")}
           >
-            Get started
+            {ctaLabel}
           </Link>
           <details className="relative md:hidden">
             <summary className="cursor-pointer list-none rounded-full border border-slate-200 px-3 py-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
@@ -61,12 +73,14 @@ export function SiteHeader({ locale, faqHref }: { locale: Locale; faqHref?: stri
                   {label}
                 </Link>
               ))}
-              <Link
-                className="rounded-lg px-3 py-2 font-medium text-slate-700 hover:bg-slate-100"
-                href={resolvedFaqHref}
-              >
-                FAQ
-              </Link>
+              {showFaq && (
+                <Link
+                  className="rounded-lg px-3 py-2 font-medium text-slate-700 hover:bg-slate-100"
+                  href={resolvedFaqHref}
+                >
+                  FAQ
+                </Link>
+              )}
             </nav>
           </details>
         </div>

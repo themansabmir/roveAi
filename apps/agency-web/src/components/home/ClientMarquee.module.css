@@ -1,7 +1,7 @@
 .section {
   overflow: hidden;
   border-block: 1px solid rgb(148 163 184 / 18%);
-  background: #f4f4f6;
+  background: var(--site-cream);
 }
 
 .inner {
@@ -16,7 +16,7 @@
 
 .intro {
   max-width: 13rem;
-  color: #64748b;
+  color: var(--site-muted);
   font-size: 0.9rem;
   font-weight: 500;
   line-height: 1.55;
@@ -41,7 +41,7 @@
   align-items: center;
   justify-content: center;
   padding-inline: 1.5rem;
-  color: #71717a;
+  color: var(--site-muted);
   font-family: var(--font-home-display), sans-serif;
   font-size: clamp(1.15rem, 2vw, 1.55rem);
   font-weight: 700;

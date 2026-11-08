@@ -1,8 +1,8 @@
 .home {
   min-height: 100vh;
   overflow-x: clip;
-  background-color: #fafafd;
-  color: #0f172a;
+  background-color: var(--site-cream);
+  color: var(--site-ink);
   font-family: var(--font-home-inter), sans-serif;
   overscroll-behavior: none;
   scroll-behavior: smooth;
@@ -42,4 +42,19 @@
   height: 1em;
   flex: none;
   vertical-align: middle;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home {
+    scroll-behavior: auto;
+  }
+
+  .home :global(*),
+  .home :global(*::before),
+  .home :global(*::after) {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

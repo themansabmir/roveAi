@@ -1,5 +1,5 @@
 .section {
-  background: #f4f4f6;
+  background: var(--site-cream);
 }
 
 .inner {
@@ -14,10 +14,10 @@
   gap: 0.7rem;
   margin: 0 0 clamp(2rem, 4vw, 3.5rem);
   padding: 0.55rem 1rem;
-  border: 1px solid rgb(15 23 42 / 10%);
+  border: 1px solid rgb(17 17 17 / 10%);
   border-radius: 999px;
   background: rgb(255 255 255 / 82%);
-  color: #475569;
+  color: var(--site-muted);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -26,13 +26,13 @@
   width: 0.65rem;
   height: 0.65rem;
   border-radius: 50%;
-  background: #2563eb;
-  box-shadow: 0 0 0 0.35rem rgb(37 99 235 / 10%);
+  background: var(--site-burnt-orange);
+  box-shadow: 0 0 0 0.35rem rgb(217 84 30 / 10%);
 }
 
 .statement {
   margin: 0;
-  color: #111827;
+  color: var(--site-ink);
   font-family: var(--font-home-display), sans-serif;
   font-size: clamp(2.25rem, 4vw, 3.75rem);
   font-weight: 550;
@@ -42,28 +42,16 @@
 }
 
 .word {
-  color: #14161a;
+  color: var(--site-ink);
   transition: color 500ms ease;
 }
 
 .ready .word {
-  color: #d0d1d5;
+  color: #b0a799;
 }
 
-.visible .word {
-  color: #14161a;
-}
-
-.accentWord {
-  color: #2563eb;
-}
-
-.ready .accentWord {
-  color: #bfdbfe;
-}
-
-.visible .accentWord {
-  color: #2563eb;
+.ready .word[data-scroll-active="true"] {
+  color: var(--site-ink);
 }
 
 .visualReveal {
@@ -81,7 +69,7 @@
   transform: translateY(0.35rem) scale(0.96);
 }
 
-.visible .visualReveal {
+.ready .visualReveal[data-scroll-active="true"] {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
@@ -93,13 +81,13 @@
   gap: 0.5rem;
   margin-inline: 0.15em;
   padding: 0.45rem 0.7rem;
-  border: 1px solid rgb(15 23 42 / 10%);
+  border: 1px solid rgb(17 17 17 / 10%);
   border-radius: 0.85rem;
-  background: rgb(255 255 255 / 92%);
+  background: rgb(243 238 227 / 92%);
   box-shadow:
-    0 2px 4px rgb(15 23 42 / 5%),
-    0 8px 18px rgb(15 23 42 / 6%);
-  color: #2563eb;
+    0 2px 4px rgb(17 17 17 / 5%),
+    0 8px 18px rgb(17 17 17 / 6%);
+  color: var(--site-burnt-orange);
   font-family: var(--font-home-mono), monospace;
   font-size: clamp(0.55rem, 0.72vw, 0.7rem);
   font-weight: 600;
@@ -116,11 +104,11 @@
 }
 
 .signalVisual {
-  color: #2563eb;
+  color: var(--site-burnt-orange);
 }
 
 .reviewVisual {
-  color: #2563eb;
+  color: var(--site-burnt-orange);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -3,18 +3,16 @@ import type { Locale } from "@rove/cms/constants"
 import { homeContent } from "@/content/home"
 import { localePath } from "@/lib/i18n"
 import { HomeAccordion } from "@/components/home/HomeAccordion"
+import { ApprovalTimeline } from "@/components/home/ApprovalTimeline"
+import { CaseStudiesGrid } from "@/components/home/CaseStudiesGrid"
 import { ClientMarquee } from "@/components/home/ClientMarquee"
+import { HowItWorksTimeline } from "@/components/home/HowItWorksTimeline"
+import { PipelineUpgradeSection } from "@/components/home/PipelineUpgradeSection"
 import { RevenueSystemFlow } from "@/components/home/RevenueSystemFlow"
 
 const sectionClass = "mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8"
 const sectionHeadingClass =
   "font-display text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl"
-
-const pathAccent = {
-  Fix: "bg-slate-300",
-  Generate: "bg-blue-300",
-  Run: "bg-purple-300",
-} as const
 
 function SectionHeading({
   eyebrow,
@@ -72,74 +70,6 @@ function SectionHeading({
   )
 }
 
-function ConditionalOffer({ scope }: { scope: string }) {
-  return (
-    <p className="mt-4 rounded-lg border border-purple-200 bg-purple-50 p-3 text-xs leading-relaxed text-slate-700">
-      <span className="font-semibold text-purple-800">{homeContent.labels.condition}: </span>
-      {scope}
-    </p>
-  )
-}
-
-function PathCard({
-  card,
-  locale,
-}: {
-  card: (typeof homeContent.paths.cards)[number]
-  locale: Locale
-}) {
-  const isPrimary = card.path === "Generate"
-
-  return (
-    <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border ${
-        isPrimary
-          ? "border-blue-300 bg-white shadow-lg shadow-blue-950/5"
-          : "border-slate-200/90 bg-white shadow-sm"
-      } p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-7`}
-    >
-      <div aria-hidden="true" className={`absolute inset-x-0 top-0 h-1 ${pathAccent[card.path]}`} />
-      <div className="mb-5 flex items-center justify-between gap-3">
-        <span
-          className={`inline-flex w-fit rounded px-2.5 py-1 font-mono text-xs font-semibold ${
-            isPrimary ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-700"
-          }`}
-        >
-          {card.path}
-        </span>
-        {isPrimary && (
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-blue-700">
-            {homeContent.labels.defaultEntry}
-          </span>
-        )}
-      </div>
-      <h3 className="font-display text-xl font-bold leading-snug text-slate-950">{card.pain}</h3>
-      <p className="mt-4 text-sm leading-relaxed text-slate-600">{card.work}</p>
-      <div className="mt-auto pt-7">
-        <p className="border-t border-slate-100 pt-4 font-display font-bold text-slate-950">
-          {card.offer}
-        </p>
-        <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">{card.price}</p>
-        <p className="mt-1 font-mono text-xs text-slate-500">{card.timing}</p>
-        {card.id === "run" ? (
-          <ConditionalOffer scope={card.scope} />
-        ) : (
-          <p className="mt-4 min-h-10 text-xs leading-relaxed text-slate-600">{card.scope}</p>
-        )}
-        <Link
-          className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-700 transition-colors hover:text-blue-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          href={localePath(locale, "/contact")}
-        >
-          {homeContent.labels.discussPath}
-          <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
-            →
-          </span>
-        </Link>
-      </div>
-    </article>
-  )
-}
-
 export function HeroSection({ locale }: { locale: Locale }) {
   return (
     <section className="relative mx-auto w-full max-w-7xl px-4 pb-20 pt-12 sm:px-6 lg:px-8">
@@ -153,31 +83,33 @@ export function HeroSection({ locale }: { locale: Locale }) {
           {homeContent.hero.eyebrow}
         </p>
         <h1 className="font-display text-4xl font-extrabold leading-[1.15] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-          {homeContent.hero.title}
+          {homeContent.hero.title.replace(homeContent.hero.accent, "")}
+          <span className="text-blue-600">{homeContent.hero.accent}</span>
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
           {homeContent.hero.description}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <a
-            className="group inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold tracking-wide text-white shadow-sm transition-all duration-200 hover:bg-blue-600 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-            href="#revenue-leak-audit"
+          <Link
+            className="group inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold tracking-wide text-white shadow-sm transition-all duration-200 hover:bg-blue-700 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            href={localePath(locale, "/contact")}
           >
             <span>{homeContent.hero.primaryAction}</span>
             <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
               →
             </span>
-          </a>
-          <Link
+          </Link>
+          <a
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold tracking-wide text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-            href={localePath(locale, "/contact")}
+            href="#how-it-works"
           >
             {homeContent.hero.secondaryAction}
             <span aria-hidden="true" className="text-slate-400">
               →
             </span>
-          </Link>
+          </a>
         </div>
+        <p className="text-xs leading-relaxed text-slate-500">{homeContent.hero.note}</p>
       </div>
       <RevenueSystemFlow />
     </section>
@@ -188,124 +120,68 @@ export function ClientMarqueeSection() {
   return <ClientMarquee />
 }
 
-export function PathsSection({ locale }: { locale: Locale }) {
+export function BuildProcessSection() {
+  const { process } = homeContent
+
   return (
-    <section className={`${sectionClass} border-t border-slate-200/70`} id="paths">
+    <section className={`${sectionClass} border-t border-slate-200/70`} id="how-it-works">
       <SectionHeading
-        accent="ways in"
         centered
-        description={homeContent.paths.description}
-        eyebrow={homeContent.paths.eyebrow}
-        title={homeContent.paths.title}
+        description={process.description}
+        eyebrow={process.eyebrow}
+        title={process.title}
       />
-      <div className="grid gap-6 lg:grid-cols-3">
-        {homeContent.paths.cards.map((card) => (
-          <PathCard card={card} key={card.id} locale={locale} />
-        ))}
-      </div>
+      <HowItWorksTimeline />
     </section>
   )
 }
 
-function ProofFlow({ project }: { project: (typeof homeContent.proof.projects)[number] }) {
-  const titleId = `${project.id}-flow-title`
-  const descriptionId = `${project.id}-flow-description`
+export function WhoItsForSection() {
+  const { startingPoints, fit } = homeContent
 
   return (
-    <figure className="relative">
-      <svg
-        aria-labelledby={`${titleId} ${descriptionId}`}
-        className="pointer-events-none absolute inset-x-0 top-1/2 hidden h-10 w-full -translate-y-1/2 lg:block"
-        preserveAspectRatio="none"
-        role="img"
-        viewBox="0 0 1000 100"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <title id={titleId}>{project.flowTitle}</title>
-        <desc id={descriptionId}>{project.flowDescription}</desc>
-        <defs>
-          <marker
-            id={`${project.id}-flow-arrow`}
-            markerHeight="7"
-            markerWidth="7"
-            orient="auto"
-            refX="6"
-            refY="3.5"
-            viewBox="0 0 7 7"
-          >
-            <path d="M0 0 7 3.5 0 7" fill="#64748b" />
-          </marker>
-        </defs>
-        <path
-          d="M200 50H300 M450 50H550 M700 50H800"
-          fill="none"
-          markerEnd={`url(#${project.id}-flow-arrow)`}
-          stroke="#64748b"
-          strokeDasharray="4 6"
-          strokeLinecap="round"
-          strokeWidth="2"
-        />
-      </svg>
-      <ol
-        aria-label={project.flowTitle}
-        className="relative grid gap-2 sm:grid-cols-2 lg:grid-cols-4"
-      >
-        {project.steps.map((step, index) => (
-          <li className="flex items-center gap-2" key={step}>
-            <span className="flex min-h-16 flex-1 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-xs font-semibold leading-relaxed text-slate-800">
-              {step}
-            </span>
-            {index < project.steps.length - 1 && (
-              <span aria-hidden="true" className="hidden font-mono text-slate-400 lg:inline">
-                →
-              </span>
-            )}
-          </li>
+    <section className={sectionClass} id="who-its-for">
+      <SectionHeading centered eyebrow={startingPoints.eyebrow} title={startingPoints.title} />
+      <div className="grid gap-3 md:grid-cols-3">
+        {startingPoints.items.map((item, index) => (
+          <article className="rounded-xl border border-slate-200 bg-white p-5" key={item.id}>
+            <p className="font-mono text-xs font-semibold text-blue-700">
+              {String(index + 1).padStart(2, "0")}
+            </p>
+            <h3 className="mt-3 font-display text-base font-bold leading-snug text-slate-950">
+              “{item.text}”
+            </h3>
+          </article>
         ))}
-      </ol>
-    </figure>
+      </div>
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <h3 className="font-display font-bold text-slate-950">{fit.bestFitTitle}</h3>
+          <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700">
+            {fit.bestFit.map((item) => (
+              <li key={item}>• {item}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <h3 className="font-display font-bold text-slate-950">{fit.notFitTitle}</h3>
+          <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700">
+            {fit.notFit.map((item) => (
+              <li key={item}>• {item}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
   )
 }
 
 export function ProofSection() {
-  const { proof } = homeContent
+  return <CaseStudiesGrid />
+}
 
-  return (
-    <section className={sectionClass} id="proof">
-      <SectionHeading
-        accent="production."
-        centered
-        description={proof.description}
-        eyebrow={proof.eyebrow}
-        title={proof.title}
-      />
-      <div className="grid gap-5 lg:grid-cols-2">
-        {proof.projects.map((project) => (
-          <article
-            className="group rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl sm:p-7"
-            key={project.id}
-          >
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-              <h3 className="font-display text-xl font-bold text-slate-950">{project.name}</h3>
-              <span className="rounded bg-blue-50 px-2.5 py-1 font-mono text-xs font-semibold uppercase tracking-wide text-blue-800">
-                {project.path}
-              </span>
-            </div>
-            <p className="mb-6 text-sm leading-relaxed text-slate-600">{project.claim}</p>
-            <ProofFlow project={project} />
-          </article>
-        ))}
-      </div>
-      <article className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 p-6 transition-colors hover:border-blue-300 hover:bg-blue-50/30 sm:p-7">
-        <p className="font-mono text-xs font-semibold uppercase tracking-wide text-slate-500">
-          {proof.placeholder.title}
-        </p>
-        <p className="mt-3 font-display text-xl font-bold text-slate-950">
-          {proof.placeholder.description}
-        </p>
-      </article>
-    </section>
-  )
+export function PipelineUpgrade() {
+  return <PipelineUpgradeSection />
 }
 
 function StackCard({ agent }: { agent: (typeof homeContent.agents.items)[number] }) {
@@ -357,29 +233,7 @@ export function AgentsSection() {
 }
 
 function ApprovalGateFlow() {
-  return (
-    <ol className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {homeContent.control.gates.map((gate, index) => (
-        <li
-          className="group relative overflow-hidden rounded-xl border border-slate-200 bg-[#FAFAFD] p-5 transition-all hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
-          key={gate.name}
-        >
-          <span
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-400"
-          />
-          <p className="font-mono text-xs font-semibold tracking-wider text-blue-700">
-            {String(index + 1).padStart(2, "0")}
-          </p>
-          <h3 className="mt-3 font-display font-bold text-slate-950">{gate.name}</h3>
-          <p className="mt-3 text-sm leading-relaxed text-slate-700">{gate.approval}</p>
-          <p className="mt-3 border-t border-slate-200 pt-3 text-xs leading-relaxed text-slate-500">
-            {gate.repeats}
-          </p>
-        </li>
-      ))}
-    </ol>
-  )
+  return <ApprovalTimeline />
 }
 
 export function ControlSection() {
@@ -403,12 +257,7 @@ export function ControlSection() {
           {control.replyRule}
         </p>
         <div className="mt-20">
-          <SectionHeading
-            accent="three clear tiers."
-            centered
-            eyebrow={control.eyebrow}
-            title={control.ownershipTitle}
-          />
+          <SectionHeading centered eyebrow={control.eyebrow} title={control.ownershipTitle} />
           <div className="grid gap-5 md:grid-cols-3">
             {control.ownership.map((tier) => (
               <article
@@ -453,20 +302,7 @@ export function EngagementSection() {
         eyebrow={process.eyebrow}
         title={process.title}
       />
-      <ol className="grid gap-5 md:grid-cols-3">
-        {process.steps.map((step, index) => (
-          <li
-            className="relative flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
-            key={step.name}
-          >
-            <span className="font-mono text-2xl font-black text-blue-600">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-            <h3 className="mt-4 font-display text-lg font-bold text-slate-950">{step.name}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.description}</p>
-          </li>
-        ))}
-      </ol>
+      <HowItWorksTimeline />
     </section>
   )
 }
@@ -487,19 +323,16 @@ export function ToolsSection() {
           eyebrow={tools.eyebrow}
           title={tools.title}
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
           {tools.groups.map((group) => (
-            <div
-              className="rounded-xl border border-slate-200/80 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
-              key={group.name}
-            >
-              <h3 className="font-mono text-xs font-bold uppercase tracking-wide text-slate-500">
+            <div className="border-b border-slate-200 py-3" key={group.name}>
+              <h3 className="font-mono text-[10px] font-bold uppercase tracking-wide text-slate-500">
                 {group.name}
               </h3>
-              <ul className="mt-4 flex flex-wrap gap-2">
+              <ul className="mt-2 flex flex-wrap gap-1.5">
                 {group.tools.map((tool) => (
                   <li
-                    className="rounded bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-800 transition-colors hover:bg-blue-50 hover:text-blue-800"
+                    className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-800"
                     key={tool}
                   >
                     {tool}
@@ -634,6 +467,9 @@ export function PricingSection({ locale }: { locale: Locale }) {
           idPrefix="offer-scope"
           items={scopeItems}
         />
+        <p className="mt-5 text-center text-sm font-semibold text-slate-700">
+          {pricing.notOffered}
+        </p>
         <p className="mt-8 text-center font-display text-base font-semibold text-slate-800">
           {pricing.boundary}
         </p>
@@ -709,35 +545,35 @@ export function FaqSection() {
 export function FinalCtaSection({ locale }: { locale: Locale }) {
   return (
     <section className={sectionClass} id="contact">
-      <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-[#070A12] px-6 py-16 text-center text-white shadow-2xl shadow-slate-950/10 sm:px-12 lg:px-16">
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white px-6 py-16 text-center text-slate-950 shadow-xl sm:px-12 lg:px-16">
         <div className="pointer-events-none absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-blue-600/20 blur-[100px]" />
         <div className="relative mx-auto max-w-3xl space-y-5">
-          <p className="inline-flex rounded-full border border-slate-700 bg-slate-900 px-3 py-1 font-mono text-xs font-medium text-blue-300">
+          <p className="inline-flex rounded-full border border-slate-200 bg-slate-100 px-3 py-1 font-mono text-xs font-medium text-blue-700">
             {homeContent.finalCta.eyebrow}
           </p>
-          <h2 className="font-display text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">
+          <h2 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-slate-950 sm:text-5xl">
             {homeContent.finalCta.title}
           </h2>
-          <p className="mx-auto max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
+          <p className="mx-auto max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
             {homeContent.finalCta.description}
           </p>
           <div className="flex flex-wrap justify-center gap-3 pt-3">
-            <a
-              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-blue-500 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              href="#revenue-leak-audit"
-            >
-              {homeContent.finalCta.auditAction}
-              <span aria-hidden="true">→</span>
-            </a>
             <Link
-              className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-600 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-blue-500 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
               href={localePath(locale, "/contact")}
+            >
+              {homeContent.finalCta.buildAction}
+              <span aria-hidden="true">→</span>
+            </Link>
+            <a
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition-colors hover:border-slate-300 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              href="#how-it-works"
             >
               {homeContent.finalCta.callAction}
               <span aria-hidden="true" className="text-slate-500">
                 →
               </span>
-            </Link>
+            </a>
           </div>
         </div>
       </div>

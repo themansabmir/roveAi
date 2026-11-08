@@ -17,7 +17,6 @@ function InlineVisual({ id }: { id: "signals" | "review" }) {
           />
           <circle cx="18" cy="16.5" r="2.5" fill="currentColor" />
         </svg>
-        <span>DATA + CRM</span>
       </span>
     )
   }
@@ -34,64 +33,74 @@ function InlineVisual({ id }: { id: "signals" | "review" }) {
         />
         <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
       </svg>
-      <span>HUMAN REVIEW</span>
     </span>
   )
 }
 
 export function PositioningStatement() {
-  const sectionRef = useRef<HTMLElement | null>(null)
+  const statementRef = useRef<HTMLParagraphElement | null>(null)
   const [isReady, setIsReady] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
   const { positioningStatement } = homeContent
-  let wordIndex = 0
 
   useEffect(() => {
-    const section = sectionRef.current
-    if (!section) return
+    const statement = statementRef.current
+    if (!statement) return
 
     setIsReady(true)
 
-    if (typeof IntersectionObserver === "undefined") {
-      setIsVisible(true)
-      return
+    let lastScrollY = window.scrollY
+    const updateReveal = () => {
+      const activationLine = window.innerHeight * 0.3
+      const revealTargets = statement.querySelectorAll<HTMLElement>("[data-scroll-reveal]")
+      const direction = window.scrollY >= lastScrollY ? "down" : "up"
+      const lines = new Map<number, HTMLElement[]>()
+      lastScrollY = window.scrollY
+
+      for (const target of revealTargets) {
+        const bounds = target.getBoundingClientRect()
+        target.dataset.scrollActive = String(bounds.top <= activationLine && bounds.bottom > 0)
+        const line = Math.round(bounds.top)
+        const lineTargets = lines.get(line) ?? []
+        lineTargets.push(target)
+        lines.set(line, lineTargets)
+      }
+
+      for (const lineTargets of lines.values()) {
+        lineTargets.forEach((target, index) => {
+          const delayIndex = direction === "down" ? index : lineTargets.length - index - 1
+          target.style.transitionDelay = `${delayIndex * 55}ms`
+        })
+      }
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setIsVisible(true)
-          observer.disconnect()
-        }
-      },
-      { rootMargin: "0px 0px -50% 0px", threshold: 0 },
-    )
+    updateReveal()
+    window.addEventListener("scroll", updateReveal, { passive: true })
+    window.addEventListener("resize", updateReveal)
 
-    observer.observe(section)
-    return () => observer.disconnect()
+    return () => {
+      window.removeEventListener("scroll", updateReveal)
+      window.removeEventListener("resize", updateReveal)
+    }
   }, [])
 
   return (
     <section
       aria-label={positioningStatement.ariaLabel}
-      className={`${styles.section} ${isReady ? styles.ready : ""} ${isVisible ? styles.visible : ""}`}
-      ref={sectionRef}
+      className={`${styles.section} ${isReady ? styles.ready : ""}`}
     >
       <div className={styles.inner}>
         <p className={styles.eyebrow}>
           <span aria-hidden="true" className={styles.eyebrowDot} />
           {positioningStatement.eyebrow}
         </p>
-        <p className={styles.statement}>
+        <p className={styles.statement} ref={statementRef}>
           {positioningStatement.segments.map((segment, segmentIndex) => {
             if (segment.type === "visual") {
-              const delay = `${wordIndex * 10}ms`
-              wordIndex += 1
               return (
                 <span
                   className={styles.visualReveal}
+                  data-scroll-reveal
                   key={`visual-${segment.id}`}
-                  style={{ transitionDelay: delay }}
                 >
                   <InlineVisual id={segment.id} />
                 </span>
@@ -100,13 +109,11 @@ export function PositioningStatement() {
 
             return segment.value.split(/(\s+)/).map((part, partIndex) => {
               if (!part.trim()) return part
-              const delay = `${wordIndex * 10}ms`
-              wordIndex += 1
               return (
                 <span
-                  className={`${styles.word} ${segment.tone === "accent" ? styles.accentWord : ""}`}
+                  className={styles.word}
+                  data-scroll-reveal
                   key={`${segmentIndex}-${partIndex}`}
-                  style={{ transitionDelay: delay }}
                 >
                   {part}
                 </span>

@@ -1,48 +1,41 @@
 import type { Locale } from "@rove/cms/constants"
 import { geminiFontClasses } from "@/components/GeminiFonts"
+import { homeContent } from "@/content/home"
 import { SiteHeader } from "@/components/site/SiteHeader"
 import { HomeFooter } from "@/components/home/HomeFooter"
-import { PositioningStatement } from "@/components/home/PositioningStatement"
-import { RevenueLeakAudit } from "@/components/home/RevenueLeakAudit"
+import { HomeChapterNav } from "@/components/home/HomeChapterNav"
+import { ThreePartsSection } from "@/components/home/ThreePartsSection"
 import {
-  AgentsSection,
-  ClientMarqueeSection,
-  ComparisonSection,
+  BuildProcessSection,
   ControlSection,
-  EngagementSection,
   FaqSection,
   FinalCtaSection,
-  FitSection,
   HeroSection,
-  PathsSection,
   PricingSection,
+  PipelineUpgrade,
   ProofSection,
-  ToolsSection,
+  WhoItsForSection,
 } from "@/components/home/HomePageSections"
 import styles from "./HomePage.module.css"
 
 export function HomePage({ locale }: { locale: Locale }) {
   return (
     <div
-      className={`${styles.home} ${geminiFontClasses} bg-[#FAFAFD] text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white`}
+      className={`${styles.home} ${geminiFontClasses} bg-[#F3EEE3] text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white`}
     >
-      <SiteHeader faqHref="#faq" locale={locale} />
+      <SiteHeader locale={locale} showFaq={false} ctaLabel={homeContent.labels.bookCall} />
       <main className="pt-16">
-        <div className="flex flex-col w-full text-slate-900 antialiased overflow-hidden selection:bg-blue-600 selection:text-white">
+        <div className="flex flex-col w-full text-slate-900 antialiased overflow-x-clip selection:bg-blue-600 selection:text-white">
           <HeroSection locale={locale} />
-          <ClientMarqueeSection />
-          <PositioningStatement />
-          <PathsSection locale={locale} />
+          <HomeChapterNav />
+          <WhoItsForSection />
+          <PipelineUpgrade />
+          <ThreePartsSection />
+          <BuildProcessSection />
           <ProofSection />
-          <AgentsSection />
           <ControlSection />
-          <EngagementSection />
-          <ToolsSection />
-          <ComparisonSection />
           <PricingSection locale={locale} />
-          <FitSection />
           <FaqSection />
-          <RevenueLeakAudit locale={locale} />
           <FinalCtaSection locale={locale} />
         </div>
       </main>

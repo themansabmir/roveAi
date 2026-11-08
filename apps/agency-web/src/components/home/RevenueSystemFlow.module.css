@@ -8,6 +8,19 @@
   width: min(100%, 47.5rem);
   height: auto;
   margin-inline: auto;
+  animation: flow-reveal 1.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes flow-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.5;
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
 }
 
 .stages {
@@ -32,14 +45,14 @@
   position: absolute;
   top: 0.8rem;
   left: -1.2rem;
-  color: #8a8f99;
+  color: var(--site-muted);
   content: "→";
   font-family: var(--font-home-mono), monospace;
   font-size: 0.8rem;
 }
 
 .label {
-  color: #64748b;
+  color: var(--site-muted);
   font-family: var(--font-home-mono), monospace;
   font-size: 0.6rem;
   font-weight: 600;
@@ -48,7 +61,7 @@
 
 .title {
   margin-top: 0.35rem;
-  color: #0f172a;
+  color: var(--site-ink);
   font-family: var(--font-home-display), sans-serif;
   font-size: 0.9rem;
   line-height: 1.4;
@@ -56,7 +69,7 @@
 
 .description {
   margin: 0.35rem 0 0;
-  color: #64748b;
+  color: var(--site-muted);
   font-size: 0.7rem;
   line-height: 1.55;
 }
@@ -64,6 +77,12 @@
 @media (max-width: 639px) {
   .figure {
     margin-top: 1.5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .illustration {
+      animation: none;
+    }
   }
 
   .stages {

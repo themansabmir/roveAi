@@ -18,12 +18,15 @@ type HomeContent = {
     pendingLegalReview: string
     defaultEntry: string
   }
+  chapters: { id: string; label: string }[]
   hero: {
     eyebrow: string
     title: string
+    accent: string
     description: string
     primaryAction: string
     secondaryAction: string
+    note: string
   }
   revenueFlow: {
     imageAlt: string
@@ -58,25 +61,41 @@ type HomeContent = {
         }
     )[]
   }
-  paths: {
+  startingPoints: {
+    eyebrow: string
+    title: string
+    items: { id: string; text: string }[]
+  }
+  threeParts: {
     eyebrow: string
     title: string
     description: string
-    cards: {
-      id: string
-      path: PathName
-      pain: string
-      work: string
-      offer: string
-      price: string
-      timing: string
-      scope: string
+    items: { id: string; title: string; description: string; link: string; href: string }[]
+    note: string
+  }
+  buildProcess: {
+    eyebrow: string
+    title: string
+    description: string
+    startingPoint: string
+    aiLabel: string
+    peopleLabel: string
+    steps: {
+      id: "signals" | "outbound" | "crm"
+      name: string
+      description: string
+      aiWork: string
+      checkpoint: string
     }[]
   }
   proof: {
     eyebrow: string
     title: string
     description: string
+    imagePlaceholder: string
+    flowLabel: string
+    caseLabel: string
+    note: string
     projects: {
       id: string
       name: string
@@ -86,10 +105,16 @@ type HomeContent = {
       steps: string[]
       flowDescription: string
     }[]
-    placeholder: {
+  }
+  pipelineUpgrade: {
+    eyebrow: string
+    title: string
+    description: string
+    issues: {
+      id: string
       title: string
       description: string
-    }
+    }[]
   }
   agents: {
     eyebrow: string
@@ -124,10 +149,8 @@ type HomeContent = {
   process: {
     eyebrow: string
     title: string
-    steps: {
-      name: string
-      description: string
-    }[]
+    description: string
+    steps: { name: string; description: string; outcome: string }[]
   }
   tools: {
     eyebrow: string
@@ -159,6 +182,7 @@ type HomeContent = {
     title: string
     description: string
     boundary: string
+    notOffered: string
     offers: {
       id: string
       name: string
@@ -212,7 +236,7 @@ type HomeContent = {
     eyebrow: string
     title: string
     description: string
-    auditAction: string
+    buildAction: string
     callAction: string
   }
   footer: {
@@ -228,7 +252,7 @@ type HomeContent = {
 
 export const homeContent = {
   labels: {
-    bookCall: "Book a call",
+    bookCall: "Book a 30-minute review",
     discussPath: "Discuss this path",
     input: "Input",
     output: "Output",
@@ -239,13 +263,24 @@ export const homeContent = {
     pendingLegalReview: "Pending legal review",
     defaultEntry: "Default entry",
   },
+  chapters: [
+    { id: "who-its-for", label: "Who it's for" },
+    { id: "the-problem", label: "The problem" },
+    { id: "three-parts", label: "Three parts" },
+    { id: "how-it-works", label: "How it works" },
+    { id: "proof", label: "Proof" },
+    { id: "control", label: "Control" },
+    { id: "pricing", label: "Price & fit" },
+  ],
   hero: {
-    eyebrow: "Fix · Generate · Run",
-    title: "Revenue operations, run by AI agents.",
+    eyebrow: "Revenue operations, run by AI agents",
+    title: "Your pipeline runs every day. Your team closes.",
+    accent: "Your team closes.",
     description:
-      "Three ways in. Fix the data your pipeline runs on. Generate qualified meetings. Run the follow-up that keeps deals moving. A person approves defined decisions and outreach at the right gates, in accounts you own.",
-    primaryAction: "Run the free Revenue Leak Audit",
-    secondaryAction: "Book a call",
+      "We build and run the outbound system that finds your buyers, the CRM that holds every conversation, and the operations behind both. Agents do the work. A senior operator supervises it, and a person approves every step that matters.",
+    primaryAction: "Book a 30-minute review",
+    secondaryAction: "See how it works",
+    note: "Published prices. Accounts in your name. Three-month minimum on outbound.",
   },
   revenueFlow: {
     imageAlt:
@@ -287,66 +322,107 @@ export const homeContent = {
     segments: [
       {
         type: "text",
-        value: "We run your revenue pipeline end to end—from licensed signals ",
+        value: "We build the system behind your pipeline. ",
       },
       { type: "visual", id: "signals" },
       {
         type: "text",
-        value: "through qualification, approved outreach, reply handling, and customer handoffs. ",
+        value:
+          "Find the right accounts, start relevant conversations, and get every reply to the right next step. ",
       },
       { type: "visual", id: "review" },
       {
         type: "text",
-        value:
-          " AI agents handle defined work under a senior operator's supervision. Your CRM and campaign assets remain yours; third-party tools are licensed directly to you.",
-        tone: "accent",
+        value: "We keep your CRM and follow-up moving, so your team can focus on selling.",
       },
     ],
   },
-  paths: {
-    eyebrow: "Three ways in",
-    title: "Three ways in.",
+  startingPoints: {
+    eyebrow: "01 / 07 · Who it's for",
+    title: "Built for B2B firms that sell through a team.",
+    items: [
+      { id: "outbound-owner", text: "We have a sales team, but nobody owns outbound." },
+      { id: "crm-trust", text: "Our CRM exists, but nobody trusts what's in it." },
+      {
+        id: "manual-operations",
+        text: "Our operations depend on people doing the same work by hand.",
+      },
+    ],
+  },
+  threeParts: {
+    eyebrow: "03 / 07 · Three parts, run for you",
+    title: "Three parts, run for you.",
     description:
-      "Diagnosis decides the path. Each offer addresses a different constraint; none is a mandatory step before the next.",
-    cards: [
+      "We cover the work from first contact through to the operations behind the business.",
+    items: [
       {
-        id: "fix",
-        path: "Fix",
-        pain: "“We don't trust our CRM or our numbers.”",
-        work: "Clean, enrich and score your CRM, and route each new lead on arrival.",
-        offer: "Revenue Data Foundation",
-        price: "$2.5k",
-        timing: "Fixed scope · 2–3 weeks",
-        scope: "Sold standalone when CRM quality blocks outreach or reporting.",
+        id: "leads",
+        title: "Get leads.",
+        description:
+          "We build the outbound system. It finds accounts with buying signals, writes outreach from your material and books meetings with your closer.",
+        link: "See outbound",
+        href: "#pricing",
       },
       {
-        id: "generate",
-        path: "Generate",
-        pain: "“We don't have enough qualified meetings.”",
-        work: "Find accounts with buying signals, write outreach from your material, and book meetings with your closer.",
-        offer: "Outbound Engine",
-        price: "$3k/mo",
-        timing: "3-month minimum · plus tools",
-        scope:
-          "Email outbound with a human approval process. The most common entry when the meetings gap is the leak.",
+        id: "qualify",
+        title: "Qualify and fill the CRM.",
+        description:
+          "Every reply is read, qualified against your ICP and logged in your CRM. No conversation gets lost, and every deal has a record.",
+        link: "See the CRM pipeline",
+        href: "#control",
       },
       {
-        id: "run",
-        path: "Run",
-        pain: "“Leads and lost deals go cold after the first touch.”",
-        work: "Reactivate lost deals, draft follow-ups and prepare a brief before every call.",
-        offer: "Always-On Revenue Agents",
-        price: "$1.5k/mo",
-        timing: "Monthly",
-        scope: "Offered only after a live engagement, or when follow-up is the leak.",
+        id: "operations",
+        title: "Run operations.",
+        description:
+          "The repeatable work behind the business runs on schedule: follow-ups, reactivation, reporting and handoffs. Your team does the work that makes money.",
+        link: "See operations",
+        href: "#how-it-works",
+      },
+    ],
+    note: "Revenue Data Foundation, a one-time CRM clean-up, is available when messy data blocks outreach.",
+  },
+  buildProcess: {
+    eyebrow: "How the pipeline works",
+    title: "A connected system, built around your team.",
+    description:
+      "Starting from scratch or fixing a system that has outgrown its setup, we connect the work from targeting through follow-up.",
+    startingPoint:
+      "Your CRM and sending accounts stay yours. We work in the tools you already use.",
+    aiLabel: "AI assists",
+    peopleLabel: "People decide",
+    steps: [
+      {
+        id: "signals",
+        name: "Signal Engineering",
+        description: "Find the right accounts and give your team a useful reason to reach out.",
+        aiWork: "Research, enrichment and prioritization",
+        checkpoint: "You approve target criteria and sources",
+      },
+      {
+        id: "outbound",
+        name: "Outbound System",
+        description: "Build a steady outbound motion using your offer, voice and account context.",
+        aiWork: "Prepare drafts and sort incoming replies",
+        checkpoint: "You approve campaigns; people handle sensitive replies",
+      },
+      {
+        id: "crm",
+        name: "CRM Automation",
+        description: "Connect lead capture, campaign activity and next steps to your CRM.",
+        aiWork: "Classify leads and prepare record updates",
+        checkpoint: "Your team owns the CRM and sales decisions",
       },
     ],
   },
   proof: {
-    eyebrow: "Selected work",
-    title: "Built and running in production.",
-    description:
-      "Examples of systems built for live operations. No performance results are implied.",
+    eyebrow: "05 / 07 · Proof",
+    title: "Built and running, not described.",
+    description: "",
+    imagePlaceholder: "Case study visual",
+    flowLabel: "Project flow",
+    caseLabel: "Case",
+    note: "We don't show results we haven't measured.",
     projects: [
       {
         id: "roister",
@@ -361,7 +437,7 @@ export const homeContent = {
       },
       {
         id: "codeninjas",
-        name: "Codeninjas",
+        name: "CodeNinjas",
         path: "Fix and Run",
         claim:
           "Built lead intake end to end for a Meta lead campaign: qualification, CRM integration and a central database update.",
@@ -370,11 +446,40 @@ export const homeContent = {
         flowDescription:
           "For Codeninjas: Meta campaign leads move through qualification and CRM integration into a central database update.",
       },
+      {
+        id: "syntropic",
+        name: "Our own outbound engine",
+        path: "In progress",
+        claim: "We publish the numbers when they're measured.",
+        flowTitle: "Our own outbound engine",
+        steps: ["Target accounts", "Outbound", "Qualified replies"],
+        flowDescription:
+          "Our own outbound engine: target accounts move through outbound to qualified replies.",
+      },
     ],
-    placeholder: {
-      title: "Case study #1, your own engine.",
-      description: "Results publish after [X] weeks of running.",
-    },
+  },
+  pipelineUpgrade: {
+    eyebrow: "02 / 07 · The problem",
+    title: "The problem isn't your team. It's work nobody has time to do.",
+    description:
+      "Outbound runs when someone remembers it. Replies wait in an inbox. CRM records drift. Follow-ups depend on habit. An SDR and an ops hire fix these one at a time, slowly, and you pay for them before the first meeting arrives.",
+    issues: [
+      {
+        id: "slow-response",
+        title: "What's breaking",
+        description: "Outbound stops whenever the person running it is busy.",
+      },
+      {
+        id: "manual-admin",
+        title: "How it feels",
+        description: 'Pipeline reviews start with "let me check."',
+      },
+      {
+        id: "disconnected-tools",
+        title: "Why it matters",
+        description: "Every unanswered reply is a meeting your closer never saw.",
+      },
+    ],
   },
   agents: {
     eyebrow: "Agent roles",
@@ -426,76 +531,79 @@ export const homeContent = {
     ],
   },
   control: {
-    eyebrow: "Control and ownership",
-    title: "People approve the audience, templates and campaign gates.",
-    description:
-      "Approval is explicit and repeats at defined points. After the first 30 days, message review moves to a weekly sample; flagged messages are pulled.",
+    eyebrow: "06 / 07 · Control and ownership",
+    title: "A person approves what matters, and you keep what we build.",
+    description: "",
     gates: [
       {
-        name: "ICP and signals",
-        approval: "Target definition and signal list.",
-        repeats: "Once per segment, and on material change.",
+        name: "ICP and signal list",
+        approval: "Your ICP and signal list are approved once per segment.",
+        repeats: "Approved once per segment.",
       },
       {
-        name: "Templates",
-        approval: "Every new email template before its first send.",
-        repeats: "For every new template.",
+        name: "New templates",
+        approval: "Every new template is approved before its first send.",
+        repeats: "Before first use.",
       },
       {
-        name: "Campaign launch",
-        approval: "Each new list and its messages.",
-        repeats: "Every message is reviewed for the first 30 days of each campaign.",
+        name: "First 30 days",
+        approval: "Every message in a campaign's first 30 days is reviewed before it goes out.",
+        repeats: "Every message, for 30 days.",
       },
       {
-        name: "Ongoing",
-        approval: "A sample of sent messages and any flagged message.",
-        repeats: "Weekly after day 30; flagged messages are pulled.",
+        name: "After day 30",
+        approval: "A weekly sample is reviewed. Any flagged message is pulled.",
+        repeats: "Weekly sample; flagged messages are pulled.",
       },
     ],
     replyRule:
-      "Replies follow the same logic. A person approves any AI-drafted response before it sends. Pricing, complaints, legal terms and unsubscribes go to a person.",
-    ownershipTitle: "Ownership is split into three clear tiers.",
+      "Replies: AI drafts a response, and a person approves it before it sends. Pricing, complaints, legal terms and unsubscribes always go to a person.",
+    ownershipTitle: "What you own and what stays with us.",
     ownership: [
       {
-        name: "Owned by you",
+        name: "You keep",
         items: [
-          "Domains registered in your name",
+          "Domains",
           "Sending inboxes",
           "CRM records",
-          "Campaign copy and client-specific prompts",
+          "Campaign copy",
+          "Client-specific prompts",
         ],
-        detail: "These remain in your accounts.",
+        detail: "These stay in your accounts.",
       },
       {
         name: "Licensed to you directly",
-        items: ["Clay", "Sending platforms", "Data providers"],
-        detail: "Their licence, credit and export terms apply.",
+        items: ["Clay", "The sending platform", "Data providers"],
+        detail: "Their terms apply.",
       },
       {
-        name: "Retained by Syntropic",
-        items: ["Internal agent code", "Reusable templates and playbooks", "Internal tooling"],
-        detail:
-          "We provide a 30-day handover with documentation and a walkthrough. The system stops working after handover unless your team can run it.",
+        name: "We keep",
+        items: ["Internal agent code", "Reusable templates", "Playbooks"],
+        detail: "These are our reusable systems.",
       },
     ],
   },
   process: {
-    eyebrow: "How an engagement works",
-    title: "Diagnose, build, run and hand over.",
+    eyebrow: "04 / 07 · How it works",
+    title: "Diagnose, build, run. Each step has a written outcome.",
+    description:
+      "A senior operator supervises the agents, with specialist teams for outbound, Meta and CRM work.",
     steps: [
       {
         name: "Diagnose",
-        description: "We map your pipeline and identify where it leaks.",
+        description: "A 30-minute review of your pipeline.",
+        outcome: "You get a written map of where it breaks and which part we'd fix first.",
       },
       {
         name: "Build",
         description:
-          "We set up your data, targeting, outreach and reply handling in your accounts.",
+          "A fixed-scope setup in your accounts: data, targeting, sending, reply handling and CRM records.",
+        outcome: "You see the scope in writing before work starts.",
       },
       {
         name: "Run and hand over",
-        description:
-          "We review the work weekly, then provide a 30-day handover if you take it in-house.",
+        description: "Weekly reviews with a named operator.",
+        outcome: "Then a 30-day handover so your team can run the system without us.",
       },
     ],
   },
@@ -550,85 +658,105 @@ export const homeContent = {
     note: "Your team still takes and closes the meetings.",
   },
   pricing: {
-    eyebrow: "Published prices",
-    title: "A clear starting price for each path.",
-    description: "The diagnosis determines which offer fits. No path is a required prerequisite.",
-    boundary: "We run the operations. Your team still closes the deals.",
+    eyebrow: "07 / 07 · Price and fit",
+    title: "Published prices. Fixed scope.",
+    description: "",
+    boundary:
+      "Tools are billed to your accounts. We don't guarantee revenue. We run the work, and your team still closes.",
+    notOffered: "Not offered at launch: LinkedIn, paid ads, cold calling, websites, apps.",
     offers: [
       {
         id: "foundation",
-        name: "Revenue Data Foundation",
-        price: "$2.5k",
+        name: "CRM clean-up",
+        price: "From $2.5k",
         summary: "Fixed scope · 2–3 weeks",
         scope:
           "CRM and data clean-up: address duplicates and missing owners, establish trusted pipeline fields, and route new leads. Sold standalone when CRM quality blocks outreach or reporting.",
       },
       {
         id: "outbound",
-        name: "Outbound Engine",
-        price: "$3k/mo",
+        name: "Outbound system",
+        price: "From $3k/month",
         summary: "3-month minimum · plus tools",
         scope:
           "Signal-driven email outbound: agree the ICP and signals, prepare outreach from your material, run approved campaigns and handle replies. Third-party tools are billed to your account.",
       },
       {
         id: "always-on",
-        name: "Always-On Revenue Agents",
-        price: "$1.5k/mo",
-        summary: "Monthly · after a live engagement",
+        name: "Operations add-on",
+        price: "From $1.5k/month",
+        summary: "After a live engagement",
         scope:
           "Ongoing follow-up and pipeline operations, including agreed CRM updates, reply classification and next-step reporting. Offered only after a live engagement.",
+      },
+      {
+        id: "custom",
+        name: "Custom internal builds",
+        price: "Quoted as projects",
+        summary: "Scoped to the work",
+        scope: "Custom internal builds are quoted as projects.",
       },
     ],
   },
   fit: {
     eyebrow: "Fit and boundaries",
-    title: "The system needs a closer and a real pipeline to work on.",
+    title: "Built for a team that can take the meetings.",
     bestFitTitle: "Best fit",
     notFitTitle: "Not a fit",
     bestFit: [
       "B2B firms with 10–50 staff.",
       "A named person who takes sales meetings.",
       "A CRM, or willingness to adopt one.",
-      "Deals worth well over $10k lifetime.",
+      "Deals worth well over $10k.",
       "US contacts only.",
     ],
-    notFit: [
-      "No one to take meetings.",
-      "B2C sales.",
-      "Very small target markets.",
-      "Non-US contacts.",
-      "Anyone expecting guaranteed revenue.",
-    ],
-    boundary:
-      "LinkedIn, paid ads, cold calling, websites and apps are not part of the launch offer.",
+    notFit: ["No one to take meetings.", "B2C sales.", "Anyone expecting guaranteed revenue."],
+    boundary: "A named person needs to take meetings. US contacts only.",
   },
   faq: {
     eyebrow: "FAQ",
-    title: "Before you decide.",
-    boundary: "We run the operations. Your team still closes the deals.",
+    title: "Questions buyers actually ask.",
+    boundary: "US contacts only. See our AI and data policy for details.",
     items: [
       {
         id: "what-buying",
         question: "What exactly are we buying?",
         answer:
-          "A working pipeline engine and the operator supervising it, not a licence or a block of hours.",
+          "A working outbound and CRM system, and the operator who supervises it. Not a licence or a block of hours.",
       },
       {
-        id: "different-agency",
-        question: "How is this different from an agency?",
-        answer: "You own the systems, the scope is fixed and the prices are published.",
+        id: "salesperson",
+        question: "Do we still need a closer?",
+        answer: "Yes. We book the meetings. Your team takes them and closes.",
       },
       {
         id: "brand-risk",
         question: "Will AI outreach hurt my brand?",
         answer:
-          "Every new email template is approved by a person before it sends. For the first 30 days of each campaign, every message is reviewed before it goes out. After that, a weekly sample and any flagged message are reviewed.",
+          "Every new template is approved before it sends. Every message is reviewed for the first 30 days. After that, we review a weekly sample.",
       },
       {
-        id: "salesperson",
-        question: "Do I still need a salesperson?",
-        answer: "Yes. Someone has to take the meetings.",
+        id: "ownership",
+        question: "Who owns the accounts and tools?",
+        answer:
+          "You do. Domains, inboxes, CRM records and campaign copy stay in your accounts. Third-party tools are licensed to you directly.",
+      },
+      {
+        id: "stopping",
+        question: "What if we stop?",
+        answer: "You keep everything you own, plus the documentation and the 30-day handover.",
+      },
+      {
+        id: "meetings-timing",
+        question: "How soon do meetings start?",
+        answer:
+          "Sending starts after a 2–4 week warm-up of your domains and inboxes. Your first review shows what's working.",
+      },
+      {
+        id: "compliance",
+        question: "Is it compliant?",
+        answer:
+          "We send to US contacts only, include a working opt-out and a physical address in every email, and honour unsubscribes within 24 hours. The full policy is linked below.",
       },
     ],
   },
@@ -701,15 +829,15 @@ export const homeContent = {
     reset: "Start again",
   },
   finalCta: {
-    eyebrow: "Start with the leak",
-    title: "Find where your pipeline leaks.",
+    eyebrow: "Start with a 30-minute review",
+    title: "Stop chasing the pipeline. Start with a 30-minute review.",
     description:
-      "Answer five questions in about two minutes. Get an indicative leak category and a path to discuss.",
-    auditAction: "Run the free audit",
-    callAction: "Book a call",
+      "We'll map where your pipeline breaks and tell you honestly whether we're the right fit.",
+    buildAction: "Book the review",
+    callAction: "See how it works",
   },
   footer: {
-    description: "AI-run revenue operations for B2B firms.",
+    description: "Outbound systems, automation and revenue operations for B2B teams.",
     links: [
       { label: "AI and data policy", path: "/policy" },
       { label: "Privacy", path: "/privacy", pending: true },
