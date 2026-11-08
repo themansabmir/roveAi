@@ -20,7 +20,7 @@ export async function generateMetadata({
     siteUrl: getSiteUrl(),
     title: "Service details",
     description:
-      "Detailed scopes for Syntropic's outbound, CRM and revenue operations services.",
+      "Detailed scopes for Rivet's outbound, CRM and revenue operations services.",
     path: localePath(locale as Locale, "/services"),
     sanityProjectId: getSanityProjectId(),
     sanityDataset: getSanityDataset(),

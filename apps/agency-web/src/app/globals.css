@@ -1,6 +1,6 @@
 @import "@rove/ui/styles.css";
 
-/* Syntropic design tokens. Emerald = automated flow, amber = a human checkpoint. */
+/* Rivet design tokens. Emerald = automated flow, amber = a human checkpoint. */
 :root {
   --rv-ink: #0b1324;
   --rv-ink-2: #121c31;

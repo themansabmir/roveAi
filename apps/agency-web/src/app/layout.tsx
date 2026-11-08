@@ -6,12 +6,12 @@ import "./globals.css"
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: "Syntropic | Revenue operations for B2B sales teams",
-    template: "%s | Syntropic",
+    default: "Rivet | Revenue operations for B2B sales teams",
+    template: "%s | Rivet",
   },
   description:
-    "Syntropic builds and runs outbound, CRM and pipeline operations for B2B firms that sell through a sales team.",
-  applicationName: "Syntropic",
+    "Rivet builds outbound, CRM and pipeline systems for B2B firms that sell through a sales team.",
+  applicationName: "Rivet",
 }
 
 export const viewport: Viewport = {

@@ -1,8 +1,8 @@
 export const pageContent = {
-  title: "Syntropic | AI + GTM Engineering",
+  title: "Rivet | AI + GTM Engineering",
   description: "",
   text: [
-    "Syntropic",
+    "Rivet",
     "AI + GTM ENGINEERING",
     "What We Build",
     "Solutions",
@@ -41,8 +41,8 @@ export const pageContent = {
     "·",
     "dpo@syntropic.ai",
     "Back to homepage",
-    "Syntropic",
-    "© 2025 Syntropic AI Technologies Inc. All rights reserved.",
+    "Rivet",
+    "© 2025 Rivet. All rights reserved.",
     "Privacy Policy",
     "•",
     "Terms of Service",

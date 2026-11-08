@@ -20,7 +20,7 @@ export async function generateMetadata({
     siteUrl: getSiteUrl(),
     title: "Work",
     description:
-      "Outbound, lead intake and CRM systems Syntropic has built and runs for B2B teams.",
+      "Outbound, lead intake and CRM systems Rivet has built and runs for B2B teams.",
     path: localePath(locale as Locale, "/work"),
     sanityProjectId: getSanityProjectId(),
     sanityDataset: getSanityDataset(),

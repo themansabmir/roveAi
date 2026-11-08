@@ -1,7 +1,7 @@
 export const homeMetadata = {
   title: "Revenue operations for B2B sales teams",
   description:
-    "Syntropic builds and runs outbound, CRM and pipeline operations for B2B firms that sell through a sales team. Agents do the work; a person approves what matters.",
+    "Rivet builds and runs outbound, CRM and pipeline operations for B2B firms that sell through a sales team. Agents do the work; a person approves what matters.",
 } as const
 
 type PathName = "Fix" | "Generate" | "Run"
@@ -286,7 +286,7 @@ export const homeContent = {
   },
   revenueFlow: {
     imageAlt:
-      "Data sources flow into the Syntropic revenue system, which supports qualified opportunities, reliable CRM records, follow-up and customer handoffs.",
+      "Data sources flow into the Rivet revenue system, which supports qualified opportunities, reliable CRM records, follow-up and customer handoffs.",
     ariaLabel: "Revenue workflow inputs, operating system and outputs",
     stages: [
       {
@@ -298,7 +298,7 @@ export const homeContent = {
       {
         id: "system",
         label: "OPERATING SYSTEM",
-        title: "Syntropic revenue system",
+        title: "Rivet revenue system",
         description: "AI agents · connected workflows · human review",
       },
       {
@@ -320,7 +320,7 @@ export const homeContent = {
   },
   positioningStatement: {
     eyebrow: "Why teams choose us",
-    ariaLabel: "How the Syntropic revenue system works",
+    ariaLabel: "How the Rivet revenue system works",
     segments: [
       {
         type: "text",

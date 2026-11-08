@@ -8,6 +8,7 @@ import { HomePage, type HomePost } from "@/components/home/HomePage"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { professionalServiceJsonLd } from "@/lib/seo/agency-jsonld"
 import { homeMetadata } from "@/content/home"
+import { brand } from "@/content/brand"
 import type { Locale } from "@rove/cms/constants"
 
 type Settings = {
@@ -43,10 +44,10 @@ export default async function AgencyHome({ params }: { params: Promise<{ locale:
     <>
       <JsonLd
         data={professionalServiceJsonLd({
-          siteName: "Syntropic",
+          siteName: brand.name,
           business: {
             ...settings?.business,
-            name: "Syntropic",
+            name: brand.name,
             description: homeMetadata.description,
           },
         })}

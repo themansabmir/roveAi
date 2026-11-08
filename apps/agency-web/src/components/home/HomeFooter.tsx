@@ -17,14 +17,14 @@ export function HomeFooter({ locale }: { locale: Locale }) {
         <div className="flex flex-col gap-8 border-b border-slate-800/80 pb-10 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
             <Link
-              aria-label="Syntropic home"
+              aria-label="Rivet home"
               className="flex w-fit items-center gap-2.5"
               href={localePath(locale, "/")}
             >
               <span className="flex h-7 w-7 items-center justify-center rounded bg-blue-600 font-display text-xs font-bold text-white">
                 S
               </span>
-              <span className="font-display text-lg font-bold text-white">Syntropic</span>
+              <span className="font-display text-lg font-bold text-white">Rivet</span>
             </Link>
             <p className="max-w-md text-xs leading-relaxed text-slate-500">
               {homeContent.footer.description}

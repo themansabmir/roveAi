@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { integrations, services, tools, type FlowNode } from "@/content/revops"
+import { brand } from "@/content/brand"
 
 const VB_W = 1000
 const VB_H = 440
@@ -204,7 +205,7 @@ export function StackFlow() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-bright/60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-bright" />
               </span>
-              Built by Syntropic, owned by you
+              Built by {brand.name}, owned by you
             </p>
             <div className="space-y-2">
               {flow.engine.map((node) => (

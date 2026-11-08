@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og"
 
-export const alt = "Syntropic: revenue operations for B2B sales teams"
+export const alt = "Rivet: revenue operations for B2B sales teams"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -24,10 +24,13 @@ export default function OpengraphImage() {
       <div
         style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 32, fontWeight: 600 }}
       >
-        <div
-          style={{ width: 40, height: 40, borderRadius: 8, background: "#ffffff", display: "flex" }}
-        />
-        Syntropic
+        <svg fill="none" height="40" viewBox="0 0 32 32" width="40">
+          <rect fill="#ffffff" height="10" rx="5" width="22" x="2" y="6" />
+          <rect fill="#ffffff" height="10" rx="5" width="22" x="8" y="16" />
+          <circle cx="16" cy="16" fill="#0b1324" r="6" />
+          <circle cx="16" cy="16" fill="#4be0a4" r="4" />
+        </svg>
+        Rivet
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
         <div

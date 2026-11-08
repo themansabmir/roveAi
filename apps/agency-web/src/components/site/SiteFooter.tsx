@@ -3,6 +3,7 @@ import type { Locale } from "@rove/cms/constants"
 import { localePath } from "@/lib/i18n"
 import { footerNav, primaryCta } from "@/components/site/nav"
 import { Wordmark } from "@/components/site/Wordmark"
+import { brand } from "@/content/brand"
 
 export function SiteFooter({ locale }: { locale: Locale }) {
   return (
@@ -40,7 +41,9 @@ export function SiteFooter({ locale }: { locale: Locale }) {
       </div>
       <div className="border-t border-ink-line">
         <div className="rv-container flex flex-col gap-3 py-6 text-xs sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Syntropic</p>
+          <p>
+            © {new Date().getFullYear()} {brand.name}
+          </p>
         </div>
       </div>
     </footer>

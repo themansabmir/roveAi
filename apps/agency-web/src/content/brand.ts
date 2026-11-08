@@ -1,4 +1,4 @@
 export const brand = {
-  name: "Throughline",
+  name: "Rivet",
   tagline: "Revenue operations for B2B sales teams",
 } as const

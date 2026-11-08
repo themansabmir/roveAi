@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react"
 import { problem } from "@/content/revops"
+import { brand } from "@/content/brand"
 
 type Mode = "before" | "after"
 
@@ -148,7 +149,7 @@ export function ProblemShowcase() {
                 />
                 <span className="relative flex items-center gap-2 rounded-2xl border border-brand-bright/40 bg-ink px-4 py-3 text-sm font-semibold text-white shadow-[0_0_40px_-6px_rgb(75_224_164/0.6)]">
                   <span className="h-2 w-2 rounded-full bg-brand-bright" />
-                  Syntropic
+                  {brand.name}
                 </span>
               </div>
             </div>
@@ -215,7 +216,7 @@ export function ProblemShowcase() {
                 onClick={() => choose(value)}
                 type="button"
               >
-                {value === "before" ? "Without a system" : "With Syntropic"}
+                {value === "before" ? "Without a system" : `With ${brand.name}`}
               </button>
             ))}
           </div>

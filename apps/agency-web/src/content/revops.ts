@@ -252,7 +252,7 @@ export const comparison = {
   title: "The other ways to fix your pipeline, side by side.",
   description:
     "Most teams weigh three options: hire, outsource to an agency, or build a system they own. Here's how they compare.",
-  columns: ["Hire in-house", "Typical agency", "Syntropic"],
+  columns: ["Hire in-house", "Typical agency", "Rivet"],
   rows: [
     {
       label: "What you end up with",

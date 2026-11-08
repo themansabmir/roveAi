@@ -40,13 +40,13 @@ function Hero({ locale }: { locale: Locale }) {
           <p className="mt-7 max-w-xl text-lg leading-relaxed text-quiet sm:text-xl">
             {hero.description}
           </p>
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Link className="rv-btn-primary px-6" href={localePath(locale, "/contact")}>
+          <div className="mt-9">
+            <Link
+              className="rv-btn-primary min-h-14 px-8 text-base"
+              href={localePath(locale, "/contact")}
+            >
               {hero.primaryAction}
             </Link>
-            <a className="rv-btn-secondary px-6" href="#how-it-works">
-              {hero.secondaryAction}
-            </a>
           </div>
         </div>
         <div className="lg:col-span-5" style={{ animation: "rv-fade-up 900ms 200ms both" }}>
@@ -362,7 +362,7 @@ function Compare() {
         </div>
 
         <div className="relative mt-14">
-          {/* Highlight behind the Syntropic column on wide screens. */}
+          {/* Highlight behind our column on wide screens. */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-0 right-0 hidden w-[calc(25%+0.5rem)] rounded-3xl border border-brand/30 bg-surface shadow-[0_40px_80px_-40px_rgb(11_122_90/0.45)] md:block"
@@ -495,7 +495,7 @@ function Faq({ locale }: { locale: Locale }) {
             <p className="mt-5 max-w-sm text-lg leading-relaxed text-quiet" data-reveal>
               Can&apos;t find your answer? Ask us directly on a 30-minute call.
             </p>
-            <Link className="rv-btn-secondary mt-8" href={localePath(locale, "/contact")}>
+            <Link className="rv-btn-primary mt-8" href={localePath(locale, "/contact")}>
               Book a 30-minute review
             </Link>
           </div>
