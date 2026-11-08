@@ -8,6 +8,7 @@ import { localePath } from "@/lib/i18n"
 import { PortableTextBlock } from "@/components/sanity/PortableTextBlock"
 import type { Locale } from "@rove/cms/constants"
 import { SiteChrome } from "@/components/site/SiteChrome"
+import { PageIntro } from "@/components/site/PageIntro"
 
 type Doc = {
   title: string
@@ -52,11 +53,16 @@ export default async function BlogPostPage({
 
   return (
     <SiteChrome locale={locale as Locale}>
-      <main className="mx-auto max-w-3xl px-6 py-16">
+      <main>
         <article>
-          <h1 className="text-3xl font-semibold">{doc.title}</h1>
-          <div className="mt-8">
-            <PortableTextBlock value={doc.body} />
+          <PageIntro
+            crumb={{ label: "Insights", href: localePath(locale as Locale, "/blog") }}
+            title={doc.title}
+          />
+          <div className="rv-container py-16">
+            <div className="rv-prose">
+              <PortableTextBlock value={doc.body} />
+            </div>
           </div>
         </article>
       </main>

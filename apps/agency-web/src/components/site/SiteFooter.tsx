@@ -1,39 +1,47 @@
 import Link from "next/link"
 import type { Locale } from "@rove/cms/constants"
 import { localePath } from "@/lib/i18n"
-
-const links = [
-  { label: "Services", path: "/what-we-build" },
-  { label: "How it works", path: "/how-it-works" },
-  { label: "About", path: "/about" },
-  { label: "FAQ", path: "/how-it-works#faq-section" },
-  { label: "Contact", path: "/contact" },
-]
+import { footerNav, primaryCta } from "@/components/site/nav"
+import { Wordmark } from "@/components/site/Wordmark"
 
 export function SiteFooter({ locale }: { locale: Locale }) {
   return (
-    <footer className="border-t border-slate-800 bg-[#070A12] text-slate-400">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-        <Link className="flex items-center gap-2.5" href={localePath(locale, "/")}>
-          <span className="flex h-7 w-7 items-center justify-center rounded bg-blue-600 font-display text-xs font-bold text-white">
-            S
-          </span>
-          <span className="font-display text-base font-bold text-white">Syntropic</span>
-        </Link>
-        <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
-          {links.map(({ label, path }) => (
-            <Link
-              className="transition-colors hover:text-white"
-              href={localePath(locale, path)}
-              key={path}
-            >
-              {label}
-            </Link>
-          ))}
-          <Link className="transition-colors hover:text-white" href={localePath(locale, "/policy")}>
-            Policies and outbound standards
+    <footer className="bg-ink text-ink-muted">
+      <div className="rv-container grid gap-12 py-16 lg:grid-cols-12 lg:py-20">
+        <div className="space-y-5 lg:col-span-5">
+          <Wordmark locale={locale} tone="light" />
+          <p className="max-w-sm text-sm leading-relaxed">
+            Outbound systems, CRM automation and revenue operations for B2B teams that sell through
+            a sales team.
+          </p>
+          <Link className="rv-btn-on-dark" href={localePath(locale, primaryCta.path)}>
+            {primaryCta.label}
           </Link>
+        </div>
+        <nav aria-label="Footer" className="grid gap-10 sm:grid-cols-3 lg:col-span-7">
+          {footerNav.map((group) => (
+            <div key={group.title}>
+              <h2 className="text-sm font-semibold text-white">{group.title}</h2>
+              <ul className="mt-4 space-y-3 text-sm">
+                {group.links.map((link) => (
+                  <li key={link.path}>
+                    <Link
+                      className="transition-colors hover:text-white"
+                      href={localePath(locale, link.path)}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
+      </div>
+      <div className="border-t border-ink-line">
+        <div className="rv-container flex flex-col gap-3 py-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Syntropic</p>
+        </div>
       </div>
     </footer>
   )

@@ -1,33 +1,36 @@
-import { Inter, JetBrains_Mono, Newsreader, Plus_Jakarta_Sans } from "next/font/google"
+import { Bricolage_Grotesque, Geist, Geist_Mono, Newsreader } from "next/font/google"
 
-const inter = Inter({
+// Variable names are kept stable because every page module references them.
+const body = Geist({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-home-inter",
+  display: "swap",
 })
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const display = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  axes: ["opsz", "wdth"],
   variable: "--font-home-display",
+  display: "swap",
 })
 
 const newsreader = Newsreader({
   subsets: ["latin"],
   style: ["italic"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
   variable: "--font-home-editorial",
+  display: "swap",
 })
 
-const jetBrainsMono = JetBrains_Mono({
+const mono = Geist_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
   variable: "--font-home-mono",
+  display: "swap",
 })
 
 export const geminiFontClasses = [
-  inter.variable,
-  plusJakartaSans.variable,
+  body.variable,
+  display.variable,
   newsreader.variable,
-  jetBrainsMono.variable,
+  mono.variable,
 ].join(" ")

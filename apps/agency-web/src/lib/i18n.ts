@@ -6,7 +6,9 @@ export function isValidLocale(value: string): value is Locale {
 }
 
 export function localePath(locale: Locale, path: string): string {
-  const normalized = path.startsWith("/") ? path : `/${path}`
+  const [pathname = "/", hash] = path.split("#")
+  const normalized = pathname.startsWith("/") ? pathname : `/${pathname}`
   const canonicalPath = getCanonicalSitePath(normalized)
-  return `/${locale}${canonicalPath === "/" ? "" : canonicalPath}`
+  const fragment = hash ? `#${hash}` : ""
+  return `/${locale}${canonicalPath === "/" ? "" : canonicalPath}${fragment}`
 }

@@ -9,6 +9,7 @@ import { SectionRenderer } from "@/components/sections/SectionRenderer"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { serviceJsonLd } from "@/lib/seo/agency-jsonld"
 import { SiteChrome } from "@/components/site/SiteChrome"
+import { PageIntro } from "@/components/site/PageIntro"
 import type { Locale } from "@rove/cms/constants"
 import type { CmsSection } from "@rove/cms/types"
 
@@ -55,11 +56,14 @@ export default async function ServicePage({
 
   return (
     <SiteChrome locale={locale as Locale}>
-      <main className="mx-auto max-w-3xl px-6 py-16">
+      <main>
         <JsonLd data={serviceJsonLd(doc)} />
-        <h1 className="text-3xl font-semibold">{doc.title}</h1>
-        {doc.summary ? <p className="mt-3 text-muted-foreground">{doc.summary}</p> : null}
-        <div className="mt-10">
+        <PageIntro
+          crumb={{ label: "Services", href: localePath(locale as Locale, "/what-we-build") }}
+          description={doc.summary}
+          title={doc.title}
+        />
+        <div className="rv-container py-16">
           <SectionRenderer sections={doc.sections} />
         </div>
       </main>

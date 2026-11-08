@@ -10,7 +10,7 @@ export const publicSitePages = [
   {
     slug: "how-it-works",
     pageSlug: "faq",
-    title: "How It Works",
+    title: "How it works",
     description: "How engagements, human review, and ongoing operations work.",
   },
   {
@@ -22,13 +22,13 @@ export const publicSitePages = [
   {
     slug: "contact",
     pageSlug: "build-system",
-    title: "Get Started",
+    title: "Get started",
     description: "Start a conversation about your pipeline and CRM.",
   },
   {
     slug: "policy",
     pageSlug: "policy",
-    title: "Policies and Outbound Standards",
+    title: "Policies and outbound standards",
     description: "Data handling and outbound delivery standards.",
   },
 ] as const satisfies readonly {

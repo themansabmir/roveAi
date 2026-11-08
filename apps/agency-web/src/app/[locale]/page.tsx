@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import { agencySiteSettingsQuery } from "@rove/cms/queries"
+import { agencyBlogPostsQuery, agencySiteSettingsQuery } from "@rove/cms/queries"
 import { mapSeoToMetadata } from "@rove/cms/seo"
 import { sanityFetch } from "@/lib/sanity/fetch"
 import { getSanityDataset, getSanityProjectId, getSiteUrl, isSanityConfigured } from "@/lib/env"
 import { localePath } from "@/lib/i18n"
-import { HomePage } from "@/components/home/HomePage"
+import { HomePage, type HomePost } from "@/components/home/HomePage"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { professionalServiceJsonLd } from "@/lib/seo/agency-jsonld"
 import { homeMetadata } from "@/content/home"
@@ -32,9 +32,12 @@ export async function generateMetadata({
 
 export default async function AgencyHome({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  const settings = isSanityConfigured()
-    ? await sanityFetch<Settings>({ query: agencySiteSettingsQuery })
-    : null
+  const [settings, posts] = isSanityConfigured()
+    ? await Promise.all([
+        sanityFetch<Settings>({ query: agencySiteSettingsQuery }),
+        sanityFetch<HomePost[]>({ query: agencyBlogPostsQuery, params: { start: 0, end: 3 } }),
+      ])
+    : [null, null]
 
   return (
     <>
@@ -48,7 +51,7 @@ export default async function AgencyHome({ params }: { params: Promise<{ locale:
           },
         })}
       />
-      <HomePage locale={locale as Locale} />
+      <HomePage locale={locale as Locale} posts={posts ?? []} />
     </>
   )
 }

@@ -9,6 +9,7 @@ import { localePath } from "@/lib/i18n"
 import { SectionRenderer } from "@/components/sections/SectionRenderer"
 import { GeminiSitePage } from "@/components/gemini/GeminiSite"
 import { SiteChrome } from "@/components/site/SiteChrome"
+import { PageIntro } from "@/components/site/PageIntro"
 import { geminiPages } from "@/content/geminiPages"
 import {
   getLegacySiteRoute,
@@ -43,24 +44,21 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>
 }): Promise<Metadata> {
   const { locale, slug } = await params
-  const publicPage = getPublicSitePage(slug)
-  if (publicPage) {
-    return {
-      title: `Syntropic | ${publicPage.title}`,
-      description: publicPage.description,
-    }
-  }
   const legacyTarget = getLegacySiteRoute(slug)
-  const legacyPage = legacyTarget ? getPublicSitePage(legacyTarget) : undefined
-  if (legacyPage) {
-    return {
-      title: `Syntropic | ${legacyPage.title}`,
-      description: legacyPage.description,
-    }
+  const publicPage = getPublicSitePage(legacyTarget ?? slug)
+  if (publicPage) {
+    return mapSeoToMetadata(null, {
+      siteUrl: getSiteUrl(),
+      title: publicPage.title,
+      description: publicPage.description,
+      path: localePath(locale as Locale, `/${publicPage.slug}`),
+      sanityProjectId: getSanityProjectId(),
+      sanityDataset: getSanityDataset(),
+    })
   }
-  if (reserved.has(slug)) return { title: "Not found" }
+  if (reserved.has(slug)) return { title: "Page not found" }
   const doc = await sanityFetch<Doc>({ query: agencyPageBySlugQuery, params: { slug } })
-  if (!doc) return { title: "Page" }
+  if (!doc) return { title: "Page not found", robots: { index: false, follow: true } }
   return mapSeoToMetadata(doc.seo, {
     siteUrl: getSiteUrl(),
     title: doc.title,
@@ -88,9 +86,9 @@ export default async function AgencyCmsPage({
 
   return (
     <SiteChrome locale={locale as Locale}>
-      <main className="mx-auto max-w-3xl px-6 py-16">
-        <h1 className="text-3xl font-semibold">{doc.title}</h1>
-        <div className="mt-10">
+      <main>
+        <PageIntro title={doc.title} />
+        <div className="rv-container py-16">
           <SectionRenderer sections={doc.sections} />
         </div>
       </main>

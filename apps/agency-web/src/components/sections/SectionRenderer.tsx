@@ -37,7 +37,7 @@ export function SectionRenderer({ sections }: { sections?: CmsSection[] | null }
                   </span>
                 ) : null}
                 {section.heading ? (
-                  <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{section.heading}</h1>
+                  <h2 className="rv-heading text-4xl sm:text-5xl">{section.heading}</h2>
                 ) : null}
                 {section.subheading ? (
                   <p className="max-w-2xl text-lg text-muted-foreground">{section.subheading}</p>
@@ -81,7 +81,7 @@ export function SectionRenderer({ sections }: { sections?: CmsSection[] | null }
             )
           case "richTextBlock":
             return (
-              <section key={index} className="prose prose-neutral dark:prose-invert max-w-none">
+              <section key={index} className="rv-prose">
                 <PortableTextBlock value={section.body} />
               </section>
             )

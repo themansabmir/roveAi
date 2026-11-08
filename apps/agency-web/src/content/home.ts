@@ -1,6 +1,7 @@
 export const homeMetadata = {
-  title: "Syntropic | Revenue operations",
-  description: "Revenue operations run by AI agents for B2B firms that sell through a sales team.",
+  title: "Revenue operations for B2B sales teams",
+  description:
+    "Syntropic builds and runs outbound, CRM and pipeline operations for B2B firms that sell through a sales team. Agents do the work; a person approves what matters.",
 } as const
 
 type PathName = "Fix" | "Generate" | "Run"
@@ -44,6 +45,8 @@ type HomeContent = {
     brands: {
       id: string
       name: string
+      /** Optional logo path (e.g. /logos/acme.svg); the name is shown as a wordmark when absent. */
+      logo?: string
     }[]
   }
   positioningStatement: {
@@ -712,48 +715,74 @@ export const homeContent = {
   },
   faq: {
     eyebrow: "FAQ",
-    title: "Questions buyers actually ask.",
+    title: "Questions we hear on every first call.",
     boundary: "US contacts only. See our AI and data policy for details.",
     items: [
       {
         id: "what-buying",
-        question: "What exactly are we buying?",
+        question: "What exactly do we get?",
         answer:
-          "A working outbound and CRM system, and the operator who supervises it. Not a licence or a block of hours.",
+          "A working revenue system built inside your own accounts: outbound, reply handling, CRM and follow-up, connected end to end. You also get documentation for every workflow and a 30-day handover, so your team can run it without us.",
+      },
+      {
+        id: "one-time",
+        question: "Is this a one-time project or an ongoing retainer?",
+        answer:
+          "A one-time build. We scope it, build it, run it alongside your team and hand it over. If you'd like us to keep operating it afterwards we can, but the system doesn't depend on us to keep working.",
+      },
+      {
+        id: "cost",
+        question: "How much does it cost?",
+        answer:
+          "It depends on which systems you need and the state of your CRM and data. We scope it together on a 30-minute call and confirm a fixed price in writing before any work starts. Tools are billed to your own accounts, so there's no markup.",
+      },
+      {
+        id: "fit",
+        question: "Who is this built for?",
+        answer:
+          "B2B firms of roughly 10–50 people, with a named person who takes sales meetings and deals worth well over $10k. We aren't a fit for B2C, or for anyone expecting guaranteed revenue.",
+      },
+      {
+        id: "timing",
+        question: "How long until it's live?",
+        answer:
+          "Your written scope includes the timeline. New domains and inboxes need a 2–4 week warm-up before sending starts, and we run that in parallel with the rest of the build.",
       },
       {
         id: "salesperson",
-        question: "Do we still need a closer?",
-        answer: "Yes. We book the meetings. Your team takes them and closes.",
+        question: "Do we still need a salesperson?",
+        answer:
+          "Yes. The system finds the accounts, starts the conversations and books the meetings. Your team takes those meetings and closes the deals.",
       },
       {
         id: "brand-risk",
-        question: "Will AI outreach hurt my brand?",
+        question: "Will AI-written outreach hurt our brand?",
         answer:
-          "Every new template is approved before it sends. Every message is reviewed for the first 30 days. After that, we review a weekly sample.",
+          "Not without a person seeing it first. You approve every new template before it sends, every message is reviewed for the first 30 days, and after that a weekly sample is checked. Any flagged message is pulled.",
       },
       {
         id: "ownership",
-        question: "Who owns the accounts and tools?",
+        question: "Who owns the accounts, data and workflows?",
         answer:
-          "You do. Domains, inboxes, CRM records and campaign copy stay in your accounts. Third-party tools are licensed to you directly.",
+          "You do. Domains, inboxes, CRM records, campaign copy and the workflows we build all live in your accounts. Tools such as Clay and your sending platform are licensed to you directly.",
       },
       {
-        id: "stopping",
-        question: "What if we stop?",
-        answer: "You keep everything you own, plus the documentation and the 30-day handover.",
+        id: "after-handover",
+        question: "What happens after the handover?",
+        answer:
+          "The system keeps running in your accounts. Your team has the documentation and the walkthrough to adjust targeting, templates and reports on their own.",
       },
       {
-        id: "meetings-timing",
-        question: "How soon do meetings start?",
+        id: "tools",
+        question: "Which tools do you work with?",
         answer:
-          "Sending starts after a 2–4 week warm-up of your domains and inboxes. Your first review shows what's working.",
+          "HubSpot and Pipedrive for CRM, Clay and Apollo for data, Instantly for sending, n8n or Make for automation, Claude or OpenAI for AI, and Slack for alerts. If you already run something else, we'll tell you on the call whether it fits.",
       },
       {
         id: "compliance",
-        question: "Is it compliant?",
+        question: "Is the outreach compliant?",
         answer:
-          "We send to US contacts only, include a working opt-out and a physical address in every email, and honour unsubscribes within 24 hours. The full policy is linked below.",
+          "We contact US recipients only. Every email has a working opt-out and a physical address, and unsubscribes are honoured within 24 hours. Our AI and data policy has the full detail.",
       },
     ],
   },

@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${siteUrl}${localePath(loc, "/")}`, lastModified: now },
-    { url: `${siteUrl}${localePath(loc, "/services")}`, lastModified: now },
+    { url: `${siteUrl}${localePath(loc, "/work")}`, lastModified: now },
     ...publicSitePages.map(({ slug }) => ({
       url: `${siteUrl}${localePath(loc, `/${slug}`)}`,
       lastModified: now,
@@ -34,8 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticRoutes,
-    ...(entries?.caseStudies?.length
-      ? [{ url: `${siteUrl}${localePath(loc, "/work")}`, lastModified: now }]
+    ...(entries?.services?.length
+      ? [{ url: `${siteUrl}${localePath(loc, "/services")}`, lastModified: now }]
       : []),
     ...(entries?.posts?.length
       ? [{ url: `${siteUrl}${localePath(loc, "/blog")}`, lastModified: now }]
