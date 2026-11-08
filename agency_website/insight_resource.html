@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Newsreader:ital,wght@1,400&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"background":"#0f131d","surface-variant":"#313540","tertiary":"#d0bcff","on-tertiary-fixed-variant":"#5516be","on-tertiary":"#3c0091","on-primary-fixed-variant":"#004395","surface-tint":"#adc6ff","tertiary-fixed":"#e9ddff","primary-fixed":"#d8e2ff","primary-fixed-dim":"#adc6ff","surface":"#0f131d","surface-dim":"#0f131d","error":"#ffb4ab","surface-container":"#1c1f2a","on-primary":"#002e6a","secondary":"#c0c1ff","on-background":"#dfe2f1","secondary-container":"#3131c0","surface-container-lowest":"#0a0e18","inverse-on-surface":"#2c303b","surface-bright":"#353944","on-secondary-container":"#b0b2ff","inverse-primary":"#005ac2","inverse-surface":"#dfe2f1","secondary-fixed":"#e1e0ff","on-surface":"#dfe2f1","on-error":"#690005","on-tertiary-container":"#340080","surface-container-high":"#262a35","error-container":"#93000a","tertiary-fixed-dim":"#d0bcff","primary-container":"#4d8eff","surface-container-low":"#171b26","on-secondary-fixed":"#07006c","secondary-fixed-dim":"#c0c1ff","on-error-container":"#ffdad6","outline-variant":"#424754","tertiary-container":"#a078ff","on-tertiary-fixed":"#23005c","outline":"#8c909f","primary":"#adc6ff","on-secondary":"#1000a9","on-surface-variant":"#c2c6d6","on-primary-fixed":"#001a42","on-primary-container":"#00285d","on-secondary-fixed-variant":"#2f2ebe","surface-container-highest":"#313540"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin-lg":"6rem","margin":"1.5rem","space-md":"1rem","space-xl":"2.5rem","space-3xl":"6rem","space-sm":"0.5rem","gutter":"1.5rem","gutter-sm":"1rem","space-lg":"1.5rem","space-2xl":"4rem","margin-md":"3rem","gutter-lg":"2rem","space-xs":"0.25rem"},fontFamily:{"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"display-xl-mobile":["Plus Jakarta Sans"],"label-mono-md":["JetBrains Mono"],"editorial-italic":["Newsreader"],"body-lg":["Inter"],"headline-sm":["Plus Jakarta Sans"],"body-md":["Inter"],"label-ui":["Inter"],"display-lg-mobile":["Plus Jakarta Sans"],"label-mono-sm":["JetBrains Mono"],"body-sm":["Inter"],"display-xl":["Plus Jakarta Sans"]},fontSize:{"headline-md":["28px",{"lineHeight":"36px","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"600"}],"headline-lg-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.015em","fontWeight":"600"}],"display-lg":["56px",{"lineHeight":"64px","letterSpacing":"-0.025em","fontWeight":"600"}],"display-xl-mobile":["40px",{"lineHeight":"48px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-mono-md":["13px",{"lineHeight":"18px","letterSpacing":"0.02em","fontWeight":"500"}],"editorial-italic":["24px",{"lineHeight":"34px","letterSpacing":"-0.005em","fontWeight":"400"}],"body-lg":["18px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-sm":["22px",{"lineHeight":"30px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-md":["15px",{"lineHeight":"24px","letterSpacing":"-0.005em","fontWeight":"400"}],"label-ui":["12px",{"lineHeight":"16px","letterSpacing":"0.01em","fontWeight":"600"}],"display-lg-mobile":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"600"}],"label-mono-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"500"}],"body-sm":["13px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"400"}],"display-xl":["72px",{"lineHeight":"80px","letterSpacing":"-0.03em","fontWeight":"700"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-7xl mx-auto px-margin-md flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><a class="flex items-center gap-space-sm" data-path="home" href="#"><span class="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight">Syntropic</span></a><div class="hidden sm:flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span><span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-primary">AI + GTM ENGINEERING</span></div></div><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="text-on-surface bg-surface-container-high font-semibold rounded-lg"><a class="px-space-sm py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="what-we-build" href="#">What We Build</a><a class="px-space-sm py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="how-it-works" href="#">How It Works</a><a class="px-space-sm py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="work" href="#">Work</a><a class="px-space-sm py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="ai-agents" href="#">AI Agents</a><a aria-current="page" class="px-space-sm py-1.5 transition-all text-on-surface bg-surface-container-high font-semibold rounded-lg" data-path="resources" href="#">Resources</a><a class="px-space-sm py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="about" href="#">About</a></nav><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center gap-space-xs px-space-lg py-2.5 rounded-full bg-primary-container text-on-primary-container font-label-ui text-label-ui hover:bg-primary hover:text-on-primary transition-all shadow-[0_0_20px_-4px_rgba(77,142,255,0.4)]" data-path="book-discovery" href="#"><span class="tracking-wide">Book a Discovery</span><span class="material-symbols-outlined text-base">arrow_forward</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-background"><div class="flex flex-col w-full">
+<!-- SECTION 1: HERO (LIGHT OFF-WHITE DOMINANT CANVAS) -->
+<section class="relative w-full bg-[#FBFBFC] text-[#070A12] px-margin md:px-margin-md lg:px-margin-lg pt-12 pb-space-2xl overflow-hidden">
+<!-- Architectural Micro-Grid Background -->
+<div class="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
+<div class="relative max-w-7xl mx-auto flex flex-col items-start gap-space-lg">
+<!-- Eyebrow Pill -->
+<div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-white shadow-sm border border-slate-200/80">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-slate-700 font-semibold">INSIGHTS &amp; RESOURCES</span>
+</div>
+<!-- Main Headline & Subtitle -->
+<div class="max-w-4xl flex flex-col gap-space-sm">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-slate-950 font-bold tracking-tight">
+          Ideas for building a <span class="font-editorial-italic italic font-normal text-slate-800">smarter revenue system.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-slate-600 max-w-2xl leading-relaxed">
+          Practical thinking on AI, GTM engineering, RevOps, automation and the systems connecting them. Engineered for compound pipeline velocity.
+        </p>
+</div>
+<!-- Dual Actions -->
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs">
+<a class="inline-flex items-center gap-space-xs px-6 py-3 rounded-full bg-[#1746B3] text-white font-label-ui text-label-ui hover:bg-[#123996] transition-all shadow-md shadow-blue-900/10 hover:shadow-lg" href="#featured">
+<span>Explore insights</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-space-xs px-6 py-3 rounded-full bg-white text-slate-700 font-label-ui text-label-ui border border-slate-200 hover:bg-slate-50 transition-all shadow-sm" href="#the-signal">
+<span>Get the latest</span>
+<span class="material-symbols-outlined text-sm">notifications</span>
+</a>
+</div>
+<!-- Telemetry Pipeline Preview Widget -->
+<div class="w-full mt-space-md p-space-md rounded-2xl bg-white border border-slate-200/80 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.06)] flex flex-col lg:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container">hub</span>
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-widest text-slate-500 font-semibold">TELEMETRY_PIPELINE:</span>
+<span class="font-label-mono-sm text-label-mono-sm text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">SYS_OK · 12ms</span>
+</div>
+<!-- Node Chain -->
+<div class="flex flex-wrap items-center gap-space-xs sm:gap-space-sm font-label-mono-sm text-label-mono-sm text-slate-600">
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200/60">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+<span class="font-semibold text-slate-800">01_INGEST</span>
+<span class="text-slate-400">48.2k Ev/s</span>
+</div>
+<span class="text-slate-300 font-bold">→</span>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200/60">
+<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+<span class="font-semibold text-slate-800">02_SYNTHESIS</span>
+<span class="text-slate-400">LLM-Deterministic</span>
+</div>
+<span class="text-slate-300 font-bold">→</span>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200/60">
+<span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
+<span class="font-semibold text-slate-800">03_SPEC_GEN</span>
+<span class="text-emerald-600 font-medium">99.8% Conf.</span>
+</div>
+</div>
+<div class="hidden xl:flex items-center gap-2 text-slate-400 font-label-mono-sm text-label-mono-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span>DETERMINISTIC VERIFICATION ACTIVE</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: FEATURED INSIGHT -->
+<section class="w-full bg-[#F4F5F8] text-[#070A12] px-margin md:px-margin-md lg:px-margin-lg py-space-2xl border-t border-slate-200/70" id="featured">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-lg">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="px-2.5 py-1 rounded bg-[#070A12] text-white font-label-mono-sm text-label-mono-sm font-semibold tracking-wider">FEATURED</span>
+<span class="px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 font-label-mono-sm text-label-mono-sm font-semibold">AI SYSTEMS</span>
+</div>
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">VOL. 04 / ISSUE 12</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-lg items-stretch">
+<!-- Article Narrative (Left Col: 5 cols) -->
+<div class="lg:col-span-5 bg-white p-space-xl rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-slate-950 font-bold leading-tight tracking-tight">
+              Where AI actually creates leverage inside a revenue team.
+            </h2>
+<p class="font-body-md text-body-md text-slate-600 leading-relaxed">
+              Not every workflow needs an agent. Not every bottleneck needs automation. Here's how to identify the precise structural inflection points where AI can create meaningful operational leverage without degrading CRM integrity.
+            </p>
+</div>
+<div class="pt-space-xl border-t border-slate-100 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-400 uppercase">Estimated Reading</span>
+<span class="font-body-sm text-body-sm font-medium text-slate-700">8 min read · RevOps Architecture</span>
+</div>
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-900 text-white font-label-ui text-label-ui hover:bg-slate-800 transition-colors" href="#">
+<span>Read Spec</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Interactive Software System Diagram (Right Col: 7 cols) -->
+<div class="lg:col-span-7 bg-[#0B0F19] p-space-lg md:p-space-xl rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between pb-space-md border-b border-slate-800/80">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+<span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+<span class="w-3 h-3 rounded-full bg-green-500/80"></span>
+<span class="font-label-mono-sm text-label-mono-sm text-slate-400 ml-2">ARCH_SCHEMATIC: GTM_REVENUE_CORE_V3</span>
+</div>
+<div class="flex items-center gap-2 font-label-mono-sm text-label-mono-sm text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span>LIVE_EXEC</span>
+</div>
+</div>
+<!-- Flow Pipeline Nodes -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-3 py-space-xl relative">
+<!-- Node 1: DATA -->
+<div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col gap-2 relative group hover:border-blue-500/50 transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-blue-400 font-bold tracking-wider">01 // DATA</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">database</span>
+</div>
+<p class="font-label-mono-sm text-label-mono-sm text-slate-300 font-medium">Raw Telemetry</p>
+<ul class="font-label-mono-sm text-[10px] text-slate-400 space-y-1">
+<li>• CRM Ingestion</li>
+<li>• 6sense Intent</li>
+<li>• Call Audio Transcripts</li>
+</ul>
+<div class="mt-2 text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-1.5 py-0.5 rounded">STREAM ACTIVE</div>
+</div>
+<!-- Node 2: DECISION -->
+<div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col gap-2 relative group hover:border-indigo-500/50 transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-indigo-400 font-bold tracking-wider">02 // DECISION</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">psychology</span>
+</div>
+<p class="font-label-mono-sm text-label-mono-sm text-slate-300 font-medium">Deterministic Logic</p>
+<ul class="font-label-mono-sm text-[10px] text-slate-400 space-y-1">
+<li>• Strict ICP Gate</li>
+<li>• Churn Vulnerability</li>
+<li>• Account Scoring</li>
+</ul>
+<div class="mt-2 text-[10px] font-mono text-blue-400 bg-blue-950/40 px-1.5 py-0.5 rounded">P(&gt;0.89) PASS</div>
+</div>
+<!-- Node 3: ACTION -->
+<div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col gap-2 relative group hover:border-violet-500/50 transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-violet-400 font-bold tracking-wider">03 // ACTION</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">bolt</span>
+</div>
+<p class="font-label-mono-sm text-label-mono-sm text-slate-300 font-medium">Autonomous Ops</p>
+<ul class="font-label-mono-sm text-[10px] text-slate-400 space-y-1">
+<li>• Contextual Outreach</li>
+<li>• AE Calendar Sync</li>
+<li>• Dynamic Pitch Gen</li>
+</ul>
+<div class="mt-2 text-[10px] font-mono text-purple-400 bg-purple-950/40 px-1.5 py-0.5 rounded">RATE 140/MIN</div>
+</div>
+<!-- Node 4: FEEDBACK -->
+<div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col gap-2 relative group hover:border-emerald-500/50 transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-emerald-400 font-bold tracking-wider">04 // FEEDBACK</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">sync</span>
+</div>
+<p class="font-label-mono-sm text-label-mono-sm text-slate-300 font-medium">Model Calibration</p>
+<ul class="font-label-mono-sm text-[10px] text-slate-400 space-y-1">
+<li>• Won/Lost Correlation</li>
+<li>• Drift Detection</li>
+<li>• Param Optimization</li>
+</ul>
+<div class="mt-2 text-[10px] font-mono text-cyan-400 bg-cyan-950/40 px-1.5 py-0.5 rounded">DELTA: +24.1%</div>
+</div>
+</div>
+<!-- Bottom Micro Console Telemetry -->
+<div class="bg-black/50 p-space-sm rounded-lg border border-slate-800/80 font-label-mono-sm text-label-mono-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-slate-400">
+<span class="text-xs text-slate-300 font-mono"><span class="text-primary-container">&gt;</span> [SYNTROPIC_DAEMON] Pipeline latency: 11.4ms · Zero Hallucination Guarantee Enabled</span>
+<span class="text-[11px] text-slate-500 uppercase">STABLE BUILD 4.9.1</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: EXPLORE BY TOPIC -->
+<section class="w-full bg-[#FBFBFC] text-[#070A12] px-margin md:px-margin-md lg:px-margin-lg py-space-2xl border-t border-slate-200">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div>
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-primary-container font-semibold">TAXONOMY</span>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-slate-950 font-bold tracking-tight">
+            Explore what you're solving for.
+          </h2>
+</div>
+<p class="font-body-md text-body-md text-slate-500 max-w-md">
+          Structured repositories indexed across core operational disciplines and technical infrastructure.
+        </p>
+</div>
+<!-- 3x2 Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Topic 1 -->
+<a class="group p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary-container text-2xl">memory</span>
+<span class="font-label-mono-sm text-label-mono-sm px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">18 PAPERS</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 group-hover:text-primary-container transition-colors font-semibold">AI SYSTEMS</h3>
+<p class="font-body-sm text-body-sm text-slate-500">Autonomous agents, deterministic intelligence layers, and enterprise LLM production deployments.</p>
+</div>
+<div class="flex items-center gap-1 font-label-mono-sm text-label-mono-sm text-slate-700 font-medium group-hover:text-primary-container">
+<span>Query collection</span>
+<span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Topic 2 -->
+<a class="group p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary-container text-2xl">terminal</span>
+<span class="font-label-mono-sm text-label-mono-sm px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">24 PAPERS</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 group-hover:text-primary-container transition-colors font-semibold">GTM ENGINEERING</h3>
+<p class="font-body-sm text-body-sm text-slate-500">Deterministic buying signals, modern outbound pipelines, and programmable prospect routing engines.</p>
+</div>
+<div class="flex items-center gap-1 font-label-mono-sm text-label-mono-sm text-slate-700 font-medium group-hover:text-primary-container">
+<span>Query collection</span>
+<span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Topic 3 -->
+<a class="group p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary-container text-2xl">account_tree</span>
+<span class="font-label-mono-sm text-label-mono-sm px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">15 PAPERS</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 group-hover:text-primary-container transition-colors font-semibold">REVOPS</h3>
+<p class="font-body-sm text-body-sm text-slate-500">Canonical data modeling, clean CRM architecture, and enterprise operational infrastructure integrity.</p>
+</div>
+<div class="flex items-center gap-1 font-label-mono-sm text-label-mono-sm text-slate-700 font-medium group-hover:text-primary-container">
+<span>Query collection</span>
+<span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Topic 4 -->
+<a class="group p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary-container text-2xl">alt_route</span>
+<span class="font-label-mono-sm text-label-mono-sm px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">19 PAPERS</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 group-hover:text-primary-container transition-colors font-semibold">AUTOMATION</h3>
+<p class="font-body-sm text-body-sm text-slate-500">Resilient event busses and execution pipelines that eliminate manual drudgery without state corruption.</p>
+</div>
+<div class="flex items-center gap-1 font-label-mono-sm text-label-mono-sm text-slate-700 font-medium group-hover:text-primary-container">
+<span>Query collection</span>
+<span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Topic 5 -->
+<a class="group p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary-container text-2xl">insights</span>
+<span class="font-label-mono-sm text-label-mono-sm px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">12 PAPERS</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 group-hover:text-primary-container transition-colors font-semibold">REVENUE INTELLIGENCE</h3>
+<p class="font-body-sm text-body-sm text-slate-500">Synthesizing disparate call logs, product telemetry, and billing records into predictive revenue decisions.</p>
+</div>
+<div class="flex items-center gap-1 font-label-mono-sm text-label-mono-sm text-slate-700 font-medium group-hover:text-primary-container">
+<span>Query collection</span>
+<span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Topic 6 -->
+<a class="group p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary-container text-2xl">code_blocks</span>
+<span class="font-label-mono-sm text-label-mono-sm px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">21 PAPERS</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 group-hover:text-primary-container transition-colors font-semibold">BUILDING</h3>
+<p class="font-body-sm text-body-sm text-slate-500">Unfiltered code, architectural trade-offs, schemas, and lessons extracted from systems shipped to production.</p>
+</div>
+<div class="flex items-center gap-1 font-label-mono-sm text-label-mono-sm text-slate-700 font-medium group-hover:text-primary-container">
+<span>Query collection</span>
+<span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- SECTION 4: LATEST THINKING (EDITORIAL GRID) -->
+<section class="w-full bg-[#F4F5F8] text-[#070A12] px-margin md:px-margin-md lg:px-margin-lg py-space-2xl border-t border-slate-200">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-slate-500 font-semibold">CHRONOLOGICAL DISPATCHES</span>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-slate-950 font-bold tracking-tight">
+            Latest thinking
+          </h2>
+</div>
+<a class="hidden sm:inline-flex items-center gap-1 font-label-mono-sm text-label-mono-sm text-slate-700 hover:text-primary-container font-semibold" href="#">
+<span>VIEW FULL ARCHIVE (72)</span>
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div>
+<!-- 6 Clean Editorial Cards (High-contrast, zero stock imagery) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Article 1 -->
+<article class="p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-slate-500">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">GTM ENGINEERING</span>
+<span class="font-label-mono-sm text-label-mono-sm">OCT 24, 2025</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 font-semibold leading-snug">
+              The Fallacy of Volume: Why 1,000 Signal-Driven Accounts Outperform 50,000 Scraped Leads
+            </h3>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-3">
+              Spam-cannon outbound is mathematically dead. An exhaustive statistical teardown of how hyper-specific intent triggers yield 7.4x higher pipeline value.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-slate-100 flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">4 min read</span>
+<a class="font-label-ui text-label-ui text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1" href="#">Read article →</a>
+</div>
+</article>
+<!-- Article 2 -->
+<article class="p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-slate-500">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">AI SYSTEMS</span>
+<span class="font-label-mono-sm text-label-mono-sm">OCT 18, 2025</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 font-semibold leading-snug">
+              Designing Human-in-the-Loop Thresholds for Autonomous Inbound Routing
+            </h3>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-3">
+              Full autonomy without sanity boundaries destroys deal velocity. Here is the operational framework for probabilistic confidence gating in routing.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-slate-100 flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">6 min read</span>
+<a class="font-label-ui text-label-ui text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1" href="#">Read article →</a>
+</div>
+</article>
+<!-- Article 3 -->
+<article class="p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-slate-500">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">REVOPS</span>
+<span class="font-label-mono-sm text-label-mono-sm">OCT 11, 2025</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 font-semibold leading-snug">
+              Deterministic vs. Probabilistic CRM Hygiene in the Age of LLMs
+            </h3>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-3">
+              Why relying on LLMs to freely write schema attributes turns Salesforce into an unindexable swamp, and how deterministic regex validation solves it.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-slate-100 flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">5 min read</span>
+<a class="font-label-ui text-label-ui text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1" href="#">Read article →</a>
+</div>
+</article>
+<!-- Article 4 -->
+<article class="p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-slate-500">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded">ARCHITECTURE</span>
+<span class="font-label-mono-sm text-label-mono-sm">OCT 04, 2025</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 font-semibold leading-snug">
+              Multi-Agent State Management: Preventing Hallucination Cascades in Enterprise GTM
+            </h3>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-3">
+              When Agent A assumes false premise X, Agent B sends contract Y. A tactical guide to transactional rollbacks in multi-agent revenue orchestrations.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-slate-100 flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">8 min read</span>
+<a class="font-label-ui text-label-ui text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1" href="#">Read article →</a>
+</div>
+</article>
+<!-- Article 5 -->
+<article class="p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-slate-500">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">AUTOMATION</span>
+<span class="font-label-mono-sm text-label-mono-sm">SEP 29, 2025</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 font-semibold leading-snug">
+              Moving Beyond Zapier: When Enterprise Pipelines Require Idempotent Execution Buses
+            </h3>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-3">
+              No-code webhooks fail silently under load. How modern engineering teams construct durable, replayable pipelines with Temporal and Kafka.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-slate-100 flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">5 min read</span>
+<a class="font-label-ui text-label-ui text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1" href="#">Read article →</a>
+</div>
+</article>
+<!-- Article 6 -->
+<article class="p-space-lg rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-slate-500">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">INTELLIGENCE</span>
+<span class="font-label-mono-sm text-label-mono-sm">SEP 22, 2025</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 font-semibold leading-snug">
+              Synthesizing 10-K Filings, Job Postings, and Tech Stack Detections into Real-Time Buying Windows
+            </h3>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-3">
+              Building continuous signal synthesizers that catch budget unlocks and leadership reorganizations weeks before they surface in conventional databases.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-slate-100 flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">7 min read</span>
+<a class="font-label-ui text-label-ui text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1" href="#">Read article →</a>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- SECTION 5: PRACTICAL PLAYBOOKS (DEEP NAVY / MIDNIGHT SECTION) -->
+<section class="w-full bg-[#070A12] text-white px-margin md:px-margin-md lg:px-margin-lg py-space-3xl relative overflow-hidden">
+<!-- Directional ambient glow -->
+<div class="absolute -top-32 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative max-w-7xl mx-auto flex flex-col gap-space-2xl">
+<!-- Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="inline-flex items-center gap-space-xs px-3 py-1 rounded-full bg-slate-900 border border-slate-800 w-fit">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-slate-300 font-semibold">PRACTICAL PLAYBOOKS</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold tracking-tight text-white">
+            Don't just read it. <span class="font-editorial-italic italic font-normal text-slate-300">Build it.</span>
+</h2>
+</div>
+<p class="font-body-md text-body-md text-slate-400 max-w-md">
+          Production-proven implementation frameworks, technical architecture blueprints, and executable code artifacts.
+        </p>
+</div>
+<!-- Playbook Cards: 3 Column Spec-Sheets -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Playbook 1 -->
+<div class="rounded-2xl bg-[#0D121F] border border-slate-800/90 p-space-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+<div class="flex flex-col gap-space-md">
+<!-- Header Spec -->
+<div class="flex items-center justify-between pb-space-xs border-b border-slate-800">
+<span class="font-label-mono-sm text-label-mono-sm text-primary font-bold">SPEC-PB-01</span>
+<span class="font-label-mono-sm text-label-mono-sm px-2 py-0.5 rounded bg-slate-800/80 text-slate-300">PDF + NOTION</span>
+</div>
+<!-- Visual Preview Miniature -->
+<div class="p-4 rounded-xl bg-slate-950 border border-slate-800/80 font-mono text-[11px] text-slate-400 flex flex-col gap-1.5">
+<div class="flex justify-between text-slate-500 pb-1 border-b border-slate-800/60">
+<span>AUDIT_SURFACE</span>
+<span class="text-emerald-400">PASSED: 18/24</span>
+</div>
+<div class="flex items-center justify-between">
+<span>[01] Inbound Funnel Friction</span>
+<span class="text-yellow-400 font-bold">2.4x DROP</span>
+</div>
+<div class="flex items-center justify-between">
+<span>[02] CRM Stage Stagnation</span>
+<span class="text-slate-300">41.2 Days</span>
+</div>
+<div class="flex items-center justify-between">
+<span>[03] Enrichment Coverage</span>
+<span class="text-emerald-400">94.8%</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-white font-semibold">GTM SYSTEM AUDIT</h3>
+<p class="font-body-sm text-body-sm text-slate-400 mt-2">
+                A deterministic framework for uncovering hidden pipeline leaks, signal blindspots, and conversion bottlenecks across entire revenue funnels.
+              </p>
+</div>
+</div>
+<div class="pt-space-lg mt-space-md border-t border-slate-800/80 flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">v3.4 · 1.8 MB</span>
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-950 font-label-ui text-label-ui hover:bg-slate-200 transition-colors" href="#">
+<span>Download playbook</span>
+<span class="material-symbols-outlined text-sm">download</span>
+</a>
+</div>
+</div>
+<!-- Playbook 2 -->
+<div class="rounded-2xl bg-[#0D121F] border border-slate-800/90 p-space-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+<div class="flex flex-col gap-space-md">
+<!-- Header Spec -->
+<div class="flex items-center justify-between pb-space-xs border-b border-slate-800">
+<span class="font-label-mono-sm text-label-mono-sm text-tertiary-fixed-dim font-bold">SPEC-PB-02</span>
+<span class="font-label-mono-sm text-label-mono-sm px-2 py-0.5 rounded bg-slate-800/80 text-slate-300">FIGMA + JSON SCHEMA</span>
+</div>
+<!-- Visual Preview Miniature -->
+<div class="p-4 rounded-xl bg-slate-950 border border-slate-800/80 font-mono text-[11px] text-slate-400 flex flex-col gap-1.5">
+<div class="flex justify-between text-slate-500 pb-1 border-b border-slate-800/60">
+<span>AGENT_TOPOLOGY</span>
+<span class="text-blue-400">STATE: GRAPH</span>
+</div>
+<div class="flex items-center justify-between">
+<span>Human-In-The-Loop Nodes</span>
+<span class="text-purple-400 font-bold">3 Checkpoints</span>
+</div>
+<div class="flex items-center justify-between">
+<span>Deterministic Gatekeeper</span>
+<span class="text-slate-300">Idempotent</span>
+</div>
+<div class="flex items-center justify-between">
+<span>Fallback Error Bus</span>
+<span class="text-emerald-400">Replay-ready</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-white font-semibold">AI WORKFLOW MAP</h3>
+<p class="font-body-sm text-body-sm text-slate-400 mt-2">
+                Identify precisely where AI agents and deterministic logic yield the highest ROI versus where simple heuristics remain superior.
+              </p>
+</div>
+</div>
+<div class="pt-space-lg mt-space-md border-t border-slate-800/80 flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">v2.1 · Canvas</span>
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-950 font-label-ui text-label-ui hover:bg-slate-200 transition-colors" href="#">
+<span>View guide</span>
+<span class="material-symbols-outlined text-sm">open_in_new</span>
+</a>
+</div>
+</div>
+<!-- Playbook 3 -->
+<div class="rounded-2xl bg-[#0D121F] border border-slate-800/90 p-space-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+<div class="flex flex-col gap-space-md">
+<!-- Header Spec -->
+<div class="flex items-center justify-between pb-space-xs border-b border-slate-800">
+<span class="font-label-mono-sm text-label-mono-sm text-secondary-fixed-dim font-bold">SPEC-PB-03</span>
+<span class="font-label-mono-sm text-label-mono-sm px-2 py-0.5 rounded bg-slate-800/80 text-slate-300">SOP + N8N FLOWS</span>
+</div>
+<!-- Visual Preview Miniature -->
+<div class="p-4 rounded-xl bg-slate-950 border border-slate-800/80 font-mono text-[11px] text-slate-400 flex flex-col gap-1.5">
+<div class="flex justify-between text-slate-500 pb-1 border-b border-slate-800/60">
+<span>SIGNAL_PIPELINE</span>
+<span class="text-cyan-400">12 DISPATCHERS</span>
+</div>
+<div class="flex items-center justify-between">
+<span>Sub-Domain Rotation</span>
+<span class="text-emerald-400 font-bold">0.0% Spammed</span>
+</div>
+<div class="flex items-center justify-between">
+<span>Payload Synthesizer</span>
+<span class="text-slate-300">Custom Clay/LLM</span>
+</div>
+<div class="flex items-center justify-between">
+<span>Slack Alert Webhook</span>
+<span class="text-blue-400">Live AE Handshake</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-white font-semibold">OUTBOUND SYSTEM CHECKLIST</h3>
+<p class="font-body-sm text-body-sm text-slate-400 mt-2">
+                An end-to-end engineering blueprint for building signal-driven outbound that converts tier-one enterprise accounts at scale.
+              </p>
+</div>
+</div>
+<div class="pt-space-lg mt-space-md border-t border-slate-800/80 flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">v4.0 · JSON + Flow</span>
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-950 font-label-ui text-label-ui hover:bg-slate-200 transition-colors" href="#">
+<span>Download playbook</span>
+<span class="material-symbols-outlined text-sm">download</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 6: RESEARCH (RETURN TO LIGHT DOMINANT CANVAS) -->
+<section class="w-full bg-[#FBFBFC] text-[#070A12] px-margin md:px-margin-md lg:px-margin-lg py-space-3xl border-t border-slate-200">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-2xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div>
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-slate-500 font-semibold">EMPIRICAL BENCHMARKS</span>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-slate-950 font-bold tracking-tight">
+            Research worth keeping.
+          </h2>
+</div>
+<p class="font-body-md text-body-md text-slate-600 max-w-md">
+          Rigorous long-form field research examining the performance, error rates, and economics of modern GTM infrastructure.
+        </p>
+</div>
+<!-- 3 Research Reports -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Report 1 -->
+<div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div>
+<!-- Technical Cover Preview Frame -->
+<div class="h-44 bg-gradient-to-br from-slate-900 to-slate-800 p-space-md flex flex-col justify-between text-white relative">
+<div class="flex justify-between items-start">
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-widest text-slate-400">ANNUAL BENCHMARK REPORT</span>
+<span class="material-symbols-outlined text-primary text-xl">analytics</span>
+</div>
+<div>
+<span class="font-label-mono-sm text-[10px] text-slate-400 block font-mono">SAMPLE: N=42 DEPLOYMENTS</span>
+<span class="font-headline-sm text-white font-bold">AI &amp; REVENUE SYSTEMS</span>
+</div>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg flex flex-col gap-space-sm">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-400">PUBLISHED Q3 2025 · 38 PAGES</span>
+<p class="font-body-md text-body-md text-slate-700 font-medium">
+                Empirical analysis of autonomous agent reliability and cost-per-qualified-opportunity across 40+ high-growth enterprise deployments.
+              </p>
+<!-- Executive Bullets -->
+<div class="pt-space-xs space-y-2 border-t border-slate-100">
+<div class="flex items-start gap-2 text-slate-600 font-body-sm text-body-sm">
+<span class="text-primary-container font-bold">•</span>
+<span>Autonomous lead response within 45s increases booked discovery calls by 312%.</span>
+</div>
+<div class="flex items-start gap-2 text-slate-600 font-body-sm text-body-sm">
+<span class="text-primary-container font-bold">•</span>
+<span>Pure probabilistic outreach yields a 38% higher churn rate post-close.</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-space-lg pt-0 border-t border-slate-50">
+<a class="inline-flex items-center justify-between w-full font-label-ui text-label-ui text-slate-900 font-semibold hover:text-blue-600" href="#">
+<span>Read Full Executive Summary</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Report 2 -->
+<div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div>
+<!-- Technical Cover Preview Frame -->
+<div class="h-44 bg-gradient-to-br from-[#121E36] to-[#0A1020] p-space-md flex flex-col justify-between text-white relative">
+<div class="flex justify-between items-start">
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-widest text-slate-400">INDUSTRY DISPATCH</span>
+<span class="material-symbols-outlined text-indigo-400 text-xl">layers</span>
+</div>
+<div>
+<span class="font-label-mono-sm text-[10px] text-slate-400 block font-mono">SAAS SPRAWL DECONSTRUCTION</span>
+<span class="font-headline-sm text-white font-bold">THE STATE OF GTM ENGINEERING</span>
+</div>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg flex flex-col gap-space-sm">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-400">PUBLISHED Q2 2025 · 46 PAGES</span>
+<p class="font-body-md text-body-md text-slate-700 font-medium">
+                The strategic shift away from point-solution SaaS sprawl to unified custom orchestration infrastructure and in-house code pipelines.
+              </p>
+<!-- Executive Bullets -->
+<div class="pt-space-xs space-y-2 border-t border-slate-100">
+<div class="flex items-start gap-2 text-slate-600 font-body-sm text-body-sm">
+<span class="text-indigo-600 font-bold">•</span>
+<span>Average enterprise GTM stack now wastes $14,200/rep on overlapping subscriptions.</span>
+</div>
+<div class="flex items-start gap-2 text-slate-600 font-body-sm text-body-sm">
+<span class="text-indigo-600 font-bold">•</span>
+<span>Consolidated event busses reduce data synchronization errors by 89%.</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-space-lg pt-0 border-t border-slate-50">
+<a class="inline-flex items-center justify-between w-full font-label-ui text-label-ui text-slate-900 font-semibold hover:text-blue-600" href="#">
+<span>Read Full Executive Summary</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Report 3 -->
+<div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div>
+<!-- Technical Cover Preview Frame -->
+<div class="h-44 bg-gradient-to-br from-[#1C1636] to-[#0A071E] p-space-md flex flex-col justify-between text-white relative">
+<div class="flex justify-between items-start">
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-widest text-slate-400">OPERATIONAL BLUEPRINT</span>
+<span class="material-symbols-outlined text-purple-400 text-xl">lan</span>
+</div>
+<div>
+<span class="font-label-mono-sm text-[10px] text-slate-400 block font-mono">ORGANIZATIONAL DESIGN</span>
+<span class="font-headline-sm text-white font-bold">BUILDING AI-NATIVE OPS</span>
+</div>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg flex flex-col gap-space-sm">
+<span class="font-label-mono-sm text-label-mono-sm text-slate-400">PUBLISHED Q1 2025 · 52 PAGES</span>
+<p class="font-body-md text-body-md text-slate-700 font-medium">
+                Organizational architectures, incentive structures, and workflow protocols for hybrid human-agent commercial revenue organizations.
+              </p>
+<!-- Executive Bullets -->
+<div class="pt-space-xs space-y-2 border-t border-slate-100">
+<div class="flex items-start gap-2 text-slate-600 font-body-sm text-body-sm">
+<span class="text-purple-600 font-bold">•</span>
+<span>AE-to-SDR ratio shifts from 2:1 to 8:1 in teams with deterministic signal pipelines.</span>
+</div>
+<div class="flex items-start gap-2 text-slate-600 font-body-sm text-body-sm">
+<span class="text-purple-600 font-bold">•</span>
+<span>Quota attainment increases 34% when non-selling admin tasks fall below 10%.</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-space-lg pt-0 border-t border-slate-50">
+<a class="inline-flex items-center justify-between w-full font-label-ui text-label-ui text-slate-900 font-semibold hover:text-blue-600" href="#">
+<span>Read Full Executive Summary</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 7: WATCH / LEARN (VIDEO & TECHNICAL WALKTHROUGHS) -->
+<section class="w-full bg-[#F4F5F8] text-[#070A12] px-margin md:px-margin-md lg:px-margin-lg py-space-2xl border-t border-slate-200">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<div>
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-slate-500 font-semibold">TECHNICAL MEDIA</span>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-slate-950 font-bold tracking-tight">
+          See the systems in action.
+        </h2>
+</div>
+<!-- 3 Video / Console Media Cards -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Media Card 1 -->
+<div class="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all">
+<div class="relative h-48 bg-slate-900 flex items-center justify-center p-4">
+<!-- Simulated Code Console Preview -->
+<div class="w-full h-full rounded bg-slate-950 p-3 font-mono text-[11px] text-slate-400 border border-slate-800 flex flex-col justify-between">
+<div class="flex items-center justify-between text-slate-500">
+<span>session_replay_042.log</span>
+<span class="text-primary-container">42:18</span>
+</div>
+<div class="text-xs text-slate-300">
+<p class="text-emerald-400">&gt; Building live pipeline...</p>
+<p>&gt; Hooking Postgres CDC to n8n bus</p>
+<p>&gt; Validating deterministic gate pass</p>
+</div>
+<div class="flex items-center gap-2 text-slate-500">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+<span>REC // PRODUCTION_WALKTHROUGH</span>
+</div>
+</div>
+<!-- Play Button Overlay -->
+<div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-slate-900 shadow-lg">
+<span class="material-symbols-outlined text-2xl">play_arrow</span>
+</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col justify-between flex-1 gap-space-sm">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-primary-container font-semibold">WALKTHROUGH</span>
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">42 MIN</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 font-semibold mt-1">WATCH A BUILD</h3>
+<p class="font-body-sm text-body-sm text-slate-600 mt-1">
+                Follow an enterprise pipeline from raw specification to multi-agent production deployment in under an hour.
+              </p>
+</div>
+<a class="font-label-ui text-label-ui text-slate-900 hover:text-primary-container font-semibold inline-flex items-center gap-1" href="#">
+<span>Watch session →</span>
+</a>
+</div>
+</div>
+<!-- Media Card 2 -->
+<div class="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all">
+<div class="relative h-48 bg-slate-900 flex items-center justify-center p-4">
+<!-- Simulated Architectural Graph Preview -->
+<div class="w-full h-full rounded bg-slate-950 p-3 font-mono text-[11px] text-slate-400 border border-slate-800 flex flex-col justify-between">
+<div class="flex items-center justify-between text-slate-500">
+<span>arch_teardown.svg</span>
+<span class="text-primary-container">18:40</span>
+</div>
+<div class="flex items-center justify-center gap-3 text-xs text-indigo-400">
+<div class="border border-indigo-700/60 p-1.5 rounded">INGRESS</div>
+<span>⇄</span>
+<div class="border border-indigo-700/60 p-1.5 rounded">KERNEL</div>
+<span>⇄</span>
+<div class="border border-indigo-700/60 p-1.5 rounded">SYNC</div>
+</div>
+<div class="flex items-center gap-2 text-slate-500">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span>DEEP DIVE // ARCHITECTURE</span>
+</div>
+</div>
+<!-- Play Button Overlay -->
+<div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-slate-900 shadow-lg">
+<span class="material-symbols-outlined text-2xl">play_arrow</span>
+</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col justify-between flex-1 gap-space-sm">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-indigo-600 font-semibold">DEEP DIVE</span>
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">18 MIN</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 font-semibold mt-1">SYSTEM BREAKDOWN</h3>
+<p class="font-body-sm text-body-sm text-slate-600 mt-1">
+                Understand the specific state machines and routing logic driving continuous account expansion at enterprise scale.
+              </p>
+</div>
+<a class="font-label-ui text-label-ui text-slate-900 hover:text-primary-container font-semibold inline-flex items-center gap-1" href="#">
+<span>Watch session →</span>
+</a>
+</div>
+</div>
+<!-- Media Card 3 -->
+<div class="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all">
+<div class="relative h-48 bg-slate-900 flex items-center justify-center p-4">
+<!-- Simulated Tactical Micro-Notes Preview -->
+<div class="w-full h-full rounded bg-slate-950 p-3 font-mono text-[11px] text-slate-400 border border-slate-800 flex flex-col justify-between">
+<div class="flex items-center justify-between text-slate-500">
+<span>field_note_89.txt</span>
+<span class="text-primary-container">05:12</span>
+</div>
+<div class="text-xs text-slate-300">
+<p class="text-violet-400">// Observation 89:</p>
+<p>"Hard timeouts on LLM API calls save 90% of stalled customer webhooks."</p>
+</div>
+<div class="flex items-center gap-2 text-slate-500">
+<span class="w-2 h-2 rounded-full bg-purple-500"></span>
+<span>TACTICAL // 5-MIN BRIEFS</span>
+</div>
+</div>
+<!-- Play Button Overlay -->
+<div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-slate-900 shadow-lg">
+<span class="material-symbols-outlined text-2xl">play_arrow</span>
+</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col justify-between flex-1 gap-space-sm">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-label-mono-sm text-purple-600 font-semibold">BRIEF</span>
+<span class="font-label-mono-sm text-label-mono-sm text-slate-500">05 MIN</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-slate-900 font-semibold mt-1">FIELD NOTES</h3>
+<p class="font-body-sm text-body-sm text-slate-600 mt-1">
+                Concise, high-density observations and tactical adjustments extracted directly from live customer systems.
+              </p>
+</div>
+<a class="font-label-ui text-label-ui text-slate-900 hover:text-primary-container font-semibold inline-flex items-center gap-1" href="#">
+<span>Watch session →</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 8: NEWSLETTER (THE SIGNAL) -->
+<section class="w-full bg-[#FBFBFC] text-[#070A12] px-margin md:px-margin-md lg:px-margin-lg py-space-2xl border-t border-slate-200" id="the-signal">
+<div class="max-w-4xl mx-auto rounded-3xl bg-white border border-slate-200/90 p-space-xl md:p-space-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-xl">
+<div class="flex flex-col gap-space-xs max-w-lg">
+<div class="inline-flex items-center gap-space-xs px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 w-fit font-label-mono-sm text-label-mono-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+<span>THE SIGNAL</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-slate-950 font-bold">
+          One useful idea for your revenue system.
+        </h2>
+<p class="font-body-sm text-body-sm text-slate-600">
+          Occasional technical notes on deterministic AI, GTM engineering, and pipeline automation. No fluff. No daily spam.
+        </p>
+</div>
+<div class="w-full md:w-auto flex flex-col gap-2">
+<form class="flex flex-col sm:flex-row gap-2" onsubmit="event.preventDefault(); alert('Subscribed to The Signal.');">
+<input class="px-4 py-2.5 rounded-full bg-slate-50 border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:bg-white w-full sm:w-64 transition-all" placeholder="Work email" required="" type="email"/>
+<button class="inline-flex items-center justify-center gap-1 px-6 py-2.5 rounded-full bg-[#1746B3] text-white font-label-ui text-label-ui hover:bg-[#123996] transition-colors shadow-sm" type="submit">
+<span>Subscribe</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</form>
+<div class="flex items-center gap-1.5 text-slate-400 font-label-mono-sm text-[11px] justify-start md:justify-center">
+<span class="material-symbols-outlined text-xs text-slate-400">lock</span>
+<span>Zero spam. Unsubscribe with one click anytime.</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 9: FINAL CTA (DEEP NAVY CONTAINER) -->
+<section class="w-full bg-[#FBFBFC] px-margin md:px-margin-md lg:px-margin-lg pb-space-3xl">
+<div class="max-w-7xl mx-auto rounded-3xl bg-[#070A12] text-white p-space-xl md:p-space-3xl relative overflow-hidden flex flex-col items-center text-center gap-space-lg shadow-xl">
+<!-- Ambient Back-Glow -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative flex flex-col items-center gap-space-xs max-w-2xl">
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-primary font-semibold">READY TO BUILD?</span>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg font-bold text-white tracking-tight">
+          Have something worth building?
+        </h2>
+<p class="font-body-md text-body-md text-slate-400 mt-space-xs leading-relaxed">
+          If you're trying to figure out where AI, automation, or better GTM engineering infrastructure could actually move the needle for your business, let's talk architecture.
+        </p>
+</div>
+<div class="relative flex flex-wrap items-center justify-center gap-space-md pt-space-xs">
+<a class="inline-flex items-center gap-space-xs px-8 py-3.5 rounded-full bg-primary-container text-on-primary-container font-label-ui text-label-ui hover:bg-primary hover:text-on-primary transition-all shadow-[0_0_24px_-4px_rgba(77,142,255,0.4)]" data-path="book-discovery" href="#">
+<span class="tracking-wide">Start a build</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-space-xs px-8 py-3.5 rounded-full bg-slate-900 text-slate-200 border border-slate-800 font-label-ui text-label-ui hover:bg-slate-800 transition-all" data-path="what-we-build" href="#">
+<span>Explore what we build</span>
+<span class="material-symbols-outlined text-sm">north_east</span>
+</a>
+</div>
+<div class="relative pt-space-md flex items-center gap-space-md text-slate-500 font-label-mono-sm text-label-mono-sm border-t border-slate-900 w-full justify-center">
+<span>Average Discovery Response: &lt; 2 Hours</span>
+<span>•</span>
+<span>Deterministic Feasibility Analysis Included</span>
+</div>
+</div>
+</section>
+</div></main><footer class="w-full bg-surface-container-lowest text-on-surface-variant"><div class="max-w-7xl mx-auto px-margin-md pt-space-3xl pb-space-2xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-gutter-lg pb-space-2xl"><div class="lg:col-span-5 flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Syntropic</span><span class="font-label-mono-sm text-label-mono-sm px-space-sm py-0.5 rounded-full bg-surface-container text-primary uppercase">AI Core</span></div><p class="font-body-md text-body-md text-on-surface-variant max-w-md">Deterministic enterprise AI systems and high-velocity Go-To-Market infrastructure engineered for compound revenue expansion.</p><div class="flex items-center gap-space-sm pt-space-xs"><span class="inline-block w-2 h-2 rounded-full bg-primary"></span><span class="font-label-mono-sm text-label-mono-sm text-outline">STATUS: OPERATIONAL SYSTEM ACTIVE</span></div></div><div class="lg:col-span-2 flex flex-col gap-space-sm"><span class="font-label-mono-md text-label-mono-md uppercase tracking-wider text-on-surface font-semibold">Architecture &amp; Solutions</span><div class="flex flex-col gap-space-xs"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="what-we-build" href="#">Autonomous Pipeline</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="ai-agents" href="#">GTM Multi-Agent Swarm</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="how-it-works" href="#">Revenue Logic Engine</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="work" href="#">Enterprise Deployments</a></div></div><div class="lg:col-span-2 flex flex-col gap-space-sm"><span class="font-label-mono-md text-label-mono-md uppercase tracking-wider text-on-surface font-semibold">Resources &amp; Insights</span><div class="flex flex-col gap-space-xs"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="resources" href="#">Engineering Logs</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="resources" href="#">Autonomous GTM Blueprint</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="resources" href="#">Deterministic Models</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="resources" href="#">System Documentation</a></div></div><div class="lg:col-span-3 flex flex-col gap-space-sm"><span class="font-label-mono-md text-label-mono-md uppercase tracking-wider text-on-surface font-semibold">Organization</span><div class="flex flex-col gap-space-xs"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="about" href="#">About Engineering</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="about" href="#">Leadership &amp; Values</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="book-discovery" href="#">Partner Network</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="book-discovery" href="#">Schedule Consultation</a></div></div></div><div class="pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md text-outline font-label-mono-sm text-label-mono-sm"><div class="flex items-center gap-space-md"><span>© 2025 Syntropic Systems Inc. All rights reserved.</span><span>SOC-2 Type II Certified</span></div><div class="flex items-center gap-space-lg"><a class="hover:text-on-surface transition-colors" data-path="resources" href="#">Privacy Framework</a><a class="hover:text-on-surface transition-colors" data-path="resources" href="#">Deterministic AI Ethics</a><a class="hover:text-on-surface transition-colors" data-path="resources" href="#">Security Protocol</a><a class="hover:text-on-surface transition-colors" data-path="resources" href="#">Terms of Service</a></div></div></div></footer></body></html>

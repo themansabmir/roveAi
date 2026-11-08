@@ -6,8 +6,13 @@ import { sanityFetch } from "@/lib/sanity/fetch"
 import { getSanityDataset, getSanityProjectId, getSiteUrl } from "@/lib/env"
 import { localePath } from "@/lib/i18n"
 import type { Locale } from "@rove/cms/constants"
+import { SiteChrome } from "@/components/site/SiteChrome"
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
   const { locale } = await params
   return mapSeoToMetadata(null, {
     siteUrl: getSiteUrl(),
@@ -28,18 +33,23 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
     })) ?? []
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-3xl font-semibold">Services</h1>
-      <ul className="mt-10 space-y-6">
-        {services.map((s) => (
-          <li key={s.slug}>
-            <Link href={localePath(loc, `/services/${s.slug}`)} className="text-lg font-medium text-primary hover:underline">
-              {s.title}
-            </Link>
-            {s.summary ? <p className="mt-1 text-sm text-muted-foreground">{s.summary}</p> : null}
-          </li>
-        ))}
-      </ul>
-    </main>
+    <SiteChrome locale={loc}>
+      <main className="mx-auto max-w-3xl px-6 py-16">
+        <h1 className="text-3xl font-semibold">Services</h1>
+        <ul className="mt-10 space-y-6">
+          {services.map((s) => (
+            <li key={s.slug}>
+              <Link
+                href={localePath(loc, `/services/${s.slug}`)}
+                className="text-lg font-medium text-primary hover:underline"
+              >
+                {s.title}
+              </Link>
+              {s.summary ? <p className="mt-1 text-sm text-muted-foreground">{s.summary}</p> : null}
+            </li>
+          ))}
+        </ul>
+      </main>
+    </SiteChrome>
   )
 }

@@ -4,8 +4,11 @@ import { agencySitemapEntriesQuery } from "@rove/cms/queries"
 import { getSiteUrl, isSanityConfigured } from "@/lib/env"
 import { localePath } from "@/lib/i18n"
 import { getSanityClient } from "@/lib/sanity/client"
+import { legacySiteRouteAliases, publicSitePages } from "@/content/siteMap"
 
 const reserved = new Set<string>(AGENCY_RESERVED_SEGMENTS)
+for (const { slug } of publicSitePages) reserved.add(slug)
+for (const slug of Object.keys(legacySiteRouteAliases)) reserved.add(slug)
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl()
@@ -14,8 +17,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${siteUrl}${localePath(loc, "/")}`, lastModified: now },
     { url: `${siteUrl}${localePath(loc, "/services")}`, lastModified: now },
-    { url: `${siteUrl}${localePath(loc, "/work")}`, lastModified: now },
-    { url: `${siteUrl}${localePath(loc, "/blog")}`, lastModified: now },
+    ...publicSitePages.map(({ slug }) => ({
+      url: `${siteUrl}${localePath(loc, `/${slug}`)}`,
+      lastModified: now,
+    })),
   ]
 
   if (!isSanityConfigured()) return staticRoutes
@@ -29,6 +34,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticRoutes,
+    ...(entries?.caseStudies?.length
+      ? [{ url: `${siteUrl}${localePath(loc, "/work")}`, lastModified: now }]
+      : []),
+    ...(entries?.posts?.length
+      ? [{ url: `${siteUrl}${localePath(loc, "/blog")}`, lastModified: now }]
+      : []),
     ...(entries?.services?.map((s) => ({
       url: `${siteUrl}${localePath(loc, `/services/${s.slug}`)}`,
       lastModified: new Date(s._updatedAt),

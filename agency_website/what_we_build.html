@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Syntropic — What We Build</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Newsreader:ital,wght@1,400;1,500;1,600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            navy: "#0a0e18",
+            navyDark: "#060911",
+            navyCard: "#111726",
+            navyBorder: "#1e293b",
+            blue: "#2563eb",
+            blueAccent: "#3b82f6",
+            blueLight: "#eff6ff",
+            purple: "#7c3aed",
+            purpleLight: "#f5f3ff",
+            paper: "#fcfdfe"
+          }
+        },
+        fontFamily: {
+          sans: ['"Inter"', 'sans-serif'],
+          display: ['"Plus Jakarta Sans"', 'sans-serif'],
+          serif: ['"Newsreader"', 'serif'],
+          mono: ['"JetBrains Mono"', 'monospace']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  @layer base {
+    html, body { margin: 0; padding: 0; }
+    body { overscroll-behavior: none; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #f8fafc; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+</style>
+</head>
+<body class="bg-[#FAFAFD] text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white">
+<!-- ========================================================================= -->
+<!-- GLOBAL NAVBAR -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#FAFAFD]/90 backdrop-blur-md border-b border-slate-200/80 transition-all">
+<div class="max-w-7xl mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+<a class="flex items-center gap-2.5 group" href="#">
+<div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-display font-bold text-sm shadow-sm group-hover:scale-105 transition-transform">
+        S
+      </div>
+<div class="flex items-center gap-2">
+<span class="font-display font-bold text-base tracking-tight text-slate-950">Syntropic</span>
+<span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-medium text-slate-500 bg-slate-100 border border-slate-200">
+          AI + GTM Engineering
+        </span>
+</div>
+</a>
+<nav class="hidden md:flex items-center gap-1 text-[13px] font-medium text-slate-600">
+<a class="px-3.5 py-1.5 rounded-full text-blue-600 bg-blue-50/80 font-semibold transition-colors" href="#what-we-build">What We Build</a>
+<a class="px-3.5 py-1.5 rounded-full hover:text-slate-950 hover:bg-slate-100 transition-colors" href="#connected-system">How It Works</a>
+<a class="px-3.5 py-1.5 rounded-full hover:text-slate-950 hover:bg-slate-100 transition-colors" href="#products">Work</a>
+<a class="px-3.5 py-1.5 rounded-full hover:text-slate-950 hover:bg-slate-100 transition-colors" href="#ai-comparison">AI Agents</a>
+<a class="px-3.5 py-1.5 rounded-full hover:text-slate-950 hover:bg-slate-100 transition-colors" href="#sovereignty">About</a>
+</nav>
+<div class="flex items-center gap-3">
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-950 text-white hover:bg-blue-600 text-xs font-semibold tracking-wide shadow-sm hover:shadow transition-all duration-200" href="#contact">
+<span>Book a Discovery</span>
+<span class="text-slate-400 group-hover:text-white">→</span>
+</a>
+</div>
+</div>
+</header>
+<main class="pt-16">
+<!-- ========================================================================= -->
+<!-- 1. HERO SECTION: Clean Editorial Split with Revenue System Visual -->
+<!-- ========================================================================= -->
+<section class="relative w-full py-20 lg:py-28 overflow-hidden bg-[#FAFAFD] border-b border-slate-200/60">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+<!-- Left: Editorial Headline -->
+<div class="lg:col-span-6 space-y-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-[11px] font-mono font-medium tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+          WHAT WE BUILD
+        </div>
+<h1 class="font-display text-4xl sm:text-5xl lg:text-[54px] font-bold text-slate-950 tracking-tight leading-[1.1]">
+          Systems built around how your business <span class="italic text-blue-600 font-serif font-normal">actually grows.</span>
+</h1>
+<p class="font-sans text-lg text-slate-600 max-w-lg leading-relaxed">
+          We engineer deterministic pipelines, agent workflows, and client-owned intelligence layers that turn signals directly into revenue.
+        </p>
+<div class="flex flex-wrap items-center gap-3 pt-3">
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 shadow-sm shadow-blue-500/20 transition-all" href="#contact">
+<span>Start a Build</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-slate-800 border border-slate-200 font-medium text-sm hover:bg-slate-50 transition-all shadow-sm" href="#what-we-build">
+<span>Explore Solutions</span>
+</a>
+</div>
+</div>
+<!-- Right: Technical Revenue System Visual Map (Large, Spacious, Editorial) -->
+<div class="lg:col-span-6">
+<div class="relative bg-white rounded-3xl p-8 lg:p-10 border border-slate-200/80 shadow-xl shadow-slate-200/50">
+<div class="flex items-center justify-between pb-6 mb-8 border-b border-slate-100">
+<span class="font-mono text-xs text-slate-500 uppercase tracking-wider">Revenue System Map</span>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-mono text-xs text-slate-700 font-medium">Deterministic Loop Active</span>
+</div>
+</div>
+<!-- Linear High-Impact Architecture Map -->
+<div class="space-y-4">
+<!-- Node 1: DATA -->
+<div class="group flex items-center justify-between p-4 rounded-2xl bg-slate-50/70 border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center font-mono text-xs font-bold text-slate-700 shadow-sm">
+                  01
+                </div>
+<div>
+<div class="font-display text-sm font-bold text-slate-900">DATA</div>
+<div class="font-mono text-xs text-slate-500">CRM, 10-K, hiring logs &amp; webhooks</div>
+</div>
+</div>
+<span class="font-mono text-xs text-slate-400 group-hover:text-blue-600 transition-colors">RAW STREAM →</span>
+</div>
+<div class="flex justify-center -my-2">
+<div class="w-px h-5 bg-gradient-to-b from-blue-300 to-blue-500"></div>
+</div>
+<!-- Node 2: SIGNALS -->
+<div class="group flex items-center justify-between p-4 rounded-2xl bg-slate-50/70 border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center font-mono text-xs font-bold text-slate-700 shadow-sm">
+                  02
+                </div>
+<div>
+<div class="font-display text-sm font-bold text-slate-900">SIGNALS</div>
+<div class="font-mono text-xs text-slate-500">Deterministic scoring &amp; ICP threshold gate</div>
+</div>
+</div>
+<span class="font-mono text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">PASSED 94%</span>
+</div>
+<div class="flex justify-center -my-2">
+<div class="w-px h-5 bg-gradient-to-b from-blue-500 to-indigo-500"></div>
+</div>
+<!-- Node 3: INTELLIGENCE -->
+<div class="group flex items-center justify-between p-4 rounded-2xl bg-slate-50/70 border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-mono text-xs font-bold text-indigo-700 shadow-sm">
+                  03
+                </div>
+<div>
+<div class="font-display text-sm font-bold text-slate-900">INTELLIGENCE</div>
+<div class="font-mono text-xs text-slate-500">Deal memory, company vector graph, dossier</div>
+</div>
+</div>
+<span class="font-mono text-xs text-indigo-600 font-medium">SYNTHESIZED</span>
+</div>
+<div class="flex justify-center -my-2">
+<div class="w-px h-5 bg-gradient-to-b from-indigo-500 to-purple-500"></div>
+</div>
+<!-- Node 4: EXECUTION -->
+<div class="group flex items-center justify-between p-4 rounded-2xl bg-slate-50/70 border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-9 h-9 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center font-mono text-xs font-bold text-purple-700 shadow-sm">
+                  04
+                </div>
+<div>
+<div class="font-display text-sm font-bold text-slate-900">EXECUTION</div>
+<div class="font-mono text-xs text-slate-500">Autonomous multi-channel agent routing</div>
+</div>
+</div>
+<span class="font-mono text-xs text-purple-600 font-medium bg-purple-50 px-2 py-0.5 rounded">SUPERVISED</span>
+</div>
+<div class="flex justify-center -my-2">
+<div class="w-px h-5 bg-gradient-to-b from-purple-500 to-emerald-500"></div>
+</div>
+<!-- Node 5: REVENUE -->
+<div class="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-md">
+<div class="flex items-center gap-4">
+<div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center font-mono text-xs font-bold text-white">
+                  05
+                </div>
+<div>
+<div class="font-display text-sm font-bold">REVENUE ENGINE</div>
+<div class="font-mono text-xs text-blue-100">Closed-loop CRM sync &amp; conversion attribution</div>
+</div>
+</div>
+<span class="font-mono text-xs font-semibold px-2.5 py-1 rounded bg-white text-blue-800">
+                100% ATTRIBUTED
+              </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 2. SECTION: THREE THINGS WE BUILD (3 Distinct Asymmetric Compositions) -->
+<!-- ========================================================================= -->
+<section class="py-24 bg-white" id="what-we-build">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="max-w-2xl mb-16">
+<div class="text-xs font-mono text-blue-600 uppercase tracking-wider font-semibold mb-2">WHAT WE BUILD</div>
+<h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-950 tracking-tight">
+        One goal. <span class="italic font-serif font-normal text-blue-600">Different systems.</span>
+</h2>
+<p class="text-slate-600 mt-3 text-base">
+        Three modular system types tailored to resolve your company's highest-friction bottlenecks.
+      </p>
+</div>
+<div class="space-y-12">
+<!-- 01 GTM SYSTEMS: Wide horizontal layout -->
+<div class="p-8 sm:p-10 rounded-3xl bg-[#FAFAFD] border border-slate-200/90 shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-4 space-y-2">
+<span class="text-xs font-mono text-blue-600 font-semibold">01 // GTM SYSTEMS</span>
+<h3 class="font-display text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight">Turn signals into pipeline.</h3>
+<p class="text-sm text-slate-600">Real-time event streams replace manual prospecting with verified buying intent.</p>
+</div>
+<div class="lg:col-span-8">
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+<div class="p-4 rounded-2xl bg-white border border-slate-200 text-center space-y-1 shadow-sm">
+<span class="font-mono text-[10px] text-slate-400 uppercase">STEP 01</span>
+<div class="font-display text-xs font-bold text-slate-900">SIGNAL</div>
+<div class="font-mono text-[11px] text-blue-600">Trigger Log</div>
+</div>
+<div class="p-4 rounded-2xl bg-white border border-slate-200 text-center space-y-1 shadow-sm">
+<span class="font-mono text-[10px] text-slate-400 uppercase">STEP 02</span>
+<div class="font-display text-xs font-bold text-slate-900">QUALIFY</div>
+<div class="font-mono text-[11px] text-indigo-600">ICP Filter</div>
+</div>
+<div class="p-4 rounded-2xl bg-white border border-slate-200 text-center space-y-1 shadow-sm">
+<span class="font-mono text-[10px] text-slate-400 uppercase">STEP 03</span>
+<div class="font-display text-xs font-bold text-slate-900">ENRICH</div>
+<div class="font-mono text-[11px] text-purple-600">Context Pack</div>
+</div>
+<div class="p-4 rounded-2xl bg-white border border-slate-200 text-center space-y-1 shadow-sm">
+<span class="font-mono text-[10px] text-slate-400 uppercase">STEP 04</span>
+<div class="font-display text-xs font-bold text-slate-900">OUTREACH</div>
+<div class="font-mono text-[11px] text-blue-600">Multi-Channel</div>
+</div>
+<div class="p-4 rounded-2xl bg-white border border-slate-200 text-center space-y-1 shadow-sm col-span-2 sm:col-span-1">
+<span class="font-mono text-[10px] text-slate-400 uppercase">STEP 05</span>
+<div class="font-display text-xs font-bold text-slate-900">REPLY</div>
+<div class="font-mono text-[11px] text-emerald-600">Booked Demo</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 02 AI REVENUE SYSTEMS: Central AI Node Layout -->
+<div class="p-8 sm:p-10 rounded-3xl bg-[#FAFAFD] border border-slate-200/90 shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-5 space-y-2">
+<span class="text-xs font-mono text-indigo-600 font-semibold">02 // AI REVENUE SYSTEMS</span>
+<h3 class="font-display text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight">Put AI where the work happens.</h3>
+<p class="text-sm text-slate-600">Autonomous multi-agent execution wired directly into your operating knowledge graph.</p>
+</div>
+<div class="lg:col-span-7">
+<div class="relative bg-white rounded-2xl p-6 sm:p-8 border border-slate-200">
+<div class="grid grid-cols-2 gap-4">
+<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+<div class="text-[11px] font-mono text-slate-400 uppercase">INPUT</div>
+<div class="font-display text-xs font-bold text-slate-900 mt-0.5">CONTEXT</div>
+<p class="text-[11px] text-slate-500 mt-1">Enterprise Slack, Notion &amp; call transcripts</p>
+</div>
+<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+<div class="text-[11px] font-mono text-slate-400 uppercase">RETRIEVAL</div>
+<div class="font-display text-xs font-bold text-slate-900 mt-0.5">KNOWLEDGE</div>
+<p class="text-[11px] text-slate-500 mt-1">pgvector embedding search with sub-50ms sync</p>
+</div>
+<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+<div class="text-[11px] font-mono text-slate-400 uppercase">LOGIC</div>
+<div class="font-display text-xs font-bold text-slate-900 mt-0.5">DECISION</div>
+<p class="text-[11px] text-slate-500 mt-1">Deterministic schema-enforced confidence scores</p>
+</div>
+<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+<div class="text-[11px] font-mono text-slate-400 uppercase">OUTPUT</div>
+<div class="font-display text-xs font-bold text-slate-900 mt-0.5">ACTION</div>
+<p class="text-[11px] text-slate-500 mt-1">Verified outreach with human intercept gates</p>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-mono text-slate-500">
+<span>ORCHESTRATION: LANGGRAPH / TEMPORAL</span>
+<span class="text-emerald-600 font-semibold">ZERO HALLUCINATIONS</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 03 CUSTOM AI PRODUCTS: Asymmetric Interface Preview -->
+<div class="p-8 sm:p-10 rounded-3xl bg-[#FAFAFD] border border-slate-200/90 shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-5 space-y-2">
+<span class="text-xs font-mono text-purple-600 font-semibold">03 // BESPOKE SOFTWARE</span>
+<h3 class="font-display text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight">Build what your business can’t buy.</h3>
+<p class="text-sm text-slate-600">Custom intelligence apps and client portals engineered directly in your AWS or GCP VPC.</p>
+</div>
+<div class="lg:col-span-7">
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 text-xs">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+<span class="font-display font-semibold text-slate-900">Custom Intelligence Portal</span>
+</div>
+<span class="font-mono text-slate-400">Single-Tenant VPC</span>
+</div>
+<div class="py-4 space-y-3">
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-600">Proprietary Inference Latency</span>
+<span class="font-mono text-emerald-600 font-semibold">24ms (Optimal)</span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-blue-600 to-indigo-600 h-full w-4/5"></div>
+</div>
+<div class="flex items-center justify-between text-xs pt-1 font-mono text-slate-500">
+<span>Attributed Deal Lift: +42%</span>
+<span>Zero Headcount Tax</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 3. SECTION: CONNECTED SYSTEM (Large Dark Navy Technical Section) -->
+<!-- ========================================================================= -->
+<section class="py-24 lg:py-32 bg-[#0A0E18] text-white relative overflow-hidden" id="connected-system">
+<div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:28px_28px] opacity-20 pointer-events-none"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<div class="text-center max-w-3xl mx-auto mb-20 space-y-3">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/60 border border-blue-800/40 text-blue-400 text-xs font-mono">
+        ARCHITECTURE TOPOLOGY
+      </div>
+<h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+        Your GTM, AI and data should <span class="italic font-serif font-normal text-blue-400">work together.</span>
+</h2>
+<p class="text-slate-400 text-base max-w-xl mx-auto">
+        A single connected topology replacing disconnected point tools with continuous compounding intelligence.
+      </p>
+</div>
+<!-- ONE Large Architecture Diagram: Generous, Impressive, Minimal labels -->
+<div class="max-w-5xl mx-auto bg-[#111726]/80 rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-2xl backdrop-blur-sm">
+<div class="grid grid-cols-1 md:grid-cols-6 gap-6 items-center text-center">
+<!-- DATA -->
+<div class="p-6 rounded-2xl bg-[#172033] border border-slate-700/60 flex flex-col items-center">
+<span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-mono text-xs font-bold mb-3">01</span>
+<div class="font-display text-base font-bold text-white">DATA</div>
+<p class="font-mono text-[11px] text-slate-400 mt-1">Raw Ingestion</p>
+</div>
+<div class="hidden md:flex justify-center text-slate-600 text-xl font-mono">→</div>
+<!-- SIGNALS -->
+<div class="p-6 rounded-2xl bg-[#172033] border border-slate-700/60 flex flex-col items-center">
+<span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-mono text-xs font-bold mb-3">02</span>
+<div class="font-display text-base font-bold text-white">SIGNALS</div>
+<p class="font-mono text-[11px] text-slate-400 mt-1">ICP Gates</p>
+</div>
+<div class="hidden md:flex justify-center text-slate-600 text-xl font-mono">→</div>
+<!-- INTELLIGENCE & AI -->
+<div class="p-6 rounded-2xl bg-[#172033] border border-slate-700/60 flex flex-col items-center ring-1 ring-blue-500/30">
+<span class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-mono text-xs font-bold mb-3">03</span>
+<div class="font-display text-base font-bold text-white">AI BRAIN</div>
+<p class="font-mono text-[11px] text-slate-400 mt-1">Vector Graph</p>
+</div>
+<div class="hidden md:flex justify-center text-slate-600 text-xl font-mono">→</div>
+<!-- EXECUTION & MEASURE -->
+<div class="p-6 rounded-2xl bg-gradient-to-b from-blue-600/30 to-blue-800/40 border border-blue-500/40 flex flex-col items-center col-span-1 md:col-span-6 lg:col-span-1">
+<span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono text-xs font-bold mb-3">04</span>
+<div class="font-display text-base font-bold text-white">EXECUTION</div>
+<p class="font-mono text-[11px] text-emerald-400 mt-1">Closed-Loop CRM</p>
+</div>
+</div>
+<div class="mt-10 pt-6 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-xs font-mono text-slate-400">
+<span>TOPOLOGY: CLIENT-OWNED VPC STATE MACHINE</span>
+<span class="text-blue-400">SOC-2 TYPE II READY • ZERO LOCK-IN</span>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 4. SECTION: FROM SIGNAL TO PIPELINE (Light Split Editorial Workflow) -->
+<!-- ========================================================================= -->
+<section class="py-24 bg-[#FAFAFD] border-b border-slate-200/60">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+<div class="lg:col-span-4 space-y-3">
+<div class="text-xs font-mono text-blue-600 font-semibold uppercase tracking-wider">PIPELINE CADENCE</div>
+<h2 class="font-display text-3xl sm:text-4xl font-bold text-slate-950 tracking-tight">
+          Turn signals into pipeline.
+        </h2>
+<p class="text-slate-600 text-base leading-relaxed">
+          High-intent triggers replace cold prospecting. Your reps receive enriched, qualified opportunities automatically.
+        </p>
+</div>
+<div class="lg:col-span-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2">
+<div class="font-mono text-xs font-bold text-blue-600">01 // SIGNAL</div>
+<h4 class="font-display text-base font-bold text-slate-900">Event Detection</h4>
+<p class="text-xs text-slate-500 leading-relaxed">Capture real-time buying signals like leadership hiring, tech changes, and filings.</p>
+</div>
+<div class="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2">
+<div class="font-mono text-xs font-bold text-indigo-600">02 // QUALIFY</div>
+<h4 class="font-display text-base font-bold text-slate-900">Deterministic Scoring</h4>
+<p class="text-xs text-slate-500 leading-relaxed">Filter noise through strictly defined business rules and ICP thresholds.</p>
+</div>
+<div class="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2">
+<div class="font-mono text-xs font-bold text-purple-600">03 // ACT</div>
+<h4 class="font-display text-base font-bold text-slate-900">Contextual Dispatch</h4>
+<p class="text-xs text-slate-500 leading-relaxed">Multi-agent system drafts bespoke messaging grounded in client account data.</p>
+</div>
+<div class="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2">
+<div class="font-mono text-xs font-bold text-emerald-600">04 // MEASURE</div>
+<h4 class="font-display text-base font-bold text-slate-900">Telemetry Feedback</h4>
+<p class="text-xs text-slate-500 leading-relaxed">Direct bi-directional sync into Salesforce &amp; HubSpot with attributed pipeline.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 5. SECTION: AI (Before vs. After Comparison) -->
+<!-- ========================================================================= -->
+<section class="py-24 bg-white border-b border-slate-200/60" id="ai-comparison">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
+<div class="text-xs font-mono text-blue-600 uppercase tracking-wider font-semibold">PARADIGM SHIFT</div>
+<h2 class="font-display text-3xl sm:text-4xl font-bold text-slate-950 tracking-tight">
+        AI is powerful. <span class="italic font-serif font-normal text-blue-600">Disconnected AI isn’t.</span>
+</h2>
+<p class="text-slate-600 text-sm">
+        Moving from one-off chat boxes to enterprise pipelines that compound in value.
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+<!-- Disconnected AI (Subtle red / gray) -->
+<div class="p-8 rounded-3xl bg-rose-50/30 border border-rose-100/80 space-y-6">
+<div class="flex items-center justify-between pb-4 border-b border-rose-100">
+<span class="font-mono text-xs text-rose-600 font-semibold">DISCONNECTED AI</span>
+<span class="material-symbols-outlined text-rose-400 text-lg">close</span>
+</div>
+<div class="space-y-4 font-mono text-xs">
+<div class="p-3 bg-white rounded-xl border border-rose-100 text-slate-700 flex justify-between">
+<span>Prompt</span>
+<span class="text-rose-500 font-medium">Generic text input</span>
+</div>
+<div class="text-center text-rose-300">↓</div>
+<div class="p-3 bg-white rounded-xl border border-rose-100 text-slate-700 flex justify-between">
+<span>Output</span>
+<span class="text-rose-500 font-medium">Unverified hallucination</span>
+</div>
+<div class="text-center text-rose-300">↓</div>
+<div class="p-3 bg-white rounded-xl border border-rose-100 text-slate-700 flex justify-between">
+<span>Manual Work</span>
+<span class="text-rose-500 font-medium">Copy-pasting into tools</span>
+</div>
+</div>
+</div>
+<!-- Connected AI (Electric Blue / Green) -->
+<div class="p-8 rounded-3xl bg-blue-50/30 border border-blue-100/80 space-y-6 shadow-sm">
+<div class="flex items-center justify-between pb-4 border-b border-blue-100">
+<span class="font-mono text-xs text-blue-600 font-semibold">CONNECTED AI</span>
+<span class="material-symbols-outlined text-emerald-500 text-lg">check_circle</span>
+</div>
+<div class="space-y-4 font-mono text-xs">
+<div class="p-3 bg-white rounded-xl border border-blue-100 text-slate-800 flex justify-between shadow-xs">
+<span>Context</span>
+<span class="text-blue-600 font-medium">Knowledge graph vectors</span>
+</div>
+<div class="text-center text-blue-400">↓</div>
+<div class="p-3 bg-white rounded-xl border border-blue-100 text-slate-800 flex justify-between shadow-xs">
+<span>Agent</span>
+<span class="text-blue-600 font-medium">Schema-gated multi-agents</span>
+</div>
+<div class="text-center text-blue-400">↓</div>
+<div class="p-3 bg-white rounded-xl border border-blue-100 text-slate-800 flex justify-between shadow-xs">
+<span>Action &amp; Learning</span>
+<span class="text-emerald-600 font-medium">Automated CRM execution</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 6. SECTION: CUSTOM AI PRODUCTS (Polished Product Showcase on Light) -->
+<!-- ========================================================================= -->
+<section class="py-24 bg-[#FAFAFD] border-b border-slate-200/60" id="products">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="max-w-2xl mb-16 space-y-2">
+<div class="text-xs font-mono text-blue-600 uppercase tracking-wider font-semibold">CUSTOM SOFTWARE</div>
+<h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-950 tracking-tight">
+        Build what your business <span class="italic font-serif font-normal text-blue-600">can’t buy.</span>
+</h2>
+<p class="text-slate-600 text-sm">
+        Production-ready custom AI applications running in your single-tenant infrastructure.
+      </p>
+</div>
+<!-- Asymmetric 3-Product Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+<!-- Featured Large Product UI (Col 7) -->
+<div class="lg:col-span-7 bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold">FEATURED BUILD</span>
+<span class="font-mono text-xs text-slate-400">Deployed v2.4</span>
+</div>
+<h3 class="font-display text-2xl font-bold text-slate-950">Revenue Intelligence Console</h3>
+<p class="text-sm text-slate-600 mt-1 mb-6">Live buyer intent analysis, deal-risk radar, and executive summaries from customer calls.</p>
+<!-- Mock Interface -->
+<div class="bg-slate-50 rounded-2xl p-5 border border-slate-100 font-mono text-xs space-y-3">
+<div class="flex justify-between items-center text-slate-500 pb-2 border-b border-slate-200/60">
+<span>DEAL HEALTH TELEMETRY</span>
+<span class="text-emerald-600 font-semibold">96% CONFIDENCE</span>
+</div>
+<div class="flex justify-between items-center text-slate-800">
+<span>Identified Expansion Potential:</span>
+<span class="font-semibold text-blue-600">+$180k ARR</span>
+</div>
+<div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full w-4/5"></div>
+</div>
+<div class="text-[11px] text-slate-500 pt-1">
+              Key Trigger: "Evaluating data sovereignty solutions for Q3 migration"
+            </div>
+</div>
+</div>
+<div class="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono text-slate-500">
+<span>STACK: WHISPER • CLAUDE 3.5 • PGVECTOR</span>
+<span class="text-blue-600 font-semibold">SOC-2 COMPLIANT</span>
+</div>
+</div>
+<!-- Two Stacked Companion Previews (Col 5) -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<!-- Companion 1: Company Brain -->
+<div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+<span>KNOWLEDGE ENGINE</span>
+<span class="text-indigo-600">ACTIVE</span>
+</div>
+<h4 class="font-display text-lg font-bold text-slate-950">Enterprise Company Brain</h4>
+<p class="text-xs text-slate-600 mt-1">Semantic search unifying Notion, Slack, Gong and support logs.</p>
+</div>
+<div class="mt-4 p-3 bg-slate-50 rounded-xl font-mono text-xs text-slate-700 border border-slate-100 flex justify-between items-center">
+<span>Query: "Q3 pricing changes"</span>
+<span class="text-blue-600 text-[11px]">3 docs matched</span>
+</div>
+</div>
+<!-- Companion 2: Custom AI Workflow -->
+<div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+<span>AUTOMATION ENGINE</span>
+<span class="text-emerald-600">SUPERVISED</span>
+</div>
+<h4 class="font-display text-lg font-bold text-slate-950">Human-in-the-Loop Co-Pilot</h4>
+<p class="text-xs text-slate-600 mt-1">Autonomous draft generation with one-click rep intercept approvals.</p>
+</div>
+<div class="mt-4 p-3 bg-slate-50 rounded-xl font-mono text-xs text-slate-700 border border-slate-100 flex justify-between items-center">
+<span>Approval Rate: 98.4%</span>
+<span class="text-emerald-600 text-[11px]">Sub-30ms loop</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 7. SECTION: HOW WE BUILD (Continuous Horizontal Timeline) -->
+<!-- ========================================================================= -->
+<section class="py-24 bg-white border-b border-slate-200/60">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
+<div class="text-xs font-mono text-blue-600 uppercase tracking-wider font-semibold">VELOCITY</div>
+<h2 class="font-display text-3xl sm:text-4xl font-bold text-slate-950 tracking-tight">
+        From bottleneck to production in <span class="italic font-serif font-normal text-blue-600">14 days.</span>
+</h2>
+<p class="text-slate-600 text-sm">
+        No endless consulting decks. We code directly into your stack.
+      </p>
+</div>
+<!-- Spacious Horizontal 5-Step Flow -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+<div class="p-6 rounded-2xl bg-[#FAFAFD] border border-slate-200/80 space-y-2">
+<span class="font-mono text-xs font-bold text-blue-600">01 // DIAGNOSE</span>
+<h4 class="font-display text-sm font-bold text-slate-900">Find Bottlenecks</h4>
+<p class="text-xs text-slate-500">48-hour pipeline audit.</p>
+</div>
+<div class="p-6 rounded-2xl bg-[#FAFAFD] border border-slate-200/80 space-y-2">
+<span class="font-mono text-xs font-bold text-blue-600">02 // ARCHITECT</span>
+<h4 class="font-display text-sm font-bold text-slate-900">Schema &amp; Logic</h4>
+<p class="text-xs text-slate-500">Deterministic model state.</p>
+</div>
+<div class="p-6 rounded-2xl bg-[#FAFAFD] border border-slate-200/80 space-y-2">
+<span class="font-mono text-xs font-bold text-blue-600">03 // BUILD</span>
+<h4 class="font-display text-sm font-bold text-slate-900">Agent Swarm</h4>
+<p class="text-xs text-slate-500">Code agent workflows.</p>
+</div>
+<div class="p-6 rounded-2xl bg-[#FAFAFD] border border-slate-200/80 space-y-2">
+<span class="font-mono text-xs font-bold text-blue-600">04 // DEPLOY</span>
+<h4 class="font-display text-sm font-bold text-slate-900">VPC Partition</h4>
+<p class="text-xs text-slate-500">Ship in your AWS or GCP.</p>
+</div>
+<div class="p-6 rounded-2xl bg-[#FAFAFD] border border-slate-200/80 space-y-2">
+<span class="font-mono text-xs font-bold text-emerald-600">05 // IMPROVE</span>
+<h4 class="font-display text-sm font-bold text-slate-900">Telemetry Tune</h4>
+<p class="text-xs text-slate-500">Closed-loop refinement.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 8. SECTION: DATA SOVEREIGNTY / OWNERSHIP (Minimal Diagram) -->
+<!-- ========================================================================= -->
+<section class="py-24 bg-[#FAFAFD] border-b border-slate-200/60" id="sovereignty">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
+<div class="text-xs font-mono text-blue-600 uppercase tracking-wider font-semibold">SOVEREIGNTY</div>
+<h2 class="font-display text-3xl sm:text-4xl font-bold text-slate-950 tracking-tight">
+        Built for your business. <span class="italic font-serif font-normal text-blue-600">Owned by your team.</span>
+</h2>
+<p class="text-slate-600 text-sm">
+        Zero vendor lock-in. Full ownership of code, model weights, and data infrastructure.
+      </p>
+</div>
+<!-- Minimal Flow -->
+<div class="max-w-4xl mx-auto bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-8">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+<span class="font-mono text-[10px] text-slate-400 block mb-1">01</span>
+<div class="font-display text-xs font-bold text-slate-900">YOUR DATA</div>
+</div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+<span class="font-mono text-[10px] text-slate-400 block mb-1">02</span>
+<div class="font-display text-xs font-bold text-slate-900">YOUR INFRA</div>
+</div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+<span class="font-mono text-[10px] text-slate-400 block mb-1">03</span>
+<div class="font-display text-xs font-bold text-slate-900">YOUR WORKFLOWS</div>
+</div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+<span class="font-mono text-[10px] text-slate-400 block mb-1">04</span>
+<div class="font-display text-xs font-bold text-slate-900">YOUR SYSTEM</div>
+</div>
+</div>
+<!-- 4 Clean Supporting Pills -->
+<div class="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-center gap-3">
+<span class="px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">No lock-in</span>
+<span class="px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">Your infrastructure</span>
+<span class="px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">Transparent stack</span>
+<span class="px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">Human control</span>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 9. SECTION: TECH ECOSYSTEM (Subtle Compact Ecosystem Line) -->
+<!-- ========================================================================= -->
+<section class="py-16 bg-white border-b border-slate-200/60">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+<div class="inline-flex flex-wrap items-center justify-center gap-3 text-xs font-mono text-slate-600 bg-slate-50 px-6 py-3 rounded-full border border-slate-200">
+<span class="font-semibold text-slate-900">CRM</span>
+<span class="text-slate-300">•</span>
+<span class="font-semibold text-slate-900">AI MODELS</span>
+<span class="text-slate-300">•</span>
+<span class="font-semibold text-slate-900">DATA WAREHOUSE</span>
+<span class="text-slate-300">•</span>
+<span class="font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">SYNTROPIC SYSTEM</span>
+<span class="text-slate-300">•</span>
+<span class="font-semibold text-slate-900">AUTOMATION</span>
+<span class="text-slate-300">•</span>
+<span class="font-semibold text-slate-900">ANALYTICS</span>
+<span class="text-slate-300">•</span>
+<span class="font-semibold text-slate-900">INFRASTRUCTURE</span>
+</div>
+<p class="font-sans text-xs text-slate-500">
+      Built around the tools your team already uses. No rip-and-replace required.
+    </p>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 10. FINAL CTA: Signature Dark Midnight Block -->
+<!-- ========================================================================= -->
+<section class="py-24 bg-white" id="contact">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="relative bg-[#0A0E18] rounded-3xl p-10 sm:p-16 lg:p-20 text-white overflow-hidden shadow-2xl border border-slate-800">
+<!-- Subtle ambient glow -->
+<div class="absolute -top-32 -right-32 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute -bottom-32 -left-32 w-80 h-80 bg-indigo-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="relative z-10 max-w-2xl mx-auto text-center space-y-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-800/50 text-blue-400 font-mono text-xs">
+          START A BUILD
+        </div>
+<h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+          Let’s build the system your business <span class="italic font-serif font-normal text-blue-400">needs next.</span>
+</h2>
+<p class="text-slate-400 text-base max-w-lg mx-auto">
+          Tell us about your pipeline friction. We’ll engineer the production system.
+        </p>
+<div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+<a class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all" href="mailto:build@syntropic.ai">
+<span>Start a Build</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-slate-900 text-slate-200 border border-slate-700 font-medium text-sm hover:bg-slate-800 transition-all" href="#what-we-build">
+<span>Explore Solutions</span>
+</a>
+</div>
+<div class="pt-8 border-t border-slate-800/80 flex flex-wrap items-center justify-center gap-6 font-mono text-xs text-slate-400">
+<span>• Direct Principal Engineer Access</span>
+<span>• 48h Viability Audit</span>
+<span>• Mutual NDA by Default</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- ========================================================================= -->
+<!-- GLOBAL FOOTER (Standard Syntropic Engineering Dark Footer) -->
+<!-- ========================================================================= -->
+<footer class="w-full bg-[#070A12] border-t border-slate-800 text-slate-400 pt-16 pb-12">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-12 border-b border-slate-800/80">
+<div class="space-y-2">
+<div class="flex items-center gap-2.5">
+<div class="w-6 h-6 rounded bg-blue-600 flex items-center justify-center text-white font-display font-bold text-xs">
+            S
+          </div>
+<span class="font-display font-bold text-lg text-white">Syntropic</span>
+<span class="text-xs font-mono text-slate-400 ml-1">AI + GTM Engineering</span>
+</div>
+<p class="text-xs text-slate-500">
+          Architecting deterministic pipeline infrastructure and autonomous revenue systems.
+        </p>
+</div>
+<div class="flex flex-wrap items-center gap-6 text-xs font-medium text-slate-300">
+<a class="text-white hover:text-blue-400 transition-colors" href="#what-we-build">What We Build</a>
+<a class="hover:text-white transition-colors" href="#connected-system">How It Works</a>
+<a class="hover:text-white transition-colors" href="#products">Work</a>
+<a class="hover:text-white transition-colors" href="#ai-comparison">AI Agents</a>
+<a class="hover:text-white transition-colors" href="#sovereignty">About</a>
+<a class="hover:text-white transition-colors" href="#">Blog</a>
+</div>
+<a class="px-4 py-2 rounded-full bg-slate-800 hover:bg-blue-600 text-white text-xs font-semibold tracking-wide border border-slate-700 transition-colors" href="#contact">
+        Book a Discovery →
+      </a>
+</div>
+<div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-600">
+<span>© 2025 Syntropic Technologies Inc. All rights reserved.</span>
+<div class="flex items-center gap-6 text-slate-500">
+<a class="hover:text-slate-300 transition-colors" href="#">Privacy</a>
+<a class="hover:text-slate-300 transition-colors" href="#">Terms</a>
+<a class="hover:text-slate-300 transition-colors" href="#">Security</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

@@ -8,6 +8,7 @@ import { localePath } from "@/lib/i18n"
 import { SectionRenderer } from "@/components/sections/SectionRenderer"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { serviceJsonLd } from "@/lib/seo/agency-jsonld"
+import { SiteChrome } from "@/components/site/SiteChrome"
 import type { Locale } from "@rove/cms/constants"
 import type { CmsSection } from "@rove/cms/types"
 
@@ -43,19 +44,25 @@ export async function generateMetadata({
   })
 }
 
-export default async function ServicePage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
-  const { slug } = await params
+export default async function ServicePage({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}) {
+  const { locale, slug } = await params
   const doc = await sanityFetch<Doc>({ query: agencyServiceBySlugQuery, params: { slug } })
   if (!doc) notFound()
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <JsonLd data={serviceJsonLd(doc)} />
-      <h1 className="text-3xl font-semibold">{doc.title}</h1>
-      {doc.summary ? <p className="mt-3 text-muted-foreground">{doc.summary}</p> : null}
-      <div className="mt-10">
-        <SectionRenderer sections={doc.sections} />
-      </div>
-    </main>
+    <SiteChrome locale={locale as Locale}>
+      <main className="mx-auto max-w-3xl px-6 py-16">
+        <JsonLd data={serviceJsonLd(doc)} />
+        <h1 className="text-3xl font-semibold">{doc.title}</h1>
+        {doc.summary ? <p className="mt-3 text-muted-foreground">{doc.summary}</p> : null}
+        <div className="mt-10">
+          <SectionRenderer sections={doc.sections} />
+        </div>
+      </main>
+    </SiteChrome>
   )
 }

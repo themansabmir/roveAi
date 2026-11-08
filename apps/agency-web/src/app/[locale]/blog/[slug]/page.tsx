@@ -7,6 +7,7 @@ import { getSanityDataset, getSanityProjectId, getSiteUrl, isSanityConfigured } 
 import { localePath } from "@/lib/i18n"
 import { PortableTextBlock } from "@/components/sanity/PortableTextBlock"
 import type { Locale } from "@rove/cms/constants"
+import { SiteChrome } from "@/components/site/SiteChrome"
 
 type Doc = {
   title: string
@@ -40,19 +41,25 @@ export async function generateMetadata({
   })
 }
 
-export default async function BlogPostPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
-  const { slug } = await params
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}) {
+  const { locale, slug } = await params
   const doc = await sanityFetch<Doc>({ query: agencyBlogPostBySlugQuery, params: { slug } })
   if (!doc) notFound()
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <article>
-        <h1 className="text-3xl font-semibold">{doc.title}</h1>
-        <div className="mt-8">
-          <PortableTextBlock value={doc.body} />
-        </div>
-      </article>
-    </main>
+    <SiteChrome locale={locale as Locale}>
+      <main className="mx-auto max-w-3xl px-6 py-16">
+        <article>
+          <h1 className="text-3xl font-semibold">{doc.title}</h1>
+          <div className="mt-8">
+            <PortableTextBlock value={doc.body} />
+          </div>
+        </article>
+      </main>
+    </SiteChrome>
   )
 }
