@@ -13,7 +13,7 @@ function pathsForDocument(body: WebhookBody): string[] {
   const paths = [
     localePath(loc, "/"),
     localePath(loc, "/services"),
-    localePath(loc, "/work"),
+    localePath(loc, "/case-studies"),
     localePath(loc, "/blog"),
   ]
   if (!slug) return paths
@@ -22,7 +22,7 @@ function pathsForDocument(body: WebhookBody): string[] {
       paths.push(localePath(loc, `/services/${slug}`))
       break
     case "agencyCaseStudy":
-      paths.push(localePath(loc, `/work/${slug}`))
+      paths.push(localePath(loc, `/case-studies/${slug}`))
       break
     case "agencyBlogPost":
       paths.push(localePath(loc, `/blog/${slug}`))

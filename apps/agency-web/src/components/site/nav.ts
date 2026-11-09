@@ -1,23 +1,24 @@
+import { services } from "@/content/revops"
+
 export const primaryNav = [
-  { label: "Services", path: "/what-we-build" },
+  { label: "Services", path: "/services" },
   { label: "How it works", path: "/how-it-works" },
-  { label: "Work", path: "/work" },
+  { label: "Case studies", path: "/case-studies" },
   { label: "About", path: "/about" },
+  { label: "Contact", path: "/contact" },
 ] as const
 
 export const footerNav = [
   {
-    title: "What we run",
-    links: [
-      { label: "Services", path: "/what-we-build" },
-      { label: "How engagements work", path: "/how-it-works" },
-    ],
+    title: "Services",
+    links: services.items.map((item) => ({ label: item.name, path: `/services/${item.slug}` })),
   },
   {
     title: "Company",
     links: [
+      { label: "How it works", path: "/how-it-works" },
       { label: "About", path: "/about" },
-      { label: "Work", path: "/work" },
+      { label: "Case studies", path: "/case-studies" },
       { label: "Contact", path: "/contact" },
     ],
   },
@@ -25,10 +26,10 @@ export const footerNav = [
     title: "Resources",
     links: [
       { label: "Insights", path: "/blog" },
-      { label: "FAQ", path: "/how-it-works#faq-section" },
+      { label: "FAQ", path: "/how-it-works#faq" },
       { label: "AI and data policy", path: "/policy" },
     ],
   },
-] as const
+]
 
 export const primaryCta = { label: "Book a 30-minute review", path: "/contact" } as const

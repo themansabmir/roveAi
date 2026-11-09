@@ -4,24 +4,20 @@ import { agencySitemapEntriesQuery } from "@rove/cms/queries"
 import { getSiteUrl, isSanityConfigured } from "@/lib/env"
 import { localePath } from "@/lib/i18n"
 import { getSanityClient } from "@/lib/sanity/client"
-import { legacySiteRouteAliases, publicSitePages } from "@/content/siteMap"
+import { reservedSiteSlugs, staticSitePaths } from "@/content/siteMap"
+import { services } from "@/content/revops"
 
-const reserved = new Set<string>(AGENCY_RESERVED_SEGMENTS)
-for (const { slug } of publicSitePages) reserved.add(slug)
-for (const slug of Object.keys(legacySiteRouteAliases)) reserved.add(slug)
+const reserved = new Set<string>([...AGENCY_RESERVED_SEGMENTS, ...reservedSiteSlugs])
+const ownServiceSlugs = new Set<string>(services.items.map((item) => item.slug))
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl()
   const loc = defaultLocale
   const now = new Date()
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${siteUrl}${localePath(loc, "/")}`, lastModified: now },
-    { url: `${siteUrl}${localePath(loc, "/work")}`, lastModified: now },
-    ...publicSitePages.map(({ slug }) => ({
-      url: `${siteUrl}${localePath(loc, `/${slug}`)}`,
-      lastModified: now,
-    })),
-  ]
+  const staticRoutes: MetadataRoute.Sitemap = ["/", ...staticSitePaths].map((path) => ({
+    url: `${siteUrl}${localePath(loc, path)}`,
+    lastModified: now,
+  }))
 
   if (!isSanityConfigured()) return staticRoutes
 
@@ -34,18 +30,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticRoutes,
-    ...(entries?.services?.length
-      ? [{ url: `${siteUrl}${localePath(loc, "/services")}`, lastModified: now }]
-      : []),
     ...(entries?.posts?.length
       ? [{ url: `${siteUrl}${localePath(loc, "/blog")}`, lastModified: now }]
       : []),
-    ...(entries?.services?.map((s) => ({
-      url: `${siteUrl}${localePath(loc, `/services/${s.slug}`)}`,
-      lastModified: new Date(s._updatedAt),
-    })) ?? []),
+    ...(entries?.services
+      ?.filter((s) => !ownServiceSlugs.has(s.slug))
+      .map((s) => ({
+        url: `${siteUrl}${localePath(loc, `/services/${s.slug}`)}`,
+        lastModified: new Date(s._updatedAt),
+      })) ?? []),
     ...(entries?.caseStudies?.map((c) => ({
-      url: `${siteUrl}${localePath(loc, `/work/${c.slug}`)}`,
+      url: `${siteUrl}${localePath(loc, `/case-studies/${c.slug}`)}`,
       lastModified: new Date(c._updatedAt),
     })) ?? []),
     ...(entries?.posts?.map((p) => ({

@@ -18,6 +18,7 @@ import { RevenueLine } from "@/components/home/RevenueLine"
 import { BrandMarquee } from "@/components/home/BrandMarquee"
 import { ProblemShowcase } from "@/components/home/ProblemShowcase"
 import { StackFlow } from "@/components/home/StackFlow"
+import { PurposeBand } from "@/components/blocks/PurposeBand"
 
 export type HomePost = { title: string; excerpt?: string; slug: string }
 
@@ -110,7 +111,7 @@ function Services({ locale }: { locale: Locale }) {
   return (
     <section aria-labelledby="services-heading" className="py-24 lg:py-32" id="services">
       <div className="rv-container">
-        <ServiceStack contactHref={localePath(locale, "/contact")} />
+        <ServiceStack locale={locale} />
       </div>
     </section>
   )
@@ -211,6 +212,29 @@ function ServiceTag({ id, tone }: { id: string; tone: "dark" | "light" }) {
 const bentoCard =
   "group relative overflow-hidden rounded-3xl border p-7 transition-[transform,box-shadow,border-color] duration-500 ease-out hover:-translate-y-1 sm:p-9"
 
+const caseSlugs: Record<string, string> = {
+  roister: "roister",
+  codeninjas: "codeninjas",
+  syntropic: "rivet-outbound",
+}
+
+function CaseLink({ id, locale, tone }: { id: string; locale: Locale; tone: "dark" | "light" }) {
+  const slug = caseSlugs[id]
+  if (!slug) return null
+  return (
+    <Link
+      className={`relative mt-6 inline-flex w-fit items-center gap-2 text-sm font-semibold underline decoration-2 underline-offset-4 transition-colors ${
+        tone === "dark"
+          ? "text-brand-bright decoration-brand-bright/30 hover:decoration-brand-bright"
+          : "text-brand decoration-brand/30 hover:decoration-brand"
+      }`}
+      href={localePath(locale, `/case-studies/${slug}`)}
+    >
+      Read the case study
+    </Link>
+  )
+}
+
 function Proof({ locale }: { locale: Locale }) {
   const { proof } = homeContent
   const [roister, codeNinjas, own] = proof.projects
@@ -221,8 +245,8 @@ function Proof({ locale }: { locale: Locale }) {
           <h2 className="rv-heading max-w-2xl text-4xl sm:text-5xl" data-reveal>
             {proof.title}
           </h2>
-          <Link className="rv-link text-sm" href={localePath(locale, "/work")}>
-            See all work
+          <Link className="rv-link text-sm" href={localePath(locale, "/case-studies")}>
+            See all case studies
           </Link>
         </div>
 
@@ -242,6 +266,7 @@ function Proof({ locale }: { locale: Locale }) {
                 <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-muted">
                   {roister.claim}
                 </p>
+                <CaseLink id={roister.id} locale={locale} tone="dark" />
                 <div className="mt-auto pt-12">
                   <FlowSteps steps={roister.steps} tone="dark" />
                 </div>
@@ -259,6 +284,7 @@ function Proof({ locale }: { locale: Locale }) {
                 <ServiceTag id={codeNinjas.id} tone="light" />
                 <h3 className="rv-heading mt-8 text-4xl">{codeNinjas.name}</h3>
                 <p className="mt-4 text-[15px] leading-relaxed text-quiet">{codeNinjas.claim}</p>
+                <CaseLink id={codeNinjas.id} locale={locale} tone="light" />
                 <ol className="relative mt-auto space-y-4 pt-10">
                   <span
                     aria-hidden="true"
@@ -308,6 +334,7 @@ function Proof({ locale }: { locale: Locale }) {
               <p className="mt-3 text-[15px] leading-relaxed text-quiet">
                 We run the same system on ourselves. Results go here once they&apos;re measured.
               </p>
+              <CaseLink id={own.id} locale={locale} tone="light" />
               <div className="mt-8">
                 <FlowSteps steps={own.steps} tone="light" />
               </div>
@@ -347,7 +374,7 @@ function Proof({ locale }: { locale: Locale }) {
   )
 }
 
-function Compare() {
+export function Compare() {
   const [hire, agency, ours] = comparison.columns
   return (
     <section className="py-24 lg:py-32" id="compare">
@@ -482,7 +509,7 @@ function Insights({ locale, posts }: { locale: Locale; posts: HomePost[] }) {
   )
 }
 
-function Faq({ locale }: { locale: Locale }) {
+export function Faq({ locale }: { locale: Locale }) {
   const { faq } = homeContent
   return (
     <section className="border-t border-line bg-surface py-24 lg:py-32" id="faq">
@@ -517,10 +544,10 @@ function Faq({ locale }: { locale: Locale }) {
   )
 }
 
-function FinalCta({ locale }: { locale: Locale }) {
+export function FinalCta({ locale }: { locale: Locale }) {
   const { finalCta } = homeContent
   return (
-    <section className="relative overflow-hidden bg-ink py-24 text-white lg:py-36" id="contact">
+    <section className="relative overflow-hidden bg-ink py-24 text-white lg:py-36" id="start">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 [background-image:linear-gradient(to_right,rgb(var(--rv-ink-line-c)/0.6)_1px,transparent_1px)] [background-size:calc(100%/12)_100%]"
@@ -557,6 +584,7 @@ export function HomePage({ locale, posts = [] }: { locale: Locale; posts?: HomeP
         <Commitments />
         <Problem />
         <Services locale={locale} />
+        <PurposeBand />
         <HowItWorks />
         <Stack />
         <Proof locale={locale} />

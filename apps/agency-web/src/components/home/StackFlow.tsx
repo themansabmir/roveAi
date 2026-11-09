@@ -38,9 +38,11 @@ function ToolTile({ node, tone = "default" }: { node: FlowNode; tone?: "default"
   )
 }
 
-export function StackFlow() {
-  const [active, setActive] = useState(0)
-  const [userControlled, setUserControlled] = useState(false)
+export function StackFlow({ only }: { only?: string } = {}) {
+  const lockedIndex = only ? integrations.flows.findIndex((f) => f.serviceId === only) : -1
+  const locked = lockedIndex >= 0
+  const [active, setActive] = useState(locked ? lockedIndex : 0)
+  const [userControlled, setUserControlled] = useState(locked)
   const [inView, setInView] = useState(false)
   const [reduced, setReduced] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -83,7 +85,11 @@ export function StackFlow() {
 
   return (
     <div ref={rootRef}>
-      <div aria-label="Systems" className="flex flex-wrap gap-2" role="tablist">
+      <div
+        aria-label="Systems"
+        className={locked ? "hidden" : "flex flex-wrap gap-2"}
+        role="tablist"
+      >
         {integrations.flows.map((f, i) => {
           const selected = i === active
           return (

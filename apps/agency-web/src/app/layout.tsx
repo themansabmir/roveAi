@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { getSiteUrl } from "@/lib/env"
-import { geminiFontClasses } from "@/components/GeminiFonts"
+import { fontClasses } from "@/components/fonts"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html className={geminiFontClasses} lang="en" suppressHydrationWarning>
+    <html className={fontClasses} lang="en" suppressHydrationWarning>
       <body>{children}</body>
     </html>
   )

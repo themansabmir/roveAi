@@ -2,6 +2,8 @@
 
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
+import type { Locale } from "@rove/cms/constants"
+import { localePath } from "@/lib/i18n"
 import { revenueStages, services } from "@/content/revops"
 
 const STICKY_TOP = 112
@@ -30,7 +32,9 @@ function StageRail({ covered }: { covered: readonly string[] }) {
   )
 }
 
-export function ServiceStack({ contactHref }: { contactHref: string }) {
+export function ServiceStack({ locale }: { locale: Locale }) {
+  const contactHref = localePath(locale, "/contact")
+  const serviceHref = (slug: string) => localePath(locale, `/services/${slug}`)
   const [active, setActive] = useState(0)
   const activeRef = useRef(0)
   const cardRefs = useRef<(HTMLElement | null)[]>([])
@@ -277,9 +281,14 @@ export function ServiceStack({ contactHref }: { contactHref: string }) {
                   </div>
                 </div>
 
-                <Link className="rv-link relative mt-8 inline-block text-sm" href={contactHref}>
-                  Discuss this system on a call
-                </Link>
+                <div className="relative mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+                  <Link className="rv-btn-secondary" href={serviceHref(item.slug)}>
+                    Explore this system
+                  </Link>
+                  <Link className="rv-link text-sm" href={contactHref}>
+                    Discuss this system on a call
+                  </Link>
+                </div>
 
                 {/* Dims the card as the next one stacks over it. */}
                 <div

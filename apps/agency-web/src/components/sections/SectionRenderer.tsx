@@ -44,7 +44,9 @@ export function SectionRenderer({ sections }: { sections?: CmsSection[] | null }
                 ) : null}
                 <div className="flex flex-wrap gap-3">
                   {section.primaryCta ? <CtaButton cta={section.primaryCta} /> : null}
-                  {section.secondaryCta ? <CtaButton cta={section.secondaryCta} variant="outline" /> : null}
+                  {section.secondaryCta ? (
+                    <CtaButton cta={section.secondaryCta} variant="outline" />
+                  ) : null}
                 </div>
               </section>
             )
@@ -58,7 +60,9 @@ export function SectionRenderer({ sections }: { sections?: CmsSection[] | null }
                   <Card key={i}>
                     <CardHeader>
                       <CardTitle>{item.title}</CardTitle>
-                      {item.description ? <CardDescription>{item.description}</CardDescription> : null}
+                      {item.description ? (
+                        <CardDescription>{item.description}</CardDescription>
+                      ) : null}
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground" />
                   </Card>
@@ -68,7 +72,9 @@ export function SectionRenderer({ sections }: { sections?: CmsSection[] | null }
           case "faqBlock":
             return (
               <section key={index} className="max-w-2xl space-y-6">
-                {section.heading ? <h2 className="text-2xl font-semibold">{section.heading}</h2> : null}
+                {section.heading ? (
+                  <h2 className="text-2xl font-semibold">{section.heading}</h2>
+                ) : null}
                 <dl className="space-y-4">
                   {section.items?.map((item, i) => (
                     <div key={i}>

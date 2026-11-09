@@ -12,15 +12,21 @@
 - Shared chrome: `SiteHeader`, `SiteFooter`, `PageIntro`, `NotFoundView` in `src/components/site/`.
 - Rules: no invented metrics, clients or integrations. No small-print disclaimer lines. Primary CTA everywhere = "Book a 30-minute review" → `/contact`.
 
+## Done (phase 2)
+- Service pages: `/services` overview + `/services/{pipeline-generation,sales-crm-system,revenue-operations}` (`components/services/ServicePage.tsx`, content in `revops.ts` → `services.items`). Other CMS service slugs still render.
+- Rebuilt `/how-it-works`, `/about`, `/contact`, `/policy` as real routes. Policy content in `content/policy.ts`.
+- Contact form posts to `/api/contact` → forwards JSON to `CONTACT_WEBHOOK_URL` (returns 503 until set).
+- Legacy gemini pages, content, assets and old home components deleted; palette bridge removed. Old URLs 308-redirect via `content/siteMap.ts`.
+- Inner pages no longer reuse homepage sections: `/services` has a stage map + symptom finder (`components/services/ServicesOverview.tsx`), service pages show a static tool chain, How it works has a 5-phase timeline + process FAQ. Inner pages close with `components/site/CtaPanel.tsx`.
+- Header "Services" is a hover/click mega-menu listing the three service pages; mobile menu lists them under Services.
+- Work: `/work` bento grid + "What we measure" section; case study pages at `/work/{roister,codeninjas,rivet-outbound}` (content in `content/work.ts`, views in `components/work/`). CMS case studies still render.
+
 ## Next actions
-- **Service pages**: one page per core service (`/services/pipeline-generation`, `/services/sales-crm`, `/services/revenue-ops`). Each: problem, business impact, approach, process, deliverables, tools (reuse `StackFlow` single flow), where you decide, after handover, related case study, CTA. Point header "Services" to a new overview; retire `/what-we-build` (redirect).
-- **How it works** (`/how-it-works`, legacy gemini `faq` page): rebuild in new system. Diagnose → Build → Run → Hand over, approval gates (content in `home.ts` → `control.gates`), handover detail, FAQ (reuse `homeContent.faq`).
-- **About** (`/about`, legacy `why-us`): rebuild. Principles, ownership model, who we are. Remove unverified claims (e.g. "100% attributed", "Zero hallucination").
-- **Contact** (`/contact`, legacy `build-system`): rebuild as a short booking form (name, work email, company, CRM, main problem). Wire to a real endpoint/scheduler.
-- **Policy** (`/policy`): restyle; keep compliance content (US only, opt-out, 24h unsubscribe).
-- **Work** (`/work`): case study detail pages in Problem → Approach → Implementation → Result format.
-- **Cleanup**: delete unused legacy gemini pages/content (case-study, cta-page, data-flow, insight-resource, system-breakdown, system-selection, case-study-maybe) and old home components (`HomePageSections`, `CaseStudiesGrid`, `ClientMarquee`, `HomeFooter`, `RevenueLeakAudit`, etc.). Then drop the palette-bridge overrides in `globals.css`.
-- **Brand loose ends**: replace `@syntropic.ai` emails; add real client and tool logos (`homeContent.clientMarquee.brands[].logo`, `tools[].logo` in `revops.ts`); check trademark and domain for "Rivet".
+- **Set `CONTACT_WEBHOOK_URL`** (n8n/Make/Slack) or swap in a scheduler (Cal.com) on `/contact`.
+- **Policy vs positioning conflict**: `content/policy.ts` handover says "internal agent code… remain ours" and "Automation stops after handover unless your team can operate it". Homepage says "keeps running after our contract ends". Owner must reconcile.
+- **Work** (`/work`): get client sign-off on case study briefs and step details in `content/work.ts`; add measured results when available.
+- **Brand loose ends**: real contact/privacy emails on the Rivet domain; real client and tool logos (`homeContent.clientMarquee.brands[].logo`, `tools[].logo` in `revops.ts`); check trademark and domain for "Rivet".
 - **Legal**: add Privacy and Terms pages, link them in the footer.
-- **Content needing owner sign-off**: comparison table "Typical agency" column; FAQ claims (no tool markup, workflows owned by client, optional ongoing operation).
+- **Content needing owner sign-off**: comparison table "Typical agency" column; FAQ claims (no tool markup, workflows owned by client, optional ongoing operation); service-page copy in `revops.ts`.
+- **Tidy**: `home.ts` still holds unused legacy blocks (audit, positioningStatement, threeParts, pricing, etc.).
 - **QA**: run `next build` with the dev server stopped; check 375/768/1024/1440/1920; Lighthouse (performance, accessibility, SEO); `prefers-reduced-motion`.

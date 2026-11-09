@@ -2,11 +2,126 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useEffect, useId, useState } from "react"
+import { useEffect, useId, useRef, useState, type FocusEvent } from "react"
 import type { Locale } from "@rove/cms/constants"
 import { localePath } from "@/lib/i18n"
 import { primaryCta, primaryNav } from "@/components/site/nav"
 import { Wordmark } from "@/components/site/Wordmark"
+import { revenueStages, services } from "@/content/revops"
+
+const stageRange = (stages: readonly string[]) => {
+  const names = revenueStages.filter((s) => stages.includes(s.id)).map((s) => s.name)
+  return names.length > 1 ? `${names[0]} → ${names[names.length - 1]}` : (names[0] ?? "")
+}
+
+function ServicesMenu({ locale, active }: { locale: Locale; active: boolean }) {
+  const pathname = usePathname()
+  const menuId = useId()
+  const [open, setOpen] = useState(false)
+  const closeTimer = useRef<number | undefined>(undefined)
+
+  const show = () => {
+    window.clearTimeout(closeTimer.current)
+    setOpen(true)
+  }
+  const hideSoon = () => {
+    window.clearTimeout(closeTimer.current)
+    closeTimer.current = window.setTimeout(() => setOpen(false), 140)
+  }
+
+  useEffect(() => setOpen(false), [pathname])
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [open])
+
+  const onBlur = (event: FocusEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false)
+  }
+
+  return (
+    <div className="relative" onBlur={onBlur} onMouseEnter={show} onMouseLeave={hideSoon}>
+      <button
+        aria-controls={menuId}
+        aria-expanded={open}
+        className={`relative flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+          active || open ? "text-ink" : "text-quiet hover:text-ink"
+        }`}
+        onClick={() => setOpen((value) => !value)}
+        type="button"
+      >
+        Services
+        <svg
+          aria-hidden="true"
+          className={`h-3 w-3 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 12 12"
+        >
+          <path d="m3 4.5 3 3 3-3" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
+        </svg>
+        <span
+          aria-hidden="true"
+          className={`absolute inset-x-3 -bottom-px h-px origin-left bg-brand transition-transform duration-300 ease-out ${
+            active ? "scale-x-100" : "scale-x-0"
+          }`}
+        />
+      </button>
+
+      <div
+        className={`absolute left-1/2 top-full w-[min(46rem,92vw)] -translate-x-1/2 pt-3 transition-[opacity,transform,visibility] duration-200 ease-out ${
+          open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0"
+        }`}
+        id={menuId}
+      >
+        <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_30px_70px_-30px_rgb(11_19_36/0.35)]">
+          <ul className="grid gap-1 p-2 sm:grid-cols-3">
+            {services.items.map((item, index) => (
+              <li key={item.id}>
+                <Link
+                  className="group flex h-full flex-col rounded-xl p-4 transition-colors hover:bg-paper"
+                  href={localePath(locale, `/services/${item.slug}`)}
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="font-mono text-xs text-brand">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="rv-heading mt-2 text-lg group-hover:text-brand">
+                    {item.name}
+                  </span>
+                  <span className="mt-1.5 text-[13px] leading-snug text-quiet">{item.promise}</span>
+                  <span className="mt-auto pt-4 text-xs font-medium text-quiet">
+                    {stageRange(item.stages)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-paper px-5 py-3 text-sm">
+            <Link
+              className="font-semibold text-ink hover:text-brand"
+              href={localePath(locale, "/services")}
+              onClick={() => setOpen(false)}
+            >
+              All services
+            </Link>
+            <Link
+              className="text-quiet hover:text-ink"
+              href={localePath(locale, "/contact")}
+              onClick={() => setOpen(false)}
+            >
+              Not sure where to start? Book a review
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function SiteHeader({
   locale,
@@ -68,6 +183,9 @@ export function SiteHeader({
           <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
             {primaryNav.map(({ label, path }) => {
               const active = isActive(path)
+              if (path === "/services") {
+                return <ServicesMenu active={Boolean(active)} key={path} locale={locale} />
+              }
               return (
                 <Link
                   aria-current={active ? "page" : undefined}
@@ -127,7 +245,10 @@ export function SiteHeader({
         }`}
         id={panelId}
       >
-        <nav aria-label="Mobile" className="rv-container flex h-full flex-col pb-8 pt-6">
+        <nav
+          aria-label="Mobile"
+          className="rv-container flex h-full flex-col overflow-y-auto pb-8 pt-6"
+        >
           <ul className="divide-y divide-line border-y border-line">
             {primaryNav.map(({ label, path }, index) => (
               <li
@@ -148,6 +269,22 @@ export function SiteHeader({
                     <span aria-hidden="true" className="h-2 w-2 rounded-full bg-brand" />
                   )}
                 </Link>
+                {path === "/services" && (
+                  <ul className="-mt-2 space-y-1 pb-4 pl-1">
+                    {services.items.map((item) => (
+                      <li key={item.id}>
+                        <Link
+                          className="flex items-center gap-3 py-1.5 text-[17px] text-quiet hover:text-ink"
+                          href={localePath(locale, `/services/${item.slug}`)}
+                          onClick={() => setOpen(false)}
+                        >
+                          <span aria-hidden="true" className="h-px w-4 bg-line" />
+                          {item.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
