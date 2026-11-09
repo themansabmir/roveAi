@@ -79,8 +79,8 @@ export const caseStudies: CaseStudy[] = [
     result: "Lead intake runs end to end, from campaign form to CRM and database.",
   },
   {
-    slug: "rivet-outbound",
-    client: "Rivet",
+    slug: "elqoralabs-outbound",
+    client: "ElqoraLabs",
     serviceId: "pipeline",
     status: "measuring",
     headline: "Our own outbound engine, built on the same system we sell.",

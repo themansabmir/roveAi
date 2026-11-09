@@ -379,7 +379,7 @@ export function HandoverKit() {
             className="flex items-center overflow-hidden whitespace-nowrap bg-brand-bright px-3 text-ink transition-[width] duration-[1800ms] ease-[cubic-bezier(0.65,0,0.35,1)]"
             style={{ width: inView ? "14%" : "90%" }}
           >
-            Rivet
+            ElqoraLabs
           </div>
           <div className="flex flex-1 items-center justify-end whitespace-nowrap bg-white px-3 text-ink">
             Your team

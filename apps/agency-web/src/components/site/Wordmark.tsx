@@ -3,7 +3,7 @@ import type { Locale } from "@rove/cms/constants"
 import { brand } from "@/content/brand"
 import { localePath } from "@/lib/i18n"
 
-/** Two offset plates fastened by one rivet: separate tools, joined into one system. */
+/** Two offset plates fastened by one connector: separate tools, joined into one system. */
 export function LogoMark({
   className = "h-7 w-7",
   tone = "dark",

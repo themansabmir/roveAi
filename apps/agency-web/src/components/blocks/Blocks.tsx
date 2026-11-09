@@ -95,9 +95,9 @@ export function CommitmentsBand({ label }: { label?: ReactNode }) {
                 </div>
                 <div>
                   <span className="block h-7 border-b border-ink/40 font-[family-name:var(--font-home-editorial)] text-xl italic text-ink">
-                    Rivet
+                    ElqoraLabs
                   </span>
-                  <span className="mt-2 block">For Rivet</span>
+                  <span className="mt-2 block">For ElqoraLabs</span>
                 </div>
               </div>
             </div>

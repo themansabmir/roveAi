@@ -6,12 +6,12 @@ import "./globals.css"
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: "Rivet | Revenue operations for B2B sales teams",
-    template: "%s | Rivet",
+    default: "ElqoraLabs | Revenue operations for B2B sales teams",
+    template: "%s | ElqoraLabs",
   },
   description:
-    "Rivet builds outbound, CRM and pipeline systems for B2B firms that sell through a sales team.",
-  applicationName: "Rivet",
+    "ElqoraLabs builds outbound, CRM and pipeline systems for B2B firms that sell through a sales team.",
+  applicationName: "ElqoraLabs",
 }
 
 export const viewport: Viewport = {

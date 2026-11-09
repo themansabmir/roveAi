@@ -326,7 +326,7 @@ export function ServicePage({ service, locale }: { service: Service; locale: Loc
               {(
                 [
                   ["Comes in from", flow.inputs, false],
-                  ["Built by Rivet, owned by you", flow.engine, true],
+                  ["Built by ElqoraLabs, owned by you", flow.engine, true],
                   ["Lands in", flow.outputs, false],
                 ] as const
               ).map(([label, nodes, engine], column) => (

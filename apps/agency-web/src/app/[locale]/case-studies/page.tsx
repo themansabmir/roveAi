@@ -25,7 +25,7 @@ export async function generateMetadata({
     siteUrl: getSiteUrl(),
     title: "RevOps case studies",
     description:
-      "Outbound, lead intake and CRM systems Rivet has built and runs for B2B teams, including the one we run on ourselves.",
+      "Outbound, lead intake and CRM systems ElqoraLabs has built and runs for B2B teams, including the one we run on ourselves.",
     path: localePath(locale as Locale, "/case-studies"),
     sanityProjectId: getSanityProjectId(),
     sanityDataset: getSanityDataset(),

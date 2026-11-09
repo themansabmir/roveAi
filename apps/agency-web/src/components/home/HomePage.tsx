@@ -215,7 +215,8 @@ const bentoCard =
 const caseSlugs: Record<string, string> = {
   roister: "roister",
   codeninjas: "codeninjas",
-  syntropic: "rivet-outbound",
+  syntropic: "elqoralabs-outbound",
+  elqoralabs: "elqoralabs-outbound",
 }
 
 function CaseLink({ id, locale, tone }: { id: string; locale: Locale; tone: "dark" | "light" }) {

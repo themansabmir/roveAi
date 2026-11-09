@@ -68,7 +68,7 @@ export async function generateMetadata({
     siteUrl: getSiteUrl(),
     title: "How our RevOps engagements work",
     description:
-      "Diagnose, build, run and hand over. How a Rivet engagement works, where you approve, and what you keep.",
+      "Diagnose, build, run and hand over. How an ElqoraLabs engagement works, where you approve, and what you keep.",
     path: localePath(locale as Locale, "/how-it-works"),
     sanityProjectId: getSanityProjectId(),
     sanityDataset: getSanityDataset(),

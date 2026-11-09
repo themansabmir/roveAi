@@ -22,16 +22,16 @@ export async function generateMetadata({
   const { locale } = await params
   return mapSeoToMetadata(null, {
     siteUrl: getSiteUrl(),
-    title: "About Rivet, a RevOps agency for B2B teams",
+    title: "About ElqoraLabs, a RevOps agency for B2B teams",
     description:
-      "Rivet builds revenue systems for B2B sales teams in their own accounts, then hands them over. What we believe, how we work and who does the work.",
+      "ElqoraLabs builds revenue systems for B2B sales teams in their own accounts, then hands them over. What we believe, how we work and who does the work.",
     path: localePath(locale as Locale, "/about"),
     sanityProjectId: getSanityProjectId(),
     sanityDataset: getSanityDataset(),
   })
 }
 
-/** The logo assembling itself: two plates slide together, then the rivet fastens them. */
+/** The logo assembling itself: two plates slide together, then the connector fastens them. */
 function AssemblingMark() {
   return (
     <svg aria-hidden="true" className="h-full w-full" fill="none" viewBox="0 0 32 32">

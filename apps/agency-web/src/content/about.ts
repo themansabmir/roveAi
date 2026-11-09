@@ -2,7 +2,7 @@ export const about = {
   hero: {
     title: "We build revenue systems that keep running after we leave.",
     description:
-      "Rivet is a revenue operations agency for B2B teams that sell through a sales team. We build the work between your tools, in your accounts, then hand it over.",
+      "ElqoraLabs is a revenue operations agency for B2B teams that sell through a sales team. We build the work between your tools, in your accounts, then hand it over.",
   },
   manifesto: {
     title: "What we believe",
@@ -13,7 +13,7 @@ export const about = {
       "We think there's a better way. Build the system once, in your own accounts. Let agents do the repeatable work, and keep a person on every decision that reaches a buyer. Write it all down. Then hand it over, so your team runs it without us.",
       "We'd rather be the agency you don't need next year than the one you can't leave.",
     ],
-    signature: "The Rivet team",
+    signature: "The ElqoraLabs team",
   },
   purpose: "Build it once. Keep it running. Hand it over.",
   values: [

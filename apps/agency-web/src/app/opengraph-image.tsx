@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og"
 
-export const alt = "Rivet: revenue operations for B2B sales teams"
+export const alt = "ElqoraLabs: revenue operations for B2B sales teams"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -30,7 +30,7 @@ export default function OpengraphImage() {
           <circle cx="16" cy="16" fill="#0b1324" r="6" />
           <circle cx="16" cy="16" fill="#4be0a4" r="4" />
         </svg>
-        Rivet
+        ElqoraLabs
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
         <div

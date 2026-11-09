@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...lead,
-        source: "rivet-website",
+        source: "elqoralabs-website",
         receivedAt: new Date().toISOString(),
       }),
     })

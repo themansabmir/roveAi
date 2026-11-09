@@ -26,6 +26,7 @@ export const legacySiteRedirects: Record<string, string> = {
   "case-study": "/case-studies",
   "case-study-maybe": "/case-studies",
   work: "/case-studies",
+  "rivet-outbound": "/case-studies/elqoralabs-outbound",
   "insight-resource": "/blog",
 }
 
