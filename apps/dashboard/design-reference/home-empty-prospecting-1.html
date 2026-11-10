@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>
+  @layer base { 
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      font-family: 'Inter', sans-serif;
+    } 
+    body { 
+      overscroll-behavior: none; 
+    } 
+    * {
+      font-family: 'Inter', sans-serif !important;
+    }
+  } 
+  ::-webkit-scrollbar { display: none; }
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = { 
+  darkMode: "class", 
+  theme: { 
+    extend: { 
+      colors: { 
+        "outline": "#797587", 
+        "tertiary": "#934800", 
+        "on-primary-container": "#ffffff", 
+        "secondary-fixed-dim": "#c6c5d0", 
+        "on-secondary": "#ffffff", 
+        "on-surface": "#111114", 
+        "on-error": "#ffffff", 
+        "primary-fixed-dim": "#cabeff", 
+        "secondary-container": "#e0deea", 
+        "primary-fixed": "#e6deff", 
+        "on-surface-variant": "#85858F", 
+        "on-background": "#111114", 
+        "primary-container": "#7856FF", 
+        "secondary": "#5d5e67", 
+        "surface-dim": "#dcd9dd", 
+        "outline-variant": "#c9c3d8", 
+        "background": "#fcf8fc", 
+        "inverse-surface": "#303033", 
+        "surface-bright": "#fcf8fc", 
+        "surface-tint": "#7856FF", 
+        "surface-container-lowest": "#ffffff", 
+        "surface-container-highest": "#e4e1e6", 
+        "surface": "#fcf8fc", 
+        "surface-container": "#f0edf1", 
+        "on-secondary-container": "#61626b", 
+        "primary": "#7856FF", 
+        "surface-container-high": "#eae7eb", 
+        "surface-container-low": "#f6f2f7", 
+        "surface-variant": "#e4e1e6", 
+        "on-primary": "#ffffff" 
+      }, 
+      borderRadius: { 
+        "DEFAULT": "0.125rem", 
+        "lg": "0.25rem", 
+        "xl": "0.5rem", 
+        "full": "0.75rem" 
+      }, 
+      spacing: { 
+        "space-2xl": "2rem", 
+        "margin-lg": "2rem", 
+        "space-lg": "1rem", 
+        "margin": "1rem", 
+        "space-sm": "0.5rem", 
+        "space-xl": "1.5rem", 
+        "space-xs": "0.25rem", 
+        "space-md": "0.75rem", 
+        "margin-md": "1.5rem", 
+        "gutter": "1rem", 
+        "gutter-lg": "1.5rem" 
+      }, 
+      fontFamily: { 
+        sans: ['Inter', 'sans-serif']
+      } 
+    } 
+  } 
+};</script></head><body class="bg-background text-[#111114] antialiased"><aside class="fixed left-0 top-0 h-full w-60 bg-surface border-r border-outline-variant/30 z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-14 flex items-center px-space-lg border-b border-outline-variant/20"><div class="flex items-center gap-space-sm"><div class="w-5 h-5 rounded-lg bg-primary-container flex items-center justify-center"><div class="w-2 h-2 rounded bg-white"></div></div><span class="text-[15px] font-semibold tracking-tight text-[#111114]">Kinetix</span></div></div><nav class="flex flex-col gap-space-xs px-space-sm py-space-md" data-active-classes="bg-surface-container text-[#111114] font-semibold"><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg transition-colors bg-surface-container text-[#111114] font-semibold text-[13px]" data-path="home" href="#"><svg class="w-[18px] h-[18px] shrink-0 text-[#111114]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span class="">Home</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="find-leads" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"></circle><path d="M2 21v-2a4 4 0 0 1 4-4h4"></path><circle cx="17" cy="17" r="3"></circle><path d="m21 21-1.5-1.5"></path></svg><span class="">Find Leads</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="prospects" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span class="">Prospects</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="task-history" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="">Task History</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="credits-&amp;-usage" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg><span class="">Credits &amp; Usage</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="integrations" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v6m0 6v6M3 12h6m6 0h6"></path></svg><span class="">Integrations</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="settings" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="">Settings</span></a></nav></div><div class="p-space-sm border-t border-outline-variant/20"><button class="w-full flex items-center justify-between p-space-xs rounded-lg hover:bg-surface-container transition-colors text-left" type="button"><div class="flex items-center gap-space-sm min-w-0 flex-1"><div class="w-7 h-7 rounded bg-secondary-container flex items-center justify-center shrink-0"><span class="text-[12px] text-on-secondary-container font-semibold">AC</span></div><div class="flex flex-col truncate"><span class="text-[13px] text-[#111114] font-medium truncate leading-tight">Alex Chen</span><span class="text-[12px] text-[#85858F] truncate leading-tight">Acme Growth</span></div></div><svg class="w-4 h-4 text-[#85858F] shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></button></div></aside><div class="pl-60 min-h-screen flex flex-col"><header class="fixed top-0 left-60 right-0 h-14 bg-surface/95 backdrop-blur-sm border-b border-outline-variant/30 z-40 px-space-xl flex items-center justify-between gap-space-lg"><div class="w-48 shrink-0"></div><div class="flex-1 max-w-md"><div class="relative flex items-center"><svg class="w-4 h-4 absolute left-3 text-[#85858F] pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><input class="w-full h-8 pl-9 pr-space-md bg-surface-container-lowest border border-outline-variant/40 rounded text-[13px] text-[#111114] placeholder:text-[#85858F] focus:outline-none focus:border-[#7856FF] transition-colors" placeholder="Search..." type="text"></div></div><div class="flex items-center gap-space-md shrink-0"><div class="flex items-center gap-space-xs px-space-sm py-0.5 border border-outline-variant/30 rounded bg-surface-container-lowest"><span class="text-[12px] text-[#111114] font-semibold">2,450</span><span class="text-[12px] text-[#85858F]">credits</span></div><div class="w-8 h-8 rounded-full bg-[#7856FF] flex items-center justify-center text-white shadow-xs"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div></div></header><main class="w-full pt-14 flex-1"><div class="flex flex-col w-full">
+<div class="w-full max-w-5xl mx-auto px-space-xl py-space-2xl">
+<div class="mb-space-xl">
+<h1 class="text-[26px] font-semibold tracking-tight text-[#111114]">What would you like to find?</h1>
+<p class="text-[14px] text-[#85858F] mt-space-xs">Pick how you want to find leads.</p>
+</div>
+<!-- AI Prospecting Employee Section -->
+<div class="bg-[#FAF8FF] border border-[#7856FF]/30 rounded-xl p-space-xl mb-space-xl shadow-xs"><div class="flex items-center justify-between mb-space-lg pb-space-sm border-b border-[#7856FF]/15"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-[#7856FF] text-white flex items-center justify-center text-[14px] font-semibold tracking-wide shrink-0 shadow-xs">A</div><div><h2 class="text-[15px] font-semibold text-[#111114] leading-tight">Your prospecting assistant, Aura</h2><p class="text-[13px] text-[#85858F] leading-normal mt-0.5">Based on your services: SEO &amp; Content Marketing</p></div></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-space-md mt-space-md"><div class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-space-md flex flex-col justify-between shadow-xs"><div class="mb-space-md"><h3 class="text-[15px] font-semibold text-[#111114] leading-tight mb-1 truncate">Orthodontists in Dubai</h3><div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/60 text-[#85858F] text-[12px] font-medium mb-space-sm"><span class="w-1.5 h-1.5 rounded-full bg-[#85858F]"></span><span class="">Slow mobile site found</span></div><p class="text-[12px] text-[#85858F]">About 200 businesses · 240 credits</p></div><div class="flex items-center gap-space-sm pt-space-xs"><button class="flex-1 h-8 bg-[#7856FF] text-white text-[13px] font-medium rounded hover:opacity-95 transition-opacity flex items-center justify-center" type="button">Start search</button><button class="px-2 py-1 text-[13px] text-[#85858F] hover:text-[#111114] transition-colors font-medium" type="button">Edit filters</button></div></div><div class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-space-md flex flex-col justify-between shadow-xs"><div class="mb-space-md"><h3 class="text-[15px] font-semibold text-[#111114] leading-tight mb-1 truncate">Plumbing companies in Houston, TX</h3><div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/60 text-[#85858F] text-[12px] font-medium mb-space-sm"><span class="w-1.5 h-1.5 rounded-full bg-[#85858F]"></span><span class="">No online booking found</span></div><p class="text-[12px] text-[#85858F]">About 200 businesses · 240 credits</p></div><div class="flex items-center gap-space-sm pt-space-xs"><button class="flex-1 h-8 bg-[#7856FF] text-white text-[13px] font-medium rounded hover:opacity-95 transition-opacity flex items-center justify-center" type="button">Start search</button><button class="px-2 py-1 text-[13px] text-[#85858F] hover:text-[#111114] transition-colors font-medium" type="button">Edit filters</button></div></div><div class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-space-md flex flex-col justify-between shadow-xs"><div class="mb-space-md"><h3 class="text-[15px] font-semibold text-[#111114] leading-tight mb-1 truncate">Law firms in London</h3><div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/60 text-[#85858F] text-[12px] font-medium mb-space-sm"><span class="w-1.5 h-1.5 rounded-full bg-[#85858F]"></span><span class="">Missing Google reviews</span></div><p class="text-[12px] text-[#85858F]">About 200 businesses · 240 credits</p></div><div class="flex items-center gap-space-sm pt-space-xs"><button class="flex-1 h-8 bg-[#7856FF] text-white text-[13px] font-medium rounded hover:opacity-95 transition-opacity flex items-center justify-center" type="button">Start search</button><button class="px-2 py-1 text-[13px] text-[#85858F] hover:text-[#111114] transition-colors font-medium" type="button">Edit filters</button></div></div></div></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-xl mb-space-2xl">
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-space-xl flex flex-col justify-between">
+<div>
+<h2 class="text-[16px] font-semibold text-[#111114] mb-space-lg">Find businesses</h2>
+<div class="space-y-space-md">
+<div>
+<label class="block text-[13px] font-medium text-[#111114] mb-space-xs">Location</label>
+<input class="w-full h-9 px-space-md bg-surface-container-lowest border border-outline-variant/40 rounded text-[14px] text-[#111114] placeholder:text-[#85858F] focus:outline-none focus:border-[#7856FF] transition-colors" placeholder="e.g. Austin, TX" type="text">
+</div>
+<div>
+<label class="block text-[13px] font-medium text-[#111114] mb-space-xs">Industry</label>
+<input class="w-full h-9 px-space-md bg-surface-container-lowest border border-outline-variant/40 rounded text-[14px] text-[#111114] placeholder:text-[#85858F] focus:outline-none focus:border-[#7856FF] transition-colors" placeholder="e.g. B2B SaaS" type="text">
+</div>
+</div>
+</div>
+<div class="pt-space-xl">
+<button class="w-full h-9 bg-[#7856FF] text-white text-[13px] font-medium rounded flex items-center justify-center hover:opacity-95 transition-opacity" type="button">
+            Find leads
+          </button>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-space-xl flex flex-col justify-between">
+<div>
+<h2 class="text-[16px] font-semibold text-[#111114] mb-space-lg">Find businesses I can help</h2>
+<div class="space-y-space-md">
+<div>
+<label class="block text-[13px] font-medium text-[#111114] mb-space-xs">Services</label>
+<input class="w-full h-9 px-space-md bg-surface-container-lowest border border-outline-variant/40 rounded text-[14px] text-[#111114] focus:outline-none focus:border-[#7856FF] transition-colors" type="text" value="SEO &amp; Content Marketing">
+</div>
+<div>
+<label class="block text-[13px] font-medium text-[#111114] mb-space-xs">Location</label>
+<input class="w-full h-9 px-space-md bg-surface-container-lowest border border-outline-variant/40 rounded text-[14px] text-[#111114] placeholder:text-[#85858F] focus:outline-none focus:border-[#7856FF] transition-colors" placeholder="e.g. United States" type="text">
+</div>
+</div>
+</div>
+<div class="pt-space-xl">
+<button class="w-full h-9 bg-[#7856FF] text-white text-[13px] font-medium rounded flex items-center justify-center hover:opacity-95 transition-opacity" type="button">
+            Find leads
+          </button>
+</div>
+</div>
+</div>
+<div>
+<h2 class="text-[16px] font-semibold text-[#111114] mb-space-md">Recent completed tasks</h2>
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg overflow-hidden divide-y divide-outline-variant/20"><div class="px-space-lg py-space-md flex items-center justify-between gap-space-md hover:bg-surface-container transition-colors"><div class="min-w-0 flex-1"><span class="text-[14px] text-[#111114] font-medium block truncate">Dentists in Dubai</span></div><div class="w-28 shrink-0"><span class="text-[13px] text-[#85858F]">Oct 22, 2026</span></div><div class="w-28 shrink-0"><span class="inline-block px-space-sm py-0.5 rounded-full bg-secondary-container text-[12px] text-[#61626b] font-medium">Completed</span></div><div class="w-32 shrink-0 text-right"><span class="text-[13px] text-[#85858F]">200 prospects</span></div><div class="w-14 shrink-0 text-right"><a class="text-[13px] font-medium text-[#7856FF] hover:underline transition-colors" href="#">View</a></div></div><div class="px-space-lg py-space-md flex items-center justify-between gap-space-md hover:bg-surface-container transition-colors"><div class="min-w-0 flex-1"><span class="text-[14px] text-[#111114] font-medium block truncate">HVAC specialists in Austin, TX</span></div><div class="w-28 shrink-0"><span class="text-[13px] text-[#85858F]">Oct 24, 2026</span></div><div class="w-28 shrink-0"><span class="inline-block px-space-sm py-0.5 rounded-full bg-secondary-container text-[12px] text-[#61626b] font-medium">Completed</span></div><div class="w-32 shrink-0 text-right"><span class="text-[13px] text-[#85858F]">840 prospects</span></div><div class="w-14 shrink-0 text-right"><a class="text-[13px] font-medium text-[#7856FF] hover:underline transition-colors" href="#">View</a></div></div><div class="px-space-lg py-space-md flex items-center justify-between gap-space-md hover:bg-surface-container transition-colors"><div class="min-w-0 flex-1"><span class="text-[14px] text-[#111114] font-medium block truncate">Cosmetic surgeons in Beverly Hills</span></div><div class="w-28 shrink-0"><span class="text-[13px] text-[#85858F]">Oct 22, 2026</span></div><div class="w-28 shrink-0"><span class="inline-block px-space-sm py-0.5 rounded-full bg-secondary-container text-[12px] text-[#61626b] font-medium">Completed</span></div><div class="w-32 shrink-0 text-right"><span class="text-[13px] text-[#85858F]">200 prospects</span></div><div class="w-14 shrink-0 text-right"><a class="text-[13px] font-medium text-[#7856FF] hover:underline transition-colors" href="#">View</a></div></div><div class="px-space-lg py-space-md flex items-center justify-between gap-space-md hover:bg-surface-container transition-colors"><div class="min-w-0 flex-1"><span class="text-[14px] text-[#111114] font-medium block truncate">Accounting firms in Sydney</span></div><div class="w-28 shrink-0"><span class="text-[13px] text-[#85858F]">Oct 19, 2026</span></div><div class="w-28 shrink-0"><span class="inline-block px-space-sm py-0.5 rounded-full bg-secondary-container text-[12px] text-[#61626b] font-medium">Completed</span></div><div class="w-32 shrink-0 text-right"><span class="text-[13px] text-[#85858F]">560 prospects</span></div><div class="w-14 shrink-0 text-right"><a class="text-[13px] font-medium text-[#7856FF] hover:underline transition-colors" href="#">View</a></div></div></div>
+</div>
+</div>
+</div></main></div>
+
+
+
+
+
+</body></html>

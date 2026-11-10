@@ -16,6 +16,7 @@ out/
 .env
 .env.*
 !.env.example
+.agents/mcp_config.json
 
 # logs
 *.log
