@@ -1,5 +1,21 @@
-import { useState } from "react"
-import { Check, Copy, ExternalLink, Gauge, Sparkles, AlertTriangle, Layers, Globe } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useParams } from "react-router-dom"
+import {
+  Check,
+  Copy,
+  ExternalLink,
+  Gauge,
+  Sparkles,
+  AlertTriangle,
+  Layers,
+  Globe,
+  FileText,
+  Tag as TagIcon,
+  Save,
+} from "lucide-react"
+import { useAuth } from "@/features/auth/application/useAuth"
+import { useUpdateLead } from "@/features/campaigns/application/useCampaigns"
+import type { ProspectStatus } from "@/features/campaigns/domain/campaign"
 import {
   Sheet,
   SheetContent,
@@ -31,8 +47,22 @@ export function LeadBriefDrawer({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { campaignId } = useParams()
+  const { me } = useAuth()
+  const organizationId = me?.organization?.id ?? ""
+  const updateMutation = useUpdateLead(organizationId, campaignId ?? "")
+
   const [copiedEmail, setCopiedEmail] = useState(false)
   const [copiedScript, setCopiedScript] = useState(false)
+  const [notesText, setNotesText] = useState("")
+  const [notesSaved, setNotesSaved] = useState(false)
+
+  useEffect(() => {
+    if (lead) {
+      setNotesText(lead.notes ?? "")
+      setNotesSaved(false)
+    }
+  }, [lead?.id, lead?.notes])
 
   const score = lead ? (lead.opportunityScore ?? heuristicScore(lead)) : null
   const perfAudit = lead?.audits?.find((a) => a.module === "PERFORMANCE")
@@ -98,12 +128,15 @@ export function LeadBriefDrawer({
             </SheetHeader>
 
             <Tabs defaultValue="brief" className="mt-6 w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="brief" className="gap-1.5">
                   <Sparkles className="size-3.5" /> Opportunity Brief
                 </TabsTrigger>
                 <TabsTrigger value="findings" className="gap-1.5">
                   <Gauge className="size-3.5" /> Audit Findings
+                </TabsTrigger>
+                <TabsTrigger value="notes" className="gap-1.5">
+                  <FileText className="size-3.5" /> Notes & Context
                 </TabsTrigger>
               </TabsList>
 
@@ -415,6 +448,98 @@ export function LeadBriefDrawer({
                         </a>
                       ) : (
                         <span className="font-medium text-muted-foreground">None</span>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* ─── TAB 3: NOTES & CONTEXT ───────────────────────────── */}
+              <TabsContent value="notes" className="mt-4 space-y-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base font-semibold">Sales Notes &amp; Internal Context</CardTitle>
+                    <CardDescription>
+                      Record outreach outcomes, client objections, or specific discovery insights.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <textarea
+                      value={notesText}
+                      onChange={(e) => {
+                        setNotesText(e.target.value)
+                        setNotesSaved(false)
+                      }}
+                      placeholder="Add personal sales notes, callback times, decision-maker names..."
+                      rows={5}
+                      className="w-full rounded-md border border-input bg-background p-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                    />
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">Prospect Status:</span>
+                        <select
+                          value={lead.prospectStatus ?? "NEW"}
+                          onChange={(e) => {
+                            updateMutation.mutate({
+                              leadId: lead.id,
+                              payload: { prospectStatus: e.target.value as ProspectStatus },
+                            })
+                          }}
+                          className="h-8 rounded-md border border-input bg-background px-2 text-xs font-medium"
+                        >
+                          <option value="NEW">New</option>
+                          <option value="RESEARCHED">Researched</option>
+                          <option value="QUALIFIED">Qualified</option>
+                          <option value="CONTACTED">Contacted</option>
+                          <option value="DISMISSED">Dismissed</option>
+                        </select>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        disabled={updateMutation.isPending}
+                        onClick={() => {
+                          updateMutation.mutate(
+                            {
+                              leadId: lead.id,
+                              payload: { notes: notesText },
+                            },
+                            {
+                              onSuccess: () => {
+                                setNotesSaved(true)
+                                setTimeout(() => setNotesSaved(false), 2500)
+                              },
+                            }
+                          )
+                        }}
+                        className="gap-1.5"
+                      >
+                        {notesSaved ? <Check className="size-3.5 text-emerald-400" /> : <Save className="size-3.5" />}
+                        {notesSaved ? "Saved" : updateMutation.isPending ? "Saving..." : "Save Notes"}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Tags Management */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-1.5">
+                      <TagIcon className="size-3.5 text-muted-foreground" />
+                      Assigned Tags
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {(lead.tags ?? []).length === 0 ? (
+                        <p className="text-xs text-muted-foreground">No tags assigned yet.</p>
+                      ) : (
+                        (lead.tags ?? []).map((t) => (
+                          <Badge key={t.id} variant="secondary" className="gap-1">
+                            {t.name}
+                          </Badge>
+                        ))
                       )}
                     </div>
                   </CardContent>
