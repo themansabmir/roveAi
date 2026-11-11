@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { InterpretService, BriefDataSchema } from "./interpret.service";
+import { InterpretRepository } from "./interpret.repository";
 import { DeterministicAiProvider } from "@plugins/ai/deterministic.provider";
 import { IAiService } from "@plugins/ai/ai.plugin";
 
@@ -13,7 +14,7 @@ describe("InterpretService — Deterministic Scoring & Decoupled AI Plugin", () 
     getActiveProviderKey: () => "deterministic",
   };
 
-  const service = new InterpretService({} as any, deterministicAi);
+  const service = new InterpretService(new InterpretRepository({} as any), deterministicAi);
 
   it("calculates high opportunity score for a business missing a website", () => {
     const score = service.computeOpportunityScore(

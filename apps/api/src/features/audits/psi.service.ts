@@ -1,17 +1,15 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { IPagespeedService } from "@plugins/pagespeed/pagespeed.plugin";
 import { PagespeedUnreachableError } from "@plugins/pagespeed/pagespeed.types";
 import { AuditJobPayload } from "@plugins/queue/queue.types";
 import { IObjectStorage } from "@plugins/storage/storage.types";
-import { claimJob, releaseJob } from "@features/jobs/job-lock";
-import { publishIfReady } from "./audit-join";
 import { JobPublisher } from "./audit-scheduler";
-import { finishJob, replaceAudit } from "./audit-write";
+import { PsiRepository } from "./psi.repository";
 import { canonicalAuditUrl, startOfUtcDay } from "./url";
 
 export class PsiService {
   constructor(
-    private readonly prisma: PrismaClient,
+    private readonly repository: PsiRepository,
     private readonly pagespeed: IPagespeedService,
     private readonly storage: IObjectStorage,
     private readonly queue: JobPublisher,
@@ -20,11 +18,11 @@ export class PsiService {
 
   async run(payload: AuditJobPayload, meta: { retrycount: number; retrylimit: number }): Promise<void> {
     console.log(`[PsiService.run] ⚡ PSI job started for lead: ${payload.leadId} (${payload.url})`);
-    const claim = await claimJob(this.prisma, payload.jobId, this.jobTimeoutMs);
+    const claim = await this.repository.claimJob(payload.jobId, this.jobTimeoutMs);
     console.log(`[PsiService.run] 🔒 Job claim result: "${claim}" for jobId: ${payload.jobId}`);
     if (claim === "done") {
       console.log(`[PsiService.run] ⏩ Job already done, calling publishIfReady()`);
-      await publishIfReady(this.prisma, this.queue, payload);
+      await this.repository.publishIfReady(this.queue, payload);
       return;
     }
     if (claim !== "ready") return;
@@ -37,40 +35,37 @@ export class PsiService {
       if (err instanceof PagespeedUnreachableError) {
         console.warn(`[PsiService.run] ⚠️ Target site unreachable: ${message}`);
         await this.writeUnreachable(payload, message);
-        await publishIfReady(this.prisma, this.queue, payload);
-        await finishJob(this.prisma, payload.jobId, "FAILED", message);
+        await this.repository.publishIfReady(this.queue, payload);
+        await this.repository.finishJob(payload.jobId, "FAILED", message);
         return;
       }
       if (meta.retrycount >= meta.retrylimit) {
         console.error(`[PsiService.run] ❌ PSI terminal failure: ${message}`);
         await this.fail(payload, message);
-        await publishIfReady(this.prisma, this.queue, payload);
-        await finishJob(this.prisma, payload.jobId, "FAILED", message);
+        await this.repository.publishIfReady(this.queue, payload);
+        await this.repository.finishJob(payload.jobId, "FAILED", message);
         return;
       }
-      await releaseJob(this.prisma, payload.jobId);
+      await this.repository.releaseJob(payload.jobId);
       throw err;
     }
     console.log(`[PsiService.run] ✅ PSI completed for lead: ${payload.leadId}. Triggering publishIfReady()`);
-    await publishIfReady(this.prisma, this.queue, payload);
-    await finishJob(this.prisma, payload.jobId, "COMPLETED");
+    await this.repository.publishIfReady(this.queue, payload);
+    await this.repository.finishJob(payload.jobId, "COMPLETED");
   }
 
   private async execute(payload: AuditJobPayload): Promise<void> {
-    const lead = await this.prisma.campaignLead.findUnique({
-      where: { id: payload.leadId },
-      include: { campaign: true },
-    });
+    const lead = await this.repository.findLeadForPsi(payload.leadId);
     if (!lead || lead.campaign.status === "CANCELLED") {
       console.log(`[PsiService.execute] 🛑 Campaign lead missing or cancelled`);
-      await finishJob(this.prisma, payload.jobId, "CANCELLED");
+      await this.repository.finishJob(payload.jobId, "CANCELLED");
       return;
     }
 
     const reused = await this.reuseToday(payload);
     if (reused) {
       console.log(`[PsiService.execute] ♻️ Reusing today's cached PSI audit for lead ${payload.leadId} (score: ${reused.score})`);
-      await replaceAudit(this.prisma, payload.jobId, {
+      await this.repository.replaceAudit(payload.jobId, {
         organizationId: payload.organizationId,
         leadId: payload.leadId,
         snapshotId: reused.snapshotId,
@@ -105,19 +100,15 @@ export class PsiService {
       body,
       contentType: "application/json",
     });
-    await this.prisma.storedFile.create({
-      data: {
-        organizationId: payload.organizationId,
-        kind: "PSI_JSON",
-        bucket: stored.bucket,
-        objectKey: stored.objectKey,
-        contentType: "application/json",
-        sizeBytes: stored.sizeBytes,
-        checksum: stored.checksum,
-      },
+    await this.repository.createStoredPsiFile({
+      organizationId: payload.organizationId,
+      bucket: stored.bucket,
+      objectKey: stored.objectKey,
+      sizeBytes: stored.sizeBytes,
+      checksum: stored.checksum,
     });
     console.log(`[PsiService.execute] ✍️ Writing PERFORMANCE audit -> score: ${report.parsed.score}/100, LCP: ${report.parsed.metrics.lcp_ms}ms, CLS: ${report.parsed.metrics.cls} (${report.parsed.findings.length} findings)`);
-    await replaceAudit(this.prisma, payload.jobId, {
+    await this.repository.replaceAudit(payload.jobId, {
       organizationId: payload.organizationId,
       leadId: payload.leadId,
       snapshotId: null,
@@ -132,19 +123,12 @@ export class PsiService {
       failureReason: null,
       findings: report.parsed.findings,
     });
-    await this.prisma.usageEvent.create({
-      data: {
-        organizationId: payload.organizationId,
-        campaignId: payload.campaignId,
-        kind: "LIGHTHOUSE_RUN",
-        quantity: 1,
-      },
-    });
+    await this.repository.recordLighthouseUsage(payload.organizationId, payload.campaignId);
     console.log(`[PsiService.execute] 📊 Recorded LIGHTHOUSE_RUN usage (+1)`);
   }
 
   private async fail(payload: AuditJobPayload, reason: string): Promise<void> {
-    await replaceAudit(this.prisma, payload.jobId, {
+    await this.repository.replaceAudit(payload.jobId, {
       organizationId: payload.organizationId,
       leadId: payload.leadId,
       snapshotId: null,
@@ -162,7 +146,7 @@ export class PsiService {
   }
 
   private async writeUnreachable(payload: AuditJobPayload, reason: string): Promise<void> {
-    await replaceAudit(this.prisma, payload.jobId, {
+    await this.repository.replaceAudit(payload.jobId, {
       organizationId: payload.organizationId,
       leadId: payload.leadId,
       snapshotId: null,
@@ -178,25 +162,15 @@ export class PsiService {
       findings: [],
     });
     // Mark the lead itself as unreachable so the UI shows it correctly
-    await this.prisma.campaignLead.updateMany({
-      where: { id: payload.leadId, auditStatus: { notIn: ["COMPLETED", "UNREACHABLE"] } },
-      data: { auditStatus: "UNREACHABLE" },
-    });
+    await this.repository.markLeadUnreachable(payload.leadId);
   }
 
   private async reuseToday(payload: AuditJobPayload) {
-    const rows = await this.prisma.technicalAudit.findMany({
-      where: {
-        organizationId: payload.organizationId,
-        module: "PERFORMANCE",
-        status: "COMPLETED",
-        observedAt: { gte: startOfUtcDay() },
-        jobId: { not: payload.jobId },
-      },
-      include: { findings: true, lead: { include: { business: true } } },
-      orderBy: { observedAt: "desc" },
-      take: 50,
-    });
+    const rows = await this.repository.findTodayCompletedPerformanceAudits(
+      payload.organizationId,
+      payload.jobId,
+      startOfUtcDay()
+    );
     return (
       rows.find((row) => {
         const website = row.lead.business.websiteUrl;
