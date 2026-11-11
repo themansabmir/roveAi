@@ -4,6 +4,7 @@ import {
   CampaignStatus,
   Prisma,
   PrismaClient,
+  ProspectStatus,
   QualificationStatus,
   WebsiteClass,
   WebsiteFilter,
@@ -74,7 +75,13 @@ export interface LeadView {
   qualificationStatus: QualificationStatus;
   auditStatus: AuditStatus;
   aiStatus: AiStatus;
+  prospectStatus: ProspectStatus;
   opportunityScore: number | null;
+  scoreBreakdown?: unknown;
+  notes: string | null;
+  savedAt: string | null;
+  archivedAt: string | null;
+  tags: { id: string; name: string }[];
   business: {
     id: string;
     name: string;
@@ -92,6 +99,44 @@ export interface JobView {
   id: string;
   status: string;
   attemptCount: number;
+}
+
+/** Lightweight row for the prospect table (no findings trees). */
+export interface LeadSummaryRow {
+  id: string;
+  qualificationStatus: QualificationStatus;
+  auditStatus: AuditStatus;
+  aiStatus: AiStatus;
+  prospectStatus: ProspectStatus;
+  opportunityScore: number | null;
+  scoreBreakdown: unknown;
+  notes: string | null;
+  savedAt: string | null;
+  archivedAt: string | null;
+  tags: { id: string; name: string }[];
+  business: {
+    id: string;
+    name: string;
+    city: string | null;
+    rating: number | null;
+    reviewCount: number | null;
+    websiteUrl: string | null;
+    websiteClass: WebsiteClass;
+  };
+  /** Audit summary (no findings). */
+  audits: { id: string; module: string; status: string; score: number | null }[];
+  brief: { id: string; aiStatus: string; headlineOpportunity: string | null } | null;
+}
+
+export interface TagView {
+  id: string;
+  name: string;
+  leadCount: number;
+}
+
+export interface LeadsSummaryResult {
+  rows: LeadSummaryRow[];
+  total: number;
 }
 
 export interface CampaignDetail extends CampaignSummary {
@@ -139,6 +184,7 @@ const detailInclude = {
         orderBy: { createdAt: "asc" as const },
       },
       brief: true,
+      score: true,
     },
   },
 } satisfies Prisma.CampaignInclude;
@@ -456,6 +502,417 @@ export class CampaignRepository {
     });
     return true;
   }
+
+  // ---------------------------------------------------------------------------
+  // Prospect workspace — leads list (lightweight, paginated)
+  // ---------------------------------------------------------------------------
+
+  async getLeadsSummary(
+    organizationId: string,
+    campaignId: string,
+    opts: {
+      page: number;
+      pageSize: number;
+      search?: string;
+      prospectStatus?: ProspectStatus;
+      scoreMin?: number;
+      scoreMax?: number;
+      tagIds?: string[];
+      archived: boolean;
+      savedOnly: boolean;
+    },
+  ): Promise<LeadsSummaryResult> {
+    const where: Prisma.CampaignLeadWhereInput = {
+      campaignId,
+      campaign: { organizationId },
+      archivedAt: opts.archived ? { not: null } : null,
+      ...(opts.savedOnly ? { savedAt: { not: null } } : {}),
+      ...(opts.prospectStatus ? { prospectStatus: opts.prospectStatus } : {}),
+      ...(opts.scoreMin != null || opts.scoreMax != null
+        ? {
+            opportunityScore: {
+              ...(opts.scoreMin != null ? { gte: opts.scoreMin } : {}),
+              ...(opts.scoreMax != null ? { lte: opts.scoreMax } : {}),
+            },
+          }
+        : {}),
+      ...(opts.tagIds?.length
+        ? { tags: { some: { tagId: { in: opts.tagIds } } } }
+        : {}),
+      ...(opts.search
+        ? {
+            business: {
+              OR: [
+                { name: { contains: opts.search, mode: "insensitive" as const } },
+                { city: { contains: opts.search, mode: "insensitive" as const } },
+                { normalizedDomain: { contains: opts.search, mode: "insensitive" as const } },
+              ],
+            },
+          }
+        : {}),
+    };
+
+    const [rows, total] = await Promise.all([
+      this.prisma.campaignLead.findMany({
+        where,
+        orderBy: { opportunityScore: "desc" },
+        skip: (opts.page - 1) * opts.pageSize,
+        take: opts.pageSize,
+        include: {
+          business: {
+            select: {
+              id: true,
+              name: true,
+              city: true,
+              rating: true,
+              reviewCount: true,
+              websiteUrl: true,
+              websiteClass: true,
+            },
+          },
+          audits: {
+            select: { id: true, module: true, status: true, score: true },
+            orderBy: { createdAt: "asc" as const },
+          },
+          brief: {
+            select: { id: true, aiStatus: true, headlineOpportunity: true },
+          },
+          tags: { include: { tag: { select: { id: true, name: true } } } },
+          score: { select: { breakdown: true } },
+        },
+      }),
+      this.prisma.campaignLead.count({ where }),
+    ]);
+
+    return {
+      total,
+      rows: rows.map((r) => ({
+        id: r.id,
+        qualificationStatus: r.qualificationStatus,
+        auditStatus: r.auditStatus,
+        aiStatus: r.aiStatus,
+        prospectStatus: r.prospectStatus,
+        opportunityScore: r.opportunityScore,
+        scoreBreakdown: r.score?.breakdown ?? null,
+        notes: r.notes,
+        savedAt: r.savedAt?.toISOString() ?? null,
+        archivedAt: r.archivedAt?.toISOString() ?? null,
+        tags: r.tags.map((lt) => ({ id: lt.tag.id, name: lt.tag.name })),
+        business: r.business,
+        audits: r.audits,
+        brief: r.brief
+          ? {
+              id: r.brief.id,
+              aiStatus: r.brief.aiStatus,
+              headlineOpportunity: r.brief.headlineOpportunity,
+            }
+          : null,
+      })),
+    };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Single lead detail (full — includes findings for the drawer)
+  // ---------------------------------------------------------------------------
+
+  async getLeadDetail(organizationId: string, campaignId: string, leadId: string): Promise<LeadView | null> {
+    const r = await this.prisma.campaignLead.findFirst({
+      where: { id: leadId, campaignId, campaign: { organizationId } },
+      include: {
+        business: true,
+        audits: {
+          include: { findings: true },
+          orderBy: { createdAt: "asc" as const },
+        },
+        brief: true,
+        score: true,
+        tags: { include: { tag: { select: { id: true, name: true } } } },
+      },
+    });
+    if (!r) return null;
+    return {
+      id: r.id,
+      qualificationStatus: r.qualificationStatus,
+      auditStatus: r.auditStatus,
+      aiStatus: r.aiStatus,
+      prospectStatus: r.prospectStatus,
+      opportunityScore: r.opportunityScore,
+      scoreBreakdown: r.score?.breakdown ?? null,
+      notes: r.notes,
+      savedAt: r.savedAt?.toISOString() ?? null,
+      archivedAt: r.archivedAt?.toISOString() ?? null,
+      tags: r.tags.map((lt) => ({ id: lt.tag.id, name: lt.tag.name })),
+      business: {
+        id: r.business.id,
+        name: r.business.name,
+        city: r.business.city,
+        rating: r.business.rating,
+        reviewCount: r.business.reviewCount,
+        websiteUrl: r.business.websiteUrl,
+        websiteClass: r.business.websiteClass,
+      },
+      audits: r.audits.map((a) => ({
+        id: a.id,
+        module: a.module,
+        status: a.status,
+        score: a.score,
+        metrics: a.metrics,
+        toolName: a.toolName,
+        deviceProfile: a.deviceProfile,
+        observedAt: a.observedAt.toISOString(),
+        findings: a.findings.map((f) => ({
+          id: f.id,
+          code: f.code,
+          severity: f.severity,
+          source: f.source,
+          confidence: f.confidence,
+          message: f.message,
+          evidence: f.evidence,
+        })),
+      })),
+      brief: r.brief
+        ? {
+            id: r.brief.id,
+            status: r.brief.status,
+            aiStatus: r.brief.aiStatus,
+            headlineOpportunity: r.brief.headlineOpportunity,
+            suggestedService: r.brief.suggestedService,
+            confidence: r.brief.confidence,
+            valueProposition: r.brief.valueProposition,
+            outreachAngle: r.brief.outreachAngle,
+            coldEmailDraft: r.brief.coldEmailDraft,
+            callScriptDraft: r.brief.callScriptDraft,
+            content: r.brief.content,
+            modelName: r.brief.modelName,
+          }
+        : null,
+    };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Single lead update
+  // ---------------------------------------------------------------------------
+
+  async updateLead(
+    organizationId: string,
+    campaignId: string,
+    leadId: string,
+    patch: {
+      prospectStatus?: ProspectStatus;
+      notes?: string;
+      savedAt?: Date | null;
+      savedByUserId?: string | null;
+      archivedAt?: Date | null;
+      tagIds?: string[];
+    },
+  ): Promise<LeadView | null> {
+    // Verify ownership
+    const existing = await this.prisma.campaignLead.findFirst({
+      where: { id: leadId, campaignId, campaign: { organizationId } },
+      select: { id: true },
+    });
+    if (!existing) return null;
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.campaignLead.update({
+        where: { id: leadId },
+        data: {
+          ...(patch.prospectStatus != null ? { prospectStatus: patch.prospectStatus } : {}),
+          ...(patch.notes !== undefined ? { notes: patch.notes } : {}),
+          ...(patch.savedAt !== undefined ? { savedAt: patch.savedAt, savedByUserId: patch.savedByUserId ?? null } : {}),
+          ...(patch.archivedAt !== undefined ? { archivedAt: patch.archivedAt } : {}),
+        },
+      });
+
+      if (patch.tagIds !== undefined) {
+        await tx.leadTag.deleteMany({ where: { leadId } });
+        if (patch.tagIds.length > 0) {
+          await tx.leadTag.createMany({
+            data: patch.tagIds.map((tagId) => ({ leadId, tagId })),
+            skipDuplicates: true,
+          });
+        }
+      }
+    });
+
+    return this.getLeadDetail(organizationId, campaignId, leadId);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Bulk update — atomic with pre-flight ownership validation
+  // ---------------------------------------------------------------------------
+
+  async bulkUpdateLeads(
+    organizationId: string,
+    campaignId: string,
+    leadIds: string[],
+    action: string,
+    opts: { prospectStatus?: ProspectStatus; tagIds?: string[]; userId?: string },
+  ): Promise<{ updatedCount: number }> {
+    const dedupedIds = [...new Set(leadIds)];
+
+    // Pre-flight: verify all leadIds belong to this campaign/org
+    const owned = await this.prisma.campaignLead.findMany({
+      where: { id: { in: dedupedIds }, campaignId, campaign: { organizationId } },
+      select: { id: true },
+    });
+    if (owned.length !== dedupedIds.length) {
+      throw new Error("FORBIDDEN: one or more lead IDs do not belong to this campaign");
+    }
+
+    // If tags involved, verify ownership
+    if (opts.tagIds?.length) {
+      const ownedTags = await this.prisma.prospectTag.findMany({
+        where: { id: { in: opts.tagIds }, organizationId },
+        select: { id: true },
+      });
+      if (ownedTags.length !== opts.tagIds.length) {
+        throw new Error("FORBIDDEN: one or more tag IDs do not belong to this organization");
+      }
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      switch (action) {
+        case "UPDATE_STATUS":
+          await tx.campaignLead.updateMany({
+            where: { id: { in: dedupedIds } },
+            data: { prospectStatus: opts.prospectStatus },
+          });
+          break;
+        case "ADD_TAGS":
+          for (const leadId of dedupedIds) {
+            await tx.leadTag.createMany({
+              data: (opts.tagIds ?? []).map((tagId) => ({ leadId, tagId })),
+              skipDuplicates: true,
+            });
+          }
+          break;
+        case "REMOVE_TAGS":
+          await tx.leadTag.deleteMany({
+            where: { leadId: { in: dedupedIds }, tagId: { in: opts.tagIds ?? [] } },
+          });
+          break;
+        case "SAVE":
+          await tx.campaignLead.updateMany({
+            where: { id: { in: dedupedIds } },
+            data: { savedAt: new Date(), savedByUserId: opts.userId ?? null },
+          });
+          break;
+        case "UNSAVE":
+          await tx.campaignLead.updateMany({
+            where: { id: { in: dedupedIds } },
+            data: { savedAt: null, savedByUserId: null },
+          });
+          break;
+        case "ARCHIVE":
+          await tx.campaignLead.updateMany({
+            where: { id: { in: dedupedIds } },
+            data: { archivedAt: new Date() },
+          });
+          break;
+        case "UNARCHIVE":
+          await tx.campaignLead.updateMany({
+            where: { id: { in: dedupedIds } },
+            data: { archivedAt: null },
+          });
+          break;
+      }
+    });
+
+    return { updatedCount: dedupedIds.length };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tags CRUD
+  // ---------------------------------------------------------------------------
+
+  async listTags(organizationId: string): Promise<TagView[]> {
+    const tags = await this.prisma.prospectTag.findMany({
+      where: { organizationId },
+      orderBy: { name: "asc" },
+      include: { _count: { select: { leads: true } } },
+    });
+    return tags.map((t) => ({ id: t.id, name: t.name, leadCount: t._count.leads }));
+  }
+
+  async createTag(organizationId: string, name: string): Promise<TagView> {
+    const tag = await this.prisma.prospectTag.create({
+      data: { organizationId, name },
+      include: { _count: { select: { leads: true } } },
+    });
+    return { id: tag.id, name: tag.name, leadCount: tag._count.leads };
+  }
+
+  async deleteTag(organizationId: string, tagId: string): Promise<boolean> {
+    const existing = await this.prisma.prospectTag.findFirst({
+      where: { id: tagId, organizationId },
+      select: { id: true },
+    });
+    if (!existing) return false;
+    await this.prisma.prospectTag.delete({ where: { id: tagId } });
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------
+  // CSV export (returns all matching rows — no pagination)
+  // ---------------------------------------------------------------------------
+
+  async getLeadsForExport(
+    organizationId: string,
+    campaignId: string,
+    leadIds?: string[],
+  ): Promise<LeadSummaryRow[]> {
+    const where: Prisma.CampaignLeadWhereInput = {
+      campaignId,
+      campaign: { organizationId },
+      ...(leadIds?.length ? { id: { in: leadIds } } : {}),
+    };
+    const rows = await this.prisma.campaignLead.findMany({
+      where,
+      orderBy: { opportunityScore: "desc" },
+      include: {
+        business: {
+          select: {
+            id: true,
+            name: true,
+            city: true,
+            rating: true,
+            reviewCount: true,
+            websiteUrl: true,
+            websiteClass: true,
+          },
+        },
+        audits: {
+          select: { id: true, module: true, status: true, score: true },
+        },
+        brief: { select: { id: true, aiStatus: true, headlineOpportunity: true } },
+        tags: { include: { tag: { select: { id: true, name: true } } } },
+        score: { select: { breakdown: true } },
+      },
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      qualificationStatus: r.qualificationStatus,
+      auditStatus: r.auditStatus,
+      aiStatus: r.aiStatus,
+      prospectStatus: r.prospectStatus,
+      opportunityScore: r.opportunityScore,
+      scoreBreakdown: r.score?.breakdown ?? null,
+      notes: r.notes,
+      savedAt: r.savedAt?.toISOString() ?? null,
+      archivedAt: r.archivedAt?.toISOString() ?? null,
+      tags: r.tags.map((lt) => ({ id: lt.tag.id, name: lt.tag.name })),
+      business: r.business,
+      audits: r.audits,
+      brief: r.brief
+        ? {
+            id: r.brief.id,
+            aiStatus: r.brief.aiStatus,
+            headlineOpportunity: r.brief.headlineOpportunity,
+          }
+        : null,
+    }));
+  }
 }
 
 function toDetail(row: DetailRow): CampaignDetail {
@@ -481,7 +938,13 @@ function toDetail(row: DetailRow): CampaignDetail {
       qualificationStatus: lead.qualificationStatus,
       auditStatus: lead.auditStatus,
       aiStatus: lead.aiStatus,
+      prospectStatus: lead.prospectStatus,
       opportunityScore: lead.opportunityScore,
+      scoreBreakdown: lead.score?.breakdown ?? null,
+      notes: lead.notes,
+      savedAt: lead.savedAt?.toISOString() ?? null,
+      archivedAt: lead.archivedAt?.toISOString() ?? null,
+      tags: [],
       business: {
         id: lead.business.id,
         name: lead.business.name,

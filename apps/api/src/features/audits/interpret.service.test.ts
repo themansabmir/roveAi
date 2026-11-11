@@ -172,4 +172,39 @@ describe("InterpretService — Deterministic Scoring & Decoupled AI Plugin", () 
     const validated = BriefDataSchema.safeParse(brief);
     expect(validated.success).toBe(true);
   });
+
+  it("includes 3D scoreBreakdown in AI evidence context", () => {
+    const lead = {
+      campaign: {
+        niche: "Dentists",
+        serviceType: "Mobile Speed Optimization",
+      },
+      business: {
+        name: "Austin Smile Studio",
+        rating: 4.8,
+        reviewCount: 65,
+        websiteUrl: "https://austinsmile.example.com",
+        websiteClass: "OWNED_SITE",
+      },
+      audits: [],
+    };
+
+    const mockScoreBreakdown: any = {
+      gapIndex: 75,
+      agencyFitScore: 85,
+      commercialViability: 90,
+      priorityRank: 81,
+      evalState: "COMPLETE",
+      evidenceFreshness: "FRESH",
+      disclaimer: "Gap Index reflects technical deficiencies and potential service need. It is NOT a predictive probability of purchase.",
+    };
+
+    const context = service.buildEvidenceContext(lead as any, null, 81, mockScoreBreakdown);
+    expect(context.scoreBreakdown).toBeDefined();
+    expect(context.scoreBreakdown?.gapIndex).toBe(75);
+    expect(context.scoreBreakdown?.agencyFitScore).toBe(85);
+    expect(context.scoreBreakdown?.commercialViability).toBe(90);
+    expect(context.scoreBreakdown?.priorityRank).toBe(81);
+    expect(context.scoreBreakdown?.disclaimer).toContain("Gap Index reflects technical deficiencies");
+  });
 });

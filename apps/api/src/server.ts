@@ -16,7 +16,7 @@ import { meRouter } from "@features/me/me.routes";
 import { adminRouter } from "@features/admin/admin.routes";
 import { organizationsRouter } from "@features/organizations/organization.routes";
 import { workspaceRouter } from "@features/workspaces/workspace.routes";
-import { campaignsRouter } from "@features/campaigns/campaign.routes";
+import { campaignsRouter, tagsRouter } from "@features/campaigns/campaign.routes";
 import { registerAllPlugins } from "@plugins/register-all";
 import { IPrismaService, PRISMA_PLUGIN } from "@plugins/prisma/prisma.plugin";
 import { IQueueService, QUEUE_PLUGIN } from "@plugins/queue/queue.types";
@@ -75,6 +75,7 @@ export async function buildApp(): Promise<{ app: Express; registry: PluginRegist
   );
   app.use("/api/invitations", invitationsRouter({ prisma, email: emailPlugin, appWebUrl: config.APP_WEB_URL }));
   app.use("/api/organizations/:organizationId/campaigns", campaignsRouter({ prisma, queue: queuePlugin }));
+  app.use("/api/organizations/:organizationId/tags", tagsRouter({ prisma }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

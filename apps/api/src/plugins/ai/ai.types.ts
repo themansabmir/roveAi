@@ -28,6 +28,14 @@ export interface AiEvidenceContext {
   cls: number | null;
   findingMessages: string[];
   opportunityScore: number;
+  scoreBreakdown?: {
+    gapIndex: number | null;
+    agencyFitScore: number | null;
+    commercialViability: number | null;
+    priorityRank?: number | null;
+    disclaimer?: string;
+    evidenceFreshness?: string;
+  };
 }
 
 export interface AiBriefResult {

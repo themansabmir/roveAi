@@ -1,11 +1,20 @@
 import { AiEvidenceContext } from "./ai.types";
 
 export function buildOpportunityPrompt(ctx: AiEvidenceContext): string {
+  const degradedNotice = ctx.scoreBreakdown?.evidenceFreshness === "DEGRADED"
+    ? "\nCRITICAL EVIDENCE NOTE: Target site was temporarily inaccessible during the latest scan attempt. Verified findings from previous successful audits are cited above. Do NOT state or imply that the business website is permanently offline or broken."
+    : "";
+
   return `
 Analyze the technical audit findings, Google Maps profile, and website signals for the following business:
 ${JSON.stringify(ctx, null, 2)}
+${degradedNotice}
 
 Produce a sales-ready Opportunity Brief for an agency offering ${ctx.serviceTarget || "Digital Marketing & Web Services"}.
+IMPORTANT:
+- Use only verified findings. Do not treat null or unassessed attributes as negative business flaws.
+- The opportunity score represents internal consultative queue priority, not customer purchase probability.
+
 Return a JSON object with EXACTLY the following structure:
 {
   "headlineOpportunity": "Concise 1-sentence sales pitch headline identifying their biggest technical vulnerability and conversion leak",

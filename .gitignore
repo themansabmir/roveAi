@@ -29,6 +29,10 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
 
 # testing
 coverage/

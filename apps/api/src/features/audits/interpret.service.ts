@@ -4,6 +4,11 @@ import { claimJob, releaseJob } from "@features/jobs/job-lock";
 import { IAiService } from "@plugins/ai/ai.plugin";
 import { AiEvidenceContext, BriefData, BriefDataSchema } from "@plugins/ai/ai.types";
 import { finishJob } from "./audit-write";
+import {
+  computeLeadScoreBreakdown,
+  persistLeadScore,
+} from "./scoring/lead-scoring";
+import { LeadScoreBreakdown } from "./scoring/score-types";
 
 export { BriefDataSchema };
 export type { BriefData };
@@ -64,18 +69,38 @@ export class InterpretService {
       include: { pages: true },
     });
 
-    // 1. Calculate deterministic objective opportunity score
-    const opportunityScore = this.computeOpportunityScore(lead, snapshot);
-    console.log(`[InterpretService.execute] 🎯 Computed opportunity score: ${opportunityScore}/100 for lead ${lead.id}`);
+    // 1. Fetch agency service offers and execution attempts for lead scoring
+    const serviceOffers = await this.prisma.serviceOffer.findMany({
+      where: { organizationId: payload.organizationId, active: true },
+      select: { name: true, codes: true, active: true },
+    });
 
-    // 2. Synthesize AI brief via injected AI Plugin (Gemini -> OpenAI -> Deterministic Fallback)
-    const context = this.buildEvidenceContext(lead, snapshot, opportunityScore);
+    const latestAttempts = await this.prisma.auditAttempt.findMany({
+      where: { leadId: payload.leadId },
+      orderBy: { observedAt: "desc" },
+      distinct: ["module"],
+      select: { module: true, status: true, observedAt: true },
+    });
+
+    // 2. Calculate deterministic 3D lead score breakdown & composite priority rank
+    const scoreBreakdown = computeLeadScoreBreakdown({
+      lead,
+      serviceOffers,
+      latestAttempts,
+    });
+    const opportunityScore = scoreBreakdown.priorityRank ?? 0;
+    console.log(`[InterpretService.execute] 🎯 3D Score: gapIndex=${scoreBreakdown.gapIndex}, fit=${scoreBreakdown.agencyFitScore}, viability=${scoreBreakdown.commercialViability} -> priorityRank=${scoreBreakdown.priorityRank}`);
+
+    // 3. Synthesize AI brief via injected AI Plugin (Gemini -> OpenAI -> Deterministic Fallback)
+    const context = this.buildEvidenceContext(lead, snapshot, opportunityScore, scoreBreakdown);
     const { brief, modelName, tokenUsage } = await this.ai.generateOpportunityBrief(context);
     console.log(`[InterpretService.execute] ✨ Brief synthesized with model "${modelName}": "${brief.headlineOpportunity}"`);
 
-    // 3. Database write: Brief record + Lead status & score update
+    // 4. Database write: Persist LeadScore, Brief record + Lead status & score update
     await this.prisma.$transaction(async (tx) => {
       const safeTechStack = Array.isArray(snapshot?.techStack) ? (snapshot.techStack as string[]) : [];
+
+      await persistLeadScore(tx, lead.id, scoreBreakdown);
 
       await tx.brief.upsert({
         where: { leadId: lead.id },
@@ -95,6 +120,11 @@ export class InterpretService {
             keyFindings: brief.keyFindings,
             metricsSummary: {
               opportunityScore,
+              gapIndex: scoreBreakdown.gapIndex,
+              agencyFitScore: scoreBreakdown.agencyFitScore,
+              commercialViability: scoreBreakdown.commercialViability,
+              evalState: scoreBreakdown.evalState,
+              evidenceFreshness: scoreBreakdown.evidenceFreshness,
               performanceAuditScore: lead.audits.find((a) => a.module === "PERFORMANCE")?.score ?? null,
               websiteClass: lead.business.websiteClass,
               techStack: safeTechStack,
@@ -116,6 +146,11 @@ export class InterpretService {
             keyFindings: brief.keyFindings,
             metricsSummary: {
               opportunityScore,
+              gapIndex: scoreBreakdown.gapIndex,
+              agencyFitScore: scoreBreakdown.agencyFitScore,
+              commercialViability: scoreBreakdown.commercialViability,
+              evalState: scoreBreakdown.evalState,
+              evidenceFreshness: scoreBreakdown.evidenceFreshness,
               performanceAuditScore: lead.audits.find((a) => a.module === "PERFORMANCE")?.score ?? null,
               websiteClass: lead.business.websiteClass,
               techStack: safeTechStack,
@@ -155,13 +190,13 @@ export class InterpretService {
       }
     });
 
-    console.log(`[InterpretService.execute] ✅ Brief stored in DB for lead ${lead.id}`);
+    console.log(`[InterpretService.execute] ✅ Brief & LeadScore stored in DB for lead ${lead.id}`);
     await finishJob(this.prisma, payload.jobId, "COMPLETED");
   }
 
   /**
-   * Deterministic opportunity scoring (0–100)
-   * High score = high pain points = high value sales opportunity.
+   * Deterministic opportunity scoring (0–100).
+   * Kept for backward compatibility with existing tests and callers.
    */
   computeOpportunityScore(
     lead: {
@@ -256,7 +291,8 @@ export class InterpretService {
       techStack?: unknown;
       pages?: Array<unknown>;
     } | null,
-    opportunityScore: number
+    opportunityScore: number,
+    scoreBreakdown?: LeadScoreBreakdown
   ): AiEvidenceContext {
     const perfAudit = lead.audits.find((a) => a.module === "PERFORMANCE");
     const perfMetrics = (perfAudit?.metrics as Record<string, unknown>) || {};
@@ -284,6 +320,16 @@ export class InterpretService {
       cls: typeof perfMetrics.cls === "number" ? perfMetrics.cls : null,
       findingMessages,
       opportunityScore,
+      scoreBreakdown: scoreBreakdown
+        ? {
+            gapIndex: scoreBreakdown.gapIndex,
+            agencyFitScore: scoreBreakdown.agencyFitScore,
+            commercialViability: scoreBreakdown.commercialViability,
+            priorityRank: scoreBreakdown.priorityRank,
+            disclaimer: scoreBreakdown.disclaimer,
+            evidenceFreshness: scoreBreakdown.evidenceFreshness,
+          }
+        : undefined,
     };
   }
 }

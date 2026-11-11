@@ -134,6 +134,16 @@ enum AiStatus {
   UNAVAILABLE
 }
 
+// Sales-pipeline lifecycle for a prospect inside a campaign workspace.
+// Completely separate from QualificationStatus (ingestion filter).
+enum ProspectStatus {
+  NEW
+  RESEARCHED
+  QUALIFIED
+  CONTACTED
+  DISMISSED
+}
+
 enum OpportunityConfidence {
   LOW
   MEDIUM
@@ -665,6 +675,9 @@ model Business {
   // Raw provider payload for traceability (Outscraper record, GBP fields).
   providerRaw Json?
 
+  // Field-level verification provenance & Quad-State contract
+  enrichmentState Json?
+
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt @db.Timestamptz
 
@@ -712,6 +725,11 @@ model CampaignLead {
   // Denormalized from LeadScore.total for list sorting.
   opportunityScore Int?
 
+  // Prospect workspace fields (sales pipeline — separate from qualificationStatus which is ingestion-only)
+  prospectStatus ProspectStatus @default(NEW)
+  notes          String?        @db.Text
+  archivedAt     DateTime?      @db.Timestamptz
+
   savedAt       DateTime? @db.Timestamptz
   savedByUserId String?
 
@@ -722,6 +740,7 @@ model CampaignLead {
   business      Business                 @relation(fields: [businessId], references: [id], onDelete: Cascade)
   savedBy       User?                    @relation("LeadSavedBy", fields: [savedByUserId], references: [id], onDelete: SetNull)
   audits        TechnicalAudit[]
+  auditAttempts AuditAttempt[]
   brief         Brief?
   competitorSet CompetitorSet?
   crmExports    CrmExport[]
@@ -735,6 +754,8 @@ model CampaignLead {
   @@unique([campaignId, businessId])
   @@index([campaignId])
   @@index([campaignId, opportunityScore])
+  @@index([campaignId, prospectStatus])
+  @@index([campaignId, archivedAt])
   @@index([savedByUserId])
   @@map("campaign_lead")
 }
@@ -842,6 +863,28 @@ model AuditFinding {
   @@index([auditId])
   @@index([code])
   @@map("audit_finding")
+}
+
+// Immutable execution history log for audit worker attempts
+model AuditAttempt {
+  id            String      @id @default(cuid())
+  leadId        String
+  jobId         String
+  module        AuditModule
+  attemptNumber Int         @default(1)
+  status        AuditStatus
+  score         Int?
+  failureReason String?     @db.VarChar(500)
+  observedAt    DateTime    @db.Timestamptz
+  createdAt     DateTime    @default(now()) @db.Timestamptz
+
+  lead CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  job  Job          @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, module, attemptNumber])
+  @@index([leadId, module, createdAt])
+  @@index([jobId])
+  @@map("audit_attempt")
 }
 
 // ---------------------------------------------------------------------------
@@ -993,11 +1036,11 @@ model LeadMatch {
 model LeadScore {
   id             String                @id @default(cuid())
   leadId         String                @unique
-  total          Int
-  evidenceScore  Int
-  fitScore       Int
-  relevanceScore Int
-  confidence     OpportunityConfidence @default(MEDIUM)
+  total          Int?
+  evidenceScore  Int?
+  fitScore       Int?
+  relevanceScore Int?
+  confidence     OpportunityConfidence @default(LOW)
   breakdown      Json
   computedAt     DateTime              @default(now()) @db.Timestamptz
 
@@ -1229,7 +1272,8 @@ model Job {
 
   campaign Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   lead     CampaignLead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  audits   TechnicalAudit[]
+  audits        TechnicalAudit[]
+  auditAttempts AuditAttempt[]
 
   @@index([campaignId, createdAt])
   @@index([organizationId, status])
