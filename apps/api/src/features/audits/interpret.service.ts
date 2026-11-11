@@ -1,13 +1,8 @@
-import { OpportunityConfidence, PrismaClient } from "@prisma/client";
 import { AuditJobPayload } from "@plugins/queue/queue.types";
-import { claimJob, releaseJob } from "@features/jobs/job-lock";
 import { IAiService } from "@plugins/ai/ai.plugin";
 import { AiEvidenceContext, BriefData, BriefDataSchema } from "@plugins/ai/ai.types";
-import { finishJob } from "./audit-write";
-import {
-  computeLeadScoreBreakdown,
-  persistLeadScore,
-} from "./scoring/lead-scoring";
+import { InterpretRepository } from "./interpret.repository";
+import { computeLeadScoreBreakdown } from "./scoring/lead-scoring";
 import { LeadScoreBreakdown } from "./scoring/score-types";
 
 export { BriefDataSchema };
@@ -15,14 +10,14 @@ export type { BriefData };
 
 export class InterpretService {
   constructor(
-    private readonly prisma: PrismaClient,
+    private readonly repository: InterpretRepository,
     private readonly ai: IAiService,
     private readonly jobTimeoutMs = 120_000
   ) {}
 
   async run(payload: AuditJobPayload, meta: { retrycount: number; retrylimit: number }): Promise<void> {
     console.log(`[InterpretService.run] 🧠 Interpret AI reasoning started for lead: ${payload.leadId} (jobId: ${payload.jobId})`);
-    const claim = await claimJob(this.prisma, payload.jobId, this.jobTimeoutMs);
+    const claim = await this.repository.claimJob(payload.jobId, this.jobTimeoutMs);
     console.log(`[InterpretService.run] 🔒 Job claim result: "${claim}" for jobId: ${payload.jobId}`);
     if (claim === "done") return;
     if (claim !== "ready") return;
@@ -33,54 +28,32 @@ export class InterpretService {
       const msg = errorMessage(err);
       if (meta.retrycount >= meta.retrylimit) {
         console.error(`[InterpretService.run] ❌ Interpret terminal failure:`, err);
-        await finishJob(this.prisma, payload.jobId, "FAILED", msg);
+        await this.repository.finishJob(payload.jobId, "FAILED", msg);
       } else {
         console.warn(`[InterpretService.run] ⚠️ Retrying after error: ${msg}`);
-        await releaseJob(this.prisma, payload.jobId);
+        await this.repository.releaseJob(payload.jobId);
       }
       throw err;
     }
   }
 
   private async execute(payload: AuditJobPayload): Promise<void> {
-    const lead = await this.prisma.campaignLead.findUnique({
-      where: { id: payload.leadId },
-      include: {
-        campaign: true,
-        business: true,
-        audits: {
-          include: { findings: true },
-        },
-      },
-    });
+    const lead = await this.repository.findLeadForInterpret(payload.leadId);
 
     if (!lead || lead.campaign.status === "CANCELLED") {
       console.log(`[InterpretService.execute] 🛑 Campaign lead missing or cancelled`);
-      await finishJob(this.prisma, payload.jobId, "CANCELLED");
+      await this.repository.finishJob(payload.jobId, "CANCELLED");
       return;
     }
 
-    const snapshot = await this.prisma.websiteSnapshot.findFirst({
-      where: {
-        businessId: lead.businessId,
-        organizationId: payload.organizationId,
-      },
-      orderBy: { createdAt: "desc" },
-      include: { pages: true },
-    });
+    const snapshot = await this.repository.findLatestSnapshot(
+      payload.organizationId,
+      lead.businessId
+    );
 
     // 1. Fetch agency service offers and execution attempts for lead scoring
-    const serviceOffers = await this.prisma.serviceOffer.findMany({
-      where: { organizationId: payload.organizationId, active: true },
-      select: { name: true, codes: true, active: true },
-    });
-
-    const latestAttempts = await this.prisma.auditAttempt.findMany({
-      where: { leadId: payload.leadId },
-      orderBy: { observedAt: "desc" },
-      distinct: ["module"],
-      select: { module: true, status: true, observedAt: true },
-    });
+    const serviceOffers = await this.repository.findActiveServiceOffers(payload.organizationId);
+    const latestAttempts = await this.repository.findLatestAuditAttempts(payload.leadId);
 
     // 2. Calculate deterministic 3D lead score breakdown & composite priority rank
     const scoreBreakdown = computeLeadScoreBreakdown({
@@ -97,101 +70,23 @@ export class InterpretService {
     console.log(`[InterpretService.execute] ✨ Brief synthesized with model "${modelName}": "${brief.headlineOpportunity}"`);
 
     // 4. Database write: Persist LeadScore, Brief record + Lead status & score update
-    await this.prisma.$transaction(async (tx) => {
-      const safeTechStack = Array.isArray(snapshot?.techStack) ? (snapshot.techStack as string[]) : [];
-
-      await persistLeadScore(tx, lead.id, scoreBreakdown);
-
-      await tx.brief.upsert({
-        where: { leadId: lead.id },
-        create: {
-          organizationId: payload.organizationId,
-          leadId: lead.id,
-          status: "DRAFT",
-          aiStatus: "COMPLETED",
-          headlineOpportunity: brief.headlineOpportunity.slice(0, 300),
-          suggestedService: brief.suggestedService.slice(0, 200),
-          confidence: brief.confidence as OpportunityConfidence,
-          valueProposition: brief.valueProposition,
-          outreachAngle: brief.outreachAngle,
-          coldEmailDraft: brief.coldEmailDraft,
-          callScriptDraft: brief.callScriptDraft,
-          content: {
-            keyFindings: brief.keyFindings,
-            metricsSummary: {
-              opportunityScore,
-              gapIndex: scoreBreakdown.gapIndex,
-              agencyFitScore: scoreBreakdown.agencyFitScore,
-              commercialViability: scoreBreakdown.commercialViability,
-              evalState: scoreBreakdown.evalState,
-              evidenceFreshness: scoreBreakdown.evidenceFreshness,
-              performanceAuditScore: lead.audits.find((a) => a.module === "PERFORMANCE")?.score ?? null,
-              websiteClass: lead.business.websiteClass,
-              techStack: safeTechStack,
-            },
-          },
-          modelName,
-        },
-        update: {
-          status: "DRAFT",
-          aiStatus: "COMPLETED",
-          headlineOpportunity: brief.headlineOpportunity.slice(0, 300),
-          suggestedService: brief.suggestedService.slice(0, 200),
-          confidence: brief.confidence as OpportunityConfidence,
-          valueProposition: brief.valueProposition,
-          outreachAngle: brief.outreachAngle,
-          coldEmailDraft: brief.coldEmailDraft,
-          callScriptDraft: brief.callScriptDraft,
-          content: {
-            keyFindings: brief.keyFindings,
-            metricsSummary: {
-              opportunityScore,
-              gapIndex: scoreBreakdown.gapIndex,
-              agencyFitScore: scoreBreakdown.agencyFitScore,
-              commercialViability: scoreBreakdown.commercialViability,
-              evalState: scoreBreakdown.evalState,
-              evidenceFreshness: scoreBreakdown.evidenceFreshness,
-              performanceAuditScore: lead.audits.find((a) => a.module === "PERFORMANCE")?.score ?? null,
-              websiteClass: lead.business.websiteClass,
-              techStack: safeTechStack,
-            },
-          },
-          modelName,
-        },
-      });
-
-      await tx.campaignLead.update({
-        where: { id: lead.id },
-        data: {
-          opportunityScore,
-          aiStatus: "COMPLETED",
-        },
-      });
-
-      if (tokenUsage?.inputTokens) {
-        await tx.usageEvent.create({
-          data: {
-            organizationId: payload.organizationId,
-            campaignId: payload.campaignId,
-            kind: "LLM_INPUT_TOKEN",
-            quantity: tokenUsage.inputTokens,
-          },
-        });
-      }
-      if (tokenUsage?.outputTokens) {
-        await tx.usageEvent.create({
-          data: {
-            organizationId: payload.organizationId,
-            campaignId: payload.campaignId,
-            kind: "LLM_OUTPUT_TOKEN",
-            quantity: tokenUsage.outputTokens,
-          },
-        });
-      }
+    const safeTechStack = Array.isArray(snapshot?.techStack) ? (snapshot.techStack as string[]) : [];
+    await this.repository.saveInterpretation({
+      organizationId: payload.organizationId,
+      campaignId: payload.campaignId,
+      leadId: lead.id,
+      opportunityScore,
+      scoreBreakdown,
+      brief,
+      modelName,
+      tokenUsage,
+      performanceAuditScore: lead.audits.find((a) => a.module === "PERFORMANCE")?.score ?? null,
+      websiteClass: lead.business.websiteClass,
+      techStack: safeTechStack,
     });
 
     console.log(`[InterpretService.execute] ✅ Brief & LeadScore stored in DB for lead ${lead.id}`);
-    await finishJob(this.prisma, payload.jobId, "COMPLETED");
+    await this.repository.finishJob(payload.jobId, "COMPLETED");
   }
 
   /**

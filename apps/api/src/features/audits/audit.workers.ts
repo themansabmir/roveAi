@@ -10,9 +10,12 @@ import { IStorageService, STORAGE_PLUGIN } from "@plugins/storage/storage.plugin
 import { CampaignRepository, DISCOVER_QUEUE } from "@features/campaigns/campaign.repository";
 import { DiscoveryService } from "@features/campaigns/discovery.service";
 import { AuditScheduler } from "./audit-scheduler";
+import { CrawlRepository } from "./crawl.repository";
 import { CrawlService } from "./crawl.service";
+import { PsiRepository } from "./psi.repository";
 import { PsiService } from "./psi.service";
 import { AI_PLUGIN, IAiService } from "@plugins/ai/ai.plugin";
+import { InterpretRepository } from "./interpret.repository";
 import { InterpretService } from "./interpret.service";
 
 export interface AuditHandlers {
@@ -33,12 +36,12 @@ export function buildAuditHandlers(pluginRegistry: IPluginRegistry): AuditHandle
   const ai = pluginRegistry.get<IAiService>(AI_PLUGIN);
   const scheduler = new AuditScheduler(prisma, queue, config.CRAWL_MAX_PAGES);
   const discovery = new DiscoveryService(new CampaignRepository(prisma), maps, scheduler);
-  const crawl = new CrawlService(prisma, fetcher, storage, queue, {
+  const crawl = new CrawlService(new CrawlRepository(prisma), fetcher, storage, queue, {
     maxPages: config.CRAWL_MAX_PAGES,
     jobTimeoutMs: config.JOB_TIMEOUT_MS,
   });
-  const psi = new PsiService(prisma, pagespeed, storage, queue, config.JOB_TIMEOUT_MS);
-  const interpret = new InterpretService(prisma, ai, config.JOB_TIMEOUT_MS);
+  const psi = new PsiService(new PsiRepository(prisma), pagespeed, storage, queue, config.JOB_TIMEOUT_MS);
+  const interpret = new InterpretService(new InterpretRepository(prisma), ai, config.JOB_TIMEOUT_MS);
 
   return {
     discover: (payload, meta) => discovery.run(payload.campaignId, payload.jobId, meta),
