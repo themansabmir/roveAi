@@ -6,7 +6,12 @@ const localeSet = new Set<string>(locales)
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  if (pathname.startsWith("/api") || pathname.startsWith("/_next") || pathname.includes(".")) {
+  if (
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/opengraph-image") ||
+    pathname.includes(".")
+  ) {
     return NextResponse.next()
   }
   const segment = pathname.split("/")[1]

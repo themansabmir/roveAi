@@ -37,14 +37,16 @@ export function SectionRenderer({ sections }: { sections?: CmsSection[] | null }
                   </span>
                 ) : null}
                 {section.heading ? (
-                  <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{section.heading}</h1>
+                  <h2 className="rv-heading text-4xl sm:text-5xl">{section.heading}</h2>
                 ) : null}
                 {section.subheading ? (
                   <p className="max-w-2xl text-lg text-muted-foreground">{section.subheading}</p>
                 ) : null}
                 <div className="flex flex-wrap gap-3">
                   {section.primaryCta ? <CtaButton cta={section.primaryCta} /> : null}
-                  {section.secondaryCta ? <CtaButton cta={section.secondaryCta} variant="outline" /> : null}
+                  {section.secondaryCta ? (
+                    <CtaButton cta={section.secondaryCta} variant="outline" />
+                  ) : null}
                 </div>
               </section>
             )
@@ -58,7 +60,9 @@ export function SectionRenderer({ sections }: { sections?: CmsSection[] | null }
                   <Card key={i}>
                     <CardHeader>
                       <CardTitle>{item.title}</CardTitle>
-                      {item.description ? <CardDescription>{item.description}</CardDescription> : null}
+                      {item.description ? (
+                        <CardDescription>{item.description}</CardDescription>
+                      ) : null}
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground" />
                   </Card>
@@ -68,7 +72,9 @@ export function SectionRenderer({ sections }: { sections?: CmsSection[] | null }
           case "faqBlock":
             return (
               <section key={index} className="max-w-2xl space-y-6">
-                {section.heading ? <h2 className="text-2xl font-semibold">{section.heading}</h2> : null}
+                {section.heading ? (
+                  <h2 className="text-2xl font-semibold">{section.heading}</h2>
+                ) : null}
                 <dl className="space-y-4">
                   {section.items?.map((item, i) => (
                     <div key={i}>
@@ -81,7 +87,7 @@ export function SectionRenderer({ sections }: { sections?: CmsSection[] | null }
             )
           case "richTextBlock":
             return (
-              <section key={index} className="prose prose-neutral dark:prose-invert max-w-none">
+              <section key={index} className="rv-prose">
                 <PortableTextBlock value={section.body} />
               </section>
             )

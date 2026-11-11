@@ -37,3 +37,7 @@ coverage/
 prisma/*.db
 
 # nested git dirs from migrated apps (removed during migration)
+
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md

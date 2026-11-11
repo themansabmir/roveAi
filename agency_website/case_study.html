@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>Syntropic AI + GTM Engineering — Case Study</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Newsreader:ital,wght@1,400;1,600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-[#F8F9FA] text-[#0B0F19] font-['Inter'] antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+<!-- ========================================================================= -->
+<!-- NAVBAR: Dark Navy (#0A0E1A) Brand Identity                               -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#0A0E1A]/95 backdrop-blur-md border-b border-slate-800/80">
+<div class="max-w-7xl mx-auto h-20 px-6 md:px-10 flex items-center justify-between">
+<!-- Wordmark -->
+<a class="flex items-center gap-3 group" data-path="work" href="#">
+<span class="font-['Plus_Jakarta_Sans'] text-xl font-bold tracking-tight text-white group-hover:text-blue-400 transition-colors">Syntropic</span>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-['JetBrains_Mono'] uppercase tracking-wider text-blue-400">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+          AI + GTM Engineering
+        </div>
+</a>
+<!-- Navigation Links -->
+<nav class="hidden lg:flex items-center gap-1 bg-[#131927] p-1.5 rounded-xl border border-slate-800">
+<a class="px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors" data-path="what-we-build" href="#">What We Build</a>
+<a class="px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors" data-path="how-it-works" href="#">How It Works</a>
+<a class="px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-sm" data-path="work" href="#">Work</a>
+<a class="px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors" data-path="ai-agents" href="#">AI Agents</a>
+<a class="px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors" data-path="about" href="#">About</a>
+</nav>
+<!-- Navbar CTAs -->
+<div class="flex items-center gap-4">
+<a class="hidden sm:inline-flex text-xs font-semibold text-slate-300 hover:text-white transition-colors" data-path="book-a-discovery" href="#">Book a Discovery</a>
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-[0_0_20px_-3px_rgba(37,99,235,0.6)] transition-all" data-path="book-a-discovery" href="#">
+<span>Start a Build</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</header>
+<main class="w-full pt-20 flex-1">
+<!-- ========================================================================= -->
+<!-- 01 HERO (Two-column split, Editorial Light Canvas)                        -->
+<!-- ========================================================================= -->
+<section class="w-full py-16 md:py-24 px-6 md:px-10 lg:px-12 border-b border-[#E2E8F0] bg-[#FAFAFC]">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+<!-- Left: ~55% content -->
+<div class="lg:col-span-7 flex flex-col gap-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+<span class="font-['JetBrains_Mono'] text-[11px] font-semibold tracking-wider uppercase">CASE STUDY</span>
+</div>
+<h1 class="font-['Plus_Jakarta_Sans'] text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0B0F19] tracking-tight leading-[1.08]">
+            From fragmented workflows to a <span class="font-['Newsreader'] font-normal italic text-blue-600">revenue system.</span>
+</h1>
+<p class="text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl font-normal">
+            A complex enterprise GTM motion re-architected around live buyer signals, deterministic routing, and intelligent agent execution.
+          </p>
+<!-- Compact Metadata -->
+<div class="py-3 px-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm flex items-center gap-2 w-fit">
+<span class="font-['JetBrains_Mono'] text-xs text-slate-500 font-medium">Series B Enterprise</span>
+<span class="text-slate-300">·</span>
+<span class="font-['JetBrains_Mono'] text-xs text-slate-700 font-semibold">B2B Infrastructure</span>
+<span class="text-slate-300">·</span>
+<span class="font-['JetBrains_Mono'] text-xs text-blue-600 font-semibold">8 Weeks Deployment</span>
+</div>
+<!-- Hero Action CTAs -->
+<div class="flex flex-wrap items-center gap-4 pt-2">
+<a class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 shadow-md hover:shadow-lg transition-all" data-path="book-a-discovery" href="#">
+<span>Start a Build</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-1.5 px-5 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-[#E2E8F0] font-semibold text-sm shadow-sm transition-all" href="#system-flow">
+<span>Explore Architecture ↓</span>
+</a>
+</div>
+</div>
+<!-- Right: ~45% visual card embedding IMAGE_14 -->
+<div class="lg:col-span-5">
+<div class="rounded-2xl bg-white border border-[#E2E8F0] p-3 shadow-xl">
+<div class="rounded-xl overflow-hidden bg-slate-50 border border-slate-100 aspect-[4/3] flex items-center justify-center">
+<img alt="AI revenue orchestration system" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1UjU8lEEyb_zkihPtNPP4DKmAIRIxx7rY_IRtZ0TDLi5jfYqG7wjicLo_iKfOvCDXUmCpfvh7AR6l_QQ7MDqQFceimLKI8_qgMWSqXREsVVOMYbCD3yuoK5xyIkRMMDUfZiexL8gm3gb4RyjQJyWIXK80FLkth8vGIxWZxrj3MN3X3vjyqERUpsJlJxwtD2h5uIgSZzL-2_Ejh_VxJOjEc86C8mPh_0Uwg-Nc9HMF0lhXPmr0rfYx_n518"/>
+</div>
+<div class="pt-3 px-2 flex items-center justify-between text-[11px] font-['JetBrains_Mono'] text-slate-400 uppercase tracking-wider">
+<span>AI Revenue Orchestration Core</span>
+<span class="text-blue-600 font-semibold">Active Node</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 02 THE PROBLEM (Editorial split)                                          -->
+<!-- ========================================================================= -->
+<section class="w-full py-20 px-6 md:px-10 lg:px-12 bg-white border-b border-[#E2E8F0]">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+<!-- Left Column -->
+<div class="lg:col-span-5 flex flex-col gap-5">
+<span class="font-['JetBrains_Mono'] text-xs font-semibold text-blue-600 uppercase tracking-widest">01 // THE PROBLEM</span>
+<h2 class="font-['Plus_Jakarta_Sans'] text-3xl sm:text-4xl font-bold text-[#0B0F19] tracking-tight leading-tight">
+            The friction wasn't in one place. It was everywhere.
+          </h2>
+<p class="text-base text-slate-600 leading-relaxed">
+            Revenue teams were losing 15+ hours weekly to manual account research, swivel-chair spreadsheet entry, and delayed SDR-to-AE handoffs. Disconnected data silos caused hot inbound accounts to grow stale while reps chased low-intent outreach blindly.
+          </p>
+<!-- 3 Horizontal Tag Pills -->
+<div class="flex flex-wrap items-center gap-2 pt-2">
+<span class="px-3.5 py-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 font-['JetBrains_Mono'] text-xs font-semibold tracking-wide">FRAGMENTED</span>
+<span class="px-3.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 font-['JetBrains_Mono'] text-xs font-semibold tracking-wide">MANUAL</span>
+<span class="px-3.5 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-['JetBrains_Mono'] text-xs font-semibold tracking-wide">SLOW</span>
+</div>
+</div>
+<!-- Right Column with IMAGE_63 -->
+<div class="lg:col-span-7 flex flex-col gap-2">
+<div class="rounded-2xl bg-white border border-[#E2E8F0] p-3 shadow-md">
+<div class="rounded-xl overflow-hidden bg-slate-50 border border-slate-100 aspect-[16/9] flex items-center justify-center">
+<img alt="Disconnected data silos and operational friction" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgA8dznMIiFhh5vfVTN9xs8ZL3eWa-p3A1Hk_E9hH_IP0SpQOg2KnMLwWSyYlHZpaG98UYsF5Xbtw7iPY5MtkeelxOTrzDW4nMcm6UmdNjpbfWETFj-gSXp5oCu-3Gc21XDzAZizd69kTPiQ5ZRyoPo-H_JdQ3nZ9Iw8hwCRx-FHQCD3rit3MlS3reTYii8MilqjfG7FrOssNMx29hzIAptaUdXyMzi57aZ3V_xMU"/>
+</div>
+</div>
+<p class="font-['JetBrains_Mono'] text-xs text-slate-500 pl-1">
+            Fig. 1.0 — Disconnected data silos and manual operational drag.
+          </p>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 03 THE TRANSFORMATION (Visual Centerpiece)                                -->
+<!-- ========================================================================= -->
+<section class="w-full py-20 px-6 md:px-10 lg:px-12 bg-[#F8F9FA] border-b border-[#E2E8F0]">
+<div class="max-w-7xl mx-auto flex flex-col gap-8">
+<div class="flex flex-col gap-2 max-w-3xl">
+<span class="font-['JetBrains_Mono'] text-xs font-semibold text-blue-600 uppercase tracking-widest">02 // THE TRANSFORMATION</span>
+<h2 class="font-['Plus_Jakarta_Sans'] text-3xl sm:text-4xl font-bold text-[#0B0F19] tracking-tight">
+            From friction to deterministic flow.
+          </h2>
+</div>
+<!-- Large Transformation Visual embedding IMAGE_13 -->
+<div class="w-full rounded-2xl bg-white border border-[#E2E8F0] p-4 md:p-6 shadow-lg flex flex-col gap-4">
+<div class="rounded-xl overflow-hidden bg-slate-50 border border-slate-100 aspect-[16/10] md:aspect-[21/11] flex items-center justify-center">
+<img alt="Transformation from fragmented cubes to unified blue ribbon pipeline" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1UPVMd_9taGELaOR8aN9WrUsbVlzrdeQr_Ryda_hpDQvHT3zk7L8gnc8_Re43-wHzBxUlIcZYKMoszXLR9UPSRDcmb57pYoC49bR6iVUn5JVDJNGZrlmUGDNNXI8DQQUuXEtAWXqSNXcDG8Fo5RunjpH5YcgAAjOep1nHvAZHG0iZqKevzRbqXqiVAbDKcH8j81ADJC2ib7NNGKMjLsR7rt2I40a9Brd6qZg6AyYOVgwwl6SZzauqgcGQ"/>
+</div>
+<!-- Minimal Flow Labels Strip -->
+<div class="pt-2 px-2 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm font-['JetBrains_Mono'] font-semibold text-slate-700">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+<span>DATA</span>
+</div>
+<span class="text-slate-300">→</span>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+<span>SIGNALS</span>
+</div>
+<span class="text-slate-300">→</span>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+<span>INTELLIGENCE</span>
+</div>
+<span class="text-slate-300">→</span>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+<span>EXECUTION</span>
+</div>
+<span class="text-slate-300">→</span>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+<span>MEASUREMENT</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 04 THE SYSTEM (Architecture & Flow)                                       -->
+<!-- ========================================================================= -->
+<section class="w-full py-20 px-6 md:px-10 lg:px-12 bg-white border-b border-[#E2E8F0]" id="system-flow">
+<div class="max-w-7xl mx-auto flex flex-col gap-10">
+<div class="flex flex-col gap-2 max-w-3xl">
+<span class="font-['JetBrains_Mono'] text-xs font-semibold text-blue-600 uppercase tracking-widest">03 // THE SYSTEM</span>
+<h2 class="font-['Plus_Jakarta_Sans'] text-3xl sm:text-4xl font-bold text-[#0B0F19] tracking-tight">
+            One connected system, built around the way revenue teams move.
+          </h2>
+</div>
+<!-- 6 Connected Horizontal Nodes Flow -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+<!-- Node 1 -->
+<div class="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm hover:border-blue-300 transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3 text-slate-400">
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase font-bold text-blue-600">01</span>
+<span class="material-symbols-outlined text-[18px] text-blue-600">database</span>
+</div>
+<h3 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">DATA</h3>
+<p class="font-['JetBrains_Mono'] text-[11px] text-slate-500 mt-2 leading-tight">Unified warehouse &amp; CRM ingestion</p>
+</div>
+<div class="mt-4 pt-2 border-t border-slate-100 text-[10px] font-['JetBrains_Mono'] text-emerald-600 font-medium">Sub-second sync</div>
+</div>
+<!-- Node 2 -->
+<div class="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm hover:border-blue-300 transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3 text-slate-400">
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase font-bold text-blue-600">02</span>
+<span class="material-symbols-outlined text-[18px] text-blue-600">sensors</span>
+</div>
+<h3 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">SIGNALS</h3>
+<p class="font-['JetBrains_Mono'] text-[11px] text-slate-500 mt-2 leading-tight">Live intent, tech shifts &amp; jobs</p>
+</div>
+<div class="mt-4 pt-2 border-t border-slate-100 text-[10px] font-['JetBrains_Mono'] text-emerald-600 font-medium">Continuous stream</div>
+</div>
+<!-- Node 3 -->
+<div class="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm hover:border-blue-300 transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3 text-slate-400">
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase font-bold text-blue-600">03</span>
+<span class="material-symbols-outlined text-[18px] text-blue-600">verified_user</span>
+</div>
+<h3 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">QUALIFICATION</h3>
+<p class="font-['JetBrains_Mono'] text-[11px] text-slate-500 mt-2 leading-tight">Strict deterministic ICP gates</p>
+</div>
+<div class="mt-4 pt-2 border-t border-slate-100 text-[10px] font-['JetBrains_Mono'] text-emerald-600 font-medium">Zero hallucination</div>
+</div>
+<!-- Node 4 -->
+<div class="p-4 rounded-xl bg-blue-50/50 border border-blue-200 shadow-sm hover:border-blue-400 transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3 text-blue-400">
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase font-bold text-blue-700">04 // CORE</span>
+<span class="material-symbols-outlined text-[18px] text-blue-600">psychology</span>
+</div>
+<h3 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">AI / INTELLIGENCE</h3>
+<p class="font-['JetBrains_Mono'] text-[11px] text-blue-900 mt-2 leading-tight">Contextual synthesis &amp; research</p>
+</div>
+<div class="mt-4 pt-2 border-t border-blue-100 text-[10px] font-['JetBrains_Mono'] text-blue-700 font-semibold">Private VPC models</div>
+</div>
+<!-- Node 5 -->
+<div class="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm hover:border-blue-300 transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3 text-slate-400">
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase font-bold text-blue-600">05</span>
+<span class="material-symbols-outlined text-[18px] text-blue-600">outgoing_mail</span>
+</div>
+<h3 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">EXECUTION</h3>
+<p class="font-['JetBrains_Mono'] text-[11px] text-slate-500 mt-2 leading-tight">Orchestrated multi-touch routing</p>
+</div>
+<div class="mt-4 pt-2 border-t border-slate-100 text-[10px] font-['JetBrains_Mono'] text-emerald-600 font-medium">Direct rep dispatch</div>
+</div>
+<!-- Node 6 -->
+<div class="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm hover:border-blue-300 transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3 text-slate-400">
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase font-bold text-blue-600">06</span>
+<span class="material-symbols-outlined text-[18px] text-blue-600">query_stats</span>
+</div>
+<h3 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">MEASUREMENT</h3>
+<p class="font-['JetBrains_Mono'] text-[11px] text-slate-500 mt-2 leading-tight">Closed-loop revenue attribution</p>
+</div>
+<div class="mt-4 pt-2 border-t border-slate-100 text-[10px] font-['JetBrains_Mono'] text-emerald-600 font-medium">Full audit logs</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 05 THE BUILD (Layered Architecture)                                       -->
+<!-- ========================================================================= -->
+<section class="w-full py-20 px-6 md:px-10 lg:px-12 bg-[#FAFAFC] border-b border-[#E2E8F0]">
+<div class="max-w-7xl mx-auto flex flex-col gap-10">
+<div class="flex flex-col gap-2 max-w-3xl">
+<span class="font-['JetBrains_Mono'] text-xs font-semibold text-blue-600 uppercase tracking-widest">04 // THE BUILD</span>
+<h2 class="font-['Plus_Jakarta_Sans'] text-3xl sm:text-4xl font-bold text-[#0B0F19] tracking-tight">
+            Looking under the hood: Layered revenue architecture.
+          </h2>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Left: Large technical diagram embedding IMAGE_64 -->
+<div class="lg:col-span-8 rounded-2xl bg-white border border-[#E2E8F0] p-4 shadow-lg">
+<div class="rounded-xl overflow-hidden bg-slate-50 border border-slate-100 aspect-[16/9] flex items-center justify-center">
+<img alt="High-end editorial technical diagram of layered system stack" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBprv5JbJGU3O0idotBENzsqyysTQ0dy3WMQjoijTLZYFdUz3GDKQjzABLaykgb4_il_5qzCJiS0v8BIZnyJ4PO9FBlHytnIjJ-gAwObVZqIH8QlGnOnUxptEFMfnQtxo1lPH0tTg1clCb2MQfY24rQaQsMISNgW7-1hAeddz6RJvOW4eJg0SgkoIx0OZO99XHkMsh1VOdzWNMi-7CH5vRYMrQk0fkpOOAywTL6Lqw"/>
+</div>
+</div>
+<!-- Right: Concise 4-layer stacked index -->
+<div class="lg:col-span-4 flex flex-col gap-3">
+<!-- Layer 1 -->
+<div class="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm">
+<span class="font-['JetBrains_Mono'] text-[10px] font-bold text-blue-600 uppercase">TIER 01</span>
+<h4 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19] mt-0.5">Experience Layer</h4>
+<p class="text-xs text-slate-500 mt-1">Unified sales reps &amp; ops consoles with inline approvals.</p>
+</div>
+<!-- Layer 2 -->
+<div class="p-4 rounded-xl bg-white border border-blue-200 bg-blue-50/20 shadow-sm">
+<span class="font-['JetBrains_Mono'] text-[10px] font-bold text-blue-600 uppercase">TIER 02</span>
+<h4 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19] mt-0.5">AI &amp; Intelligence Layer</h4>
+<p class="text-xs text-slate-500 mt-1">Neural account qualification, pricing &amp; contextual angle generation.</p>
+</div>
+<!-- Layer 3 -->
+<div class="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm">
+<span class="font-['JetBrains_Mono'] text-[10px] font-bold text-blue-600 uppercase">TIER 03</span>
+<h4 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19] mt-0.5">Automation &amp; Workflow Engine</h4>
+<p class="text-xs text-slate-500 mt-1">Deterministic state machines, behavioral triggers &amp; webhooks.</p>
+</div>
+<!-- Layer 4 -->
+<div class="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm">
+<span class="font-['JetBrains_Mono'] text-[10px] font-bold text-blue-600 uppercase">TIER 04</span>
+<h4 class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19] mt-0.5">Unified Data &amp; Signals Layer</h4>
+<p class="text-xs text-slate-500 mt-1">Enterprise CRM sync, telemetry lakes, and unified customer graph.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 06 THE OUTCOME (Proof-first)                                              -->
+<!-- ========================================================================= -->
+<section class="w-full py-20 px-6 md:px-10 lg:px-12 bg-white border-b border-[#E2E8F0]">
+<div class="max-w-7xl mx-auto flex flex-col gap-10">
+<div class="flex flex-col gap-2 max-w-3xl">
+<span class="font-['JetBrains_Mono'] text-xs font-semibold text-blue-600 uppercase tracking-widest">05 // THE OUTCOME</span>
+<h2 class="font-['Plus_Jakarta_Sans'] text-3xl sm:text-4xl font-bold text-[#0B0F19] tracking-tight">
+            What changed after the build.
+          </h2>
+</div>
+<!-- 4 Large Proof Metric Blocks -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="p-6 rounded-2xl bg-[#FAFAFC] border border-[#E2E8F0] shadow-sm flex flex-col justify-between">
+<span class="font-['Plus_Jakarta_Sans'] text-5xl font-extrabold text-blue-600 tracking-tight">10x</span>
+<div class="mt-4">
+<p class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">Faster Inbound Routing</p>
+<p class="text-xs text-slate-500 mt-1">High-fit signals dispatched to reps in sub-60 seconds.</p>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-[#FAFAFC] border border-[#E2E8F0] shadow-sm flex flex-col justify-between">
+<span class="font-['Plus_Jakarta_Sans'] text-5xl font-extrabold text-[#0B0F19] tracking-tight">80%</span>
+<div class="mt-4">
+<p class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">Reduction in Rep Admin</p>
+<p class="text-xs text-slate-500 mt-1">Eliminated manual cross-referencing and data entry.</p>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-[#FAFAFC] border border-[#E2E8F0] shadow-sm flex flex-col justify-between">
+<span class="font-['Plus_Jakarta_Sans'] text-5xl font-extrabold text-blue-600 tracking-tight">100%</span>
+<div class="mt-4">
+<p class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">Deterministic Verification</p>
+<p class="text-xs text-slate-500 mt-1">Audit-proof qualification before any sequence initiates.</p>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-[#FAFAFC] border border-[#E2E8F0] shadow-sm flex flex-col justify-between">
+<span class="font-['Plus_Jakarta_Sans'] text-5xl font-extrabold text-[#0B0F19] tracking-tight">0</span>
+<div class="mt-4">
+<p class="font-['Plus_Jakarta_Sans'] text-sm font-bold text-[#0B0F19]">Data Silos Remaining</p>
+<p class="text-xs text-slate-500 mt-1">Unified operational truth across CRM, warehouse, and reps.</p>
+</div>
+</div>
+</div>
+<!-- Short 2-sentence summary of operational impact -->
+<div class="p-6 rounded-2xl bg-blue-50/40 border border-blue-100 max-w-4xl">
+<p class="text-base text-slate-800 leading-relaxed font-normal">
+            The revenue team transitioned from managing spreadsheet duct-tape to operating an autonomous, deterministic pipeline machine. Qualified opportunity velocity accelerated without adding a single headcount to the operations group.
+          </p>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 07 RELATED WORK (3 Case Studies: 1 featured + 2 secondary)                -->
+<!-- ========================================================================= -->
+<section class="w-full py-20 px-6 md:px-10 lg:px-12 bg-[#F8F9FA] border-b border-[#E2E8F0]">
+<div class="max-w-7xl mx-auto flex flex-col gap-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div class="flex flex-col gap-2">
+<span class="font-['JetBrains_Mono'] text-xs font-semibold text-blue-600 uppercase tracking-widest">06 // RELATED BUILDS</span>
+<h2 class="font-['Plus_Jakarta_Sans'] text-3xl sm:text-4xl font-bold text-[#0B0F19] tracking-tight">
+              More systems we've engineered.
+            </h2>
+</div>
+<a class="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors" data-path="work" href="#">
+<span>View all work</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Featured Card (col-span-6 or 5) -->
+<a class="lg:col-span-6 p-7 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between group" data-path="work" href="#">
+<div class="flex flex-col gap-3">
+<span class="font-['JetBrains_Mono'] text-xs text-blue-600 font-semibold uppercase tracking-wider">FEATURED BUILD // FINTECH</span>
+<h3 class="font-['Plus_Jakarta_Sans'] text-xl font-bold text-[#0B0F19] group-hover:text-blue-600 transition-colors">
+                Autonomous Inbound Qualification &amp; Routing
+              </h3>
+<p class="text-sm text-slate-600 leading-relaxed">
+                Deterministic lead scoring and instant calendar dispatch for Series B enterprise fintech with zero human triage lag.
+              </p>
+</div>
+<div class="pt-6 flex items-center gap-1.5 text-sm font-semibold text-blue-600 group-hover:translate-x-1 transition-transform">
+<span>Read case study</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</a>
+<!-- Secondary Card 1 -->
+<a class="lg:col-span-3 p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between group" data-path="work" href="#">
+<div class="flex flex-col gap-2.5">
+<span class="font-['JetBrains_Mono'] text-[11px] text-slate-400 font-medium uppercase tracking-wider">DEVTOOLS</span>
+<h3 class="font-['Plus_Jakarta_Sans'] text-base font-bold text-[#0B0F19] group-hover:text-blue-600 transition-colors">
+                Signal-Driven Developer Outbound Engine
+              </h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+                Automated commit and repository intent detection mapped to technical champion outreach.
+              </p>
+</div>
+<div class="pt-5 flex items-center gap-1 text-xs font-semibold text-blue-600 group-hover:translate-x-1 transition-transform">
+<span>Read case study →</span>
+</div>
+</a>
+<!-- Secondary Card 2 -->
+<a class="lg:col-span-3 p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between group" data-path="work" href="#">
+<div class="flex flex-col gap-2.5">
+<span class="font-['JetBrains_Mono'] text-[11px] text-slate-400 font-medium uppercase tracking-wider">LOGISTICS REVOPS</span>
+<h3 class="font-['Plus_Jakarta_Sans'] text-base font-bold text-[#0B0F19] group-hover:text-blue-600 transition-colors">
+                Unified RevOps Data Normalization Layer
+              </h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+                Eliminated 40+ hours of weekly manual reconciliation across 5 siloed operational hubs.
+              </p>
+</div>
+<div class="pt-5 flex items-center gap-1 text-xs font-semibold text-blue-600 group-hover:translate-x-1 transition-transform">
+<span>Read case study →</span>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 08 FINAL CTA & CLOSING: Dark Navy Container (#0B0F19)                      -->
+<!-- ========================================================================= -->
+<section class="w-full py-20 px-6 md:px-10 lg:px-12 bg-[#F8F9FA]">
+<div class="max-w-7xl mx-auto">
+<div class="w-full rounded-3xl bg-[#0B0F19] text-white p-10 md:p-16 relative overflow-hidden shadow-2xl flex flex-col items-center text-center gap-8 border border-slate-800">
+<!-- Subtle glow -->
+<div class="absolute inset-0 bg-gradient-to-b from-blue-600/10 to-transparent pointer-events-none"></div>
+<div class="flex flex-col gap-3 max-w-2xl relative z-10">
+<span class="font-['JetBrains_Mono'] text-xs text-blue-400 uppercase tracking-widest font-semibold">GET IN TOUCH</span>
+<h2 class="font-['Plus_Jakarta_Sans'] text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+              Have a problem worth engineering?
+            </h2>
+<p class="text-base text-slate-400 max-w-xl mx-auto pt-1 font-normal">
+              Tell us what's broken in your revenue flow. We'll audit your existing pipeline and outline the system to build.
+            </p>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-4 relative z-10">
+<a class="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-500 shadow-[0_0_24px_-4px_rgba(37,99,235,0.5)] transition-all" data-path="book-a-discovery" href="#">
+<span>Start a build</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 font-semibold text-sm hover:bg-slate-800 transition-colors" data-path="work" href="#">
+<span>View all work</span>
+</a>
+</div>
+<!-- Guarantee Strip -->
+<div class="pt-2 flex flex-wrap items-center justify-center gap-5 text-slate-400 text-xs font-['JetBrains_Mono'] relative z-10">
+<span>Direct Principal Engineer Access</span>
+<span class="text-slate-600">·</span>
+<span>48h Viability Audit</span>
+<span class="text-slate-600">·</span>
+<span>Problem-First Discussion</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- ========================================================================= -->
+<!-- FOOTER: Standard Dark Syntropic Engineering Footer (#070A12)             -->
+<!-- ========================================================================= -->
+<footer class="w-full bg-[#070A12] border-t border-slate-900 text-slate-400">
+<div class="max-w-7xl mx-auto px-6 md:px-10 lg:px-12 pt-16 pb-12">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-slate-800/60">
+<!-- Brand Info -->
+<div class="md:col-span-5 flex flex-col gap-4">
+<div class="flex items-center gap-2.5">
+<span class="font-['Plus_Jakarta_Sans'] text-lg font-bold text-white tracking-tight">Syntropic</span>
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-900 text-[10px] font-['JetBrains_Mono'] uppercase tracking-wider text-blue-400 border border-slate-800">
+              AI + GTM
+            </div>
+</div>
+<p class="text-sm text-slate-400 max-w-sm leading-relaxed">
+            Deterministic enterprise AI systems and high-velocity Go-To-Market infrastructure engineered for compound revenue expansion.
+          </p>
+<div class="flex items-center gap-2 pt-1">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-['JetBrains_Mono'] text-xs text-slate-400">Systems Operational · Autonomous Node V4</span>
+</div>
+</div>
+<!-- Links 1 -->
+<div class="md:col-span-4 flex flex-col gap-3">
+<span class="font-['JetBrains_Mono'] text-xs uppercase tracking-wider text-slate-500 font-semibold">Architecture &amp; Solutions</span>
+<nav class="flex flex-col gap-2 text-sm">
+<a class="hover:text-white transition-colors" data-path="what-we-build" href="#">What We Build</a>
+<a class="hover:text-white transition-colors" data-path="how-it-works" href="#">How It Works</a>
+<a class="hover:text-white transition-colors" data-path="work" href="#">Work</a>
+<a class="hover:text-white transition-colors" data-path="ai-agents" href="#">AI Agents</a>
+</nav>
+</div>
+<!-- Links 2 -->
+<div class="md:col-span-3 flex flex-col gap-3">
+<span class="font-['JetBrains_Mono'] text-xs uppercase tracking-wider text-slate-500 font-semibold">Organization</span>
+<nav class="flex flex-col gap-2 text-sm">
+<a class="hover:text-white transition-colors" data-path="about" href="#">About</a>
+<a class="hover:text-white transition-colors" data-path="about" href="#">Blog</a>
+<a class="hover:text-blue-400 transition-colors" data-path="book-a-discovery" href="#">Book a Discovery</a>
+</nav>
+</div>
+</div>
+<div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-['JetBrains_Mono'] text-slate-500">
+<p>© 2025 Syntropic AI Systems Inc. All rights reserved.</p>
+<div class="flex items-center gap-6">
+<a class="hover:text-slate-400 transition-colors" data-path="about" href="#">Terms of Service</a>
+<a class="hover:text-slate-400 transition-colors" data-path="about" href="#">Privacy Policy</a>
+<a class="hover:text-slate-400 transition-colors" data-path="about" href="#">Security Attestation</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>Syntropic | Solutions // Business Bottleneck Explorer</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Newsreader:ital,wght@1,400;1,500;1,600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0b0f19',
+              dark: '#0f131d',
+              accent: '#2563eb',
+              electric: '#3b82f6',
+              surface: '#f8f9fa',
+              lightcard: '#ffffff',
+              border: '#e2e8f0',
+              muted: '#64748b'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            serif: ['Newsreader', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    body {
+      background-color: #f8f9fa;
+      color: #0b0f19;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    .grid-pattern {
+      background-image: radial-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .grid-pattern-dark {
+      background-image: radial-gradient(rgba(59, 130, 246, 0.12) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+<body class="bg-[#f8f9fa] text-[#0b0f19] antialiased selection:bg-blue-600 selection:text-white">
+<!-- =========================================================================
+       NAVIGATION (Exact locked Syntropic dark theme)
+       ========================================================================= -->
+<header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#0b0f19]/90 backdrop-blur-xl border-b border-slate-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+<div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<a class="flex items-center gap-3 group" data-path="solutions" href="#">
+<span class="font-display text-xl md:text-2xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">Syntropic</span>
+<span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full bg-slate-800/80 text-blue-400 font-mono text-[11px] font-semibold tracking-wider border border-blue-500/20 uppercase">
+            AI + GTM ENGINEERING
+          </span>
+</a>
+</div>
+<nav class="hidden xl:flex items-center gap-8 text-sm">
+<a class="text-slate-400 hover:text-white transition-colors" data-path="what-we-build" href="#">What We Build</a>
+<a aria-current="page" class="text-blue-400 font-semibold flex items-center gap-1.5" data-path="solutions" href="#">
+          Solutions
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+</a>
+<a class="text-slate-400 hover:text-white transition-colors" data-path="case-studies" href="#">Case Studies</a>
+<a class="text-slate-400 hover:text-white transition-colors" data-path="resources" href="#">Resources</a>
+<a class="text-slate-400 hover:text-white transition-colors" data-path="about" href="#">About</a>
+</nav>
+<div class="flex items-center gap-3">
+<a class="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-full bg-slate-800 text-slate-200 text-xs font-semibold hover:bg-slate-700 hover:text-white transition-all border border-slate-700" data-path="book-a-discovery" href="#">
+          Book a Discovery
+        </a>
+<a class="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-blue-600 text-white text-xs font-semibold shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-blue-500/50 transition-all" data-path="start-a-build" href="#contact">
+          Start a Build
+        </a>
+<div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[17px]">person</span>
+</div>
+</div>
+</div>
+</header>
+<main class="w-full pt-20">
+<!-- =========================================================================
+         SECTION 1: HERO (REFINED, CALM SYSTEM VISUAL)
+         ========================================================================= -->
+<section class="relative w-full bg-[#f8f9fa] border-b border-[#e2e8f0] py-20 lg:py-28 overflow-hidden">
+<div class="absolute inset-0 grid-pattern pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+<!-- Left: Hero copy & action -->
+<div class="lg:col-span-6 flex flex-col items-start gap-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-semibold tracking-wider uppercase">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+              SOLUTIONS // BUSINESS BOTTLENECK EXPLORER
+            </div>
+<h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0b0f19] tracking-tight leading-[1.08]">
+              The right system depends on what your business <span class="italic text-blue-600 font-serif font-normal">needs next.</span>
+</h1>
+<p class="text-base sm:text-lg text-slate-600 font-medium max-w-xl">
+              Choose the bottleneck. See the system behind it.
+            </p>
+<div class="flex flex-wrap items-center gap-4 pt-2">
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 text-white text-sm font-semibold shadow-[0_8px_20px_-4px_rgba(37,99,235,0.4)] hover:bg-blue-700 transition-all" data-path="start-a-build" href="#contact">
+                Start a Build
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-[#e2e8f0] text-slate-800 text-sm font-semibold hover:border-slate-400 hover:bg-slate-50 transition-all shadow-sm" data-path="what-we-build" href="#bottlenecks">
+                Explore What We Build
+                <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</a>
+</div>
+</div>
+<!-- Right: Calm, Refined Product System Visual -->
+<div class="lg:col-span-6 flex justify-center">
+<div class="w-full max-w-lg bg-white rounded-2xl border border-[#e2e8f0] p-7 shadow-lg relative overflow-hidden">
+<div class="flex items-center justify-between pb-3 mb-6 border-b border-slate-100">
+<span class="font-mono text-xs font-semibold text-slate-500 uppercase tracking-wider">SYSTEM TOPOLOGY</span>
+<span class="font-mono text-[11px] text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded font-semibold flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+              ACTIVE ENGINE
+            </span>
+</div>
+<div class="relative w-full h-64 flex items-center justify-between px-2">
+<!-- SVG delicate connective lines -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" preserveaspectratio="none" viewbox="0 0 420 256">
+<path d="M 90 42 C 160 42, 175 128, 230 128" fill="none" stroke="#93c5fd" stroke-dasharray="3 3" stroke-width="1.5"></path>
+<path d="M 90 94 C 150 94, 175 128, 230 128" fill="none" stroke="#60a5fa" stroke-width="1.5"></path>
+<path d="M 90 162 C 150 162, 175 128, 230 128" fill="none" stroke="#60a5fa" stroke-width="1.5"></path>
+<path d="M 90 214 C 160 214, 175 128, 230 128" fill="none" stroke="#93c5fd" stroke-dasharray="3 3" stroke-width="1.5"></path>
+<line stroke="#10b981" stroke-width="2" x1="330" x2="385" y1="128" y2="128"></line>
+<circle cx="230" cy="128" fill="#2563eb" r="3"></circle>
+</svg>
+<!-- 4 Clean Connected Peripheral Nodes -->
+<div class="flex flex-col justify-between h-full py-1 z-10 w-24">
+<div class="px-2.5 py-1.5 rounded-lg bg-[#f8f9fa] border border-slate-200 text-slate-800 font-mono text-[11px] font-semibold text-center shadow-xs">
+              GTM
+            </div>
+<div class="px-2.5 py-1.5 rounded-lg bg-[#f8f9fa] border border-slate-200 text-slate-800 font-mono text-[11px] font-semibold text-center shadow-xs">
+              AI
+            </div>
+<div class="px-2.5 py-1.5 rounded-lg bg-[#f8f9fa] border border-slate-200 text-slate-800 font-mono text-[11px] font-semibold text-center shadow-xs">
+              DATA
+            </div>
+<div class="px-2.5 py-1.5 rounded-lg bg-[#f8f9fa] border border-slate-200 text-slate-800 font-mono text-[11px] font-semibold text-center shadow-xs">
+              WORKFLOWS
+            </div>
+</div>
+<!-- Center: Glowing Dark Badge -->
+<div class="z-10 flex flex-col items-center">
+<div class="w-32 h-32 rounded-2xl bg-[#0b0f19] text-white border-2 border-blue-500 shadow-[0_0_25px_rgba(37,99,235,0.35)] ring-4 ring-blue-500/15 flex flex-col items-center justify-center text-center p-3">
+<span class="material-symbols-outlined text-blue-400 text-xl mb-1">hub</span>
+<span class="font-mono text-[9px] text-blue-300 font-semibold uppercase tracking-wider">CORE SYSTEM</span>
+<span class="font-display text-[11px] font-extrabold text-white leading-tight mt-1">CONNECTED REVENUE SYSTEM</span>
+</div>
+</div>
+<!-- Output Node -->
+<div class="z-10 flex flex-col justify-center">
+<div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 font-mono text-[11px] font-bold text-center shadow-xs flex flex-col gap-0.5">
+<span class="text-[9px] text-emerald-700 tracking-wider">RESULT</span>
+<span>DETERMINISTIC GROWTH</span>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+<span>4 FEEDS CONVERGED</span>
+<span class="text-blue-600 font-semibold">CONTINUOUS FEEDBACK</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 2: BOTTLENECK DIAGNOSTIC SELECTOR (CLEAN HORIZONTAL COMPONENT)
+         ========================================================================= -->
+<section class="w-full bg-[#f8f9fa] py-20 border-b border-[#e2e8f0]" id="bottlenecks">
+<div class="max-w-5xl mx-auto px-6 lg:px-12 flex flex-col gap-8">
+<div class="flex flex-col gap-2">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+            01 // BOTTLENECK DIAGNOSIS
+          </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+            Where does the bottleneck live?
+          </h2>
+</div>
+<!-- Horizontal Interactive-style Diagnostic Component -->
+<div class="w-full bg-white rounded-2xl border border-[#e2e8f0] p-6 lg:p-8 shadow-sm flex flex-col gap-6">
+<!-- Tabs/Pills -->
+<div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-100">
+<button class="px-4 py-2 rounded-lg bg-blue-600 text-white font-mono text-xs font-bold shadow-xs flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+            Pipeline
+          </button>
+<button class="px-4 py-2 rounded-lg bg-[#f8f9fa] hover:bg-slate-100 text-slate-700 font-mono text-xs font-medium border border-slate-200 transition-colors">
+            GTM
+          </button>
+<button class="px-4 py-2 rounded-lg bg-[#f8f9fa] hover:bg-slate-100 text-slate-700 font-mono text-xs font-medium border border-slate-200 transition-colors">
+            RevOps
+          </button>
+<button class="px-4 py-2 rounded-lg bg-[#f8f9fa] hover:bg-slate-100 text-slate-700 font-mono text-xs font-medium border border-slate-200 transition-colors">
+            AI
+          </button>
+<button class="px-4 py-2 rounded-lg bg-[#f8f9fa] hover:bg-slate-100 text-slate-700 font-mono text-xs font-medium border border-slate-200 transition-colors">
+            Operations
+          </button>
+</div>
+<!-- Active Diagnostic Card -->
+<div class="p-6 rounded-xl bg-slate-50/80 border border-slate-200/80 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+<div class="md:col-span-8 flex flex-col gap-3">
+<div class="flex items-center gap-2 text-xs font-mono text-rose-600 font-semibold">
+<span class="material-symbols-outlined text-sm">warning</span>
+              CONSTRAINT IDENTIFIED
+            </div>
+<p class="text-sm sm:text-base text-slate-800 font-medium">
+              Weak inbound qualification and low outbound reply velocity across key market segments.
+            </p>
+<div class="flex items-center gap-2 text-xs font-mono text-blue-700 font-semibold pt-1">
+<span class="material-symbols-outlined text-sm">precision_manufacturing</span>
+              SYSTEM SOLUTION: <span class="font-normal text-slate-700">Deterministic Outbound &amp; Signal Architecture</span>
+</div>
+</div>
+<div class="md:col-span-4 flex md:justify-end">
+<a class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-white border border-[#e2e8f0] text-blue-600 font-mono text-xs font-bold hover:border-blue-400 hover:shadow-xs transition-all" href="#pipeline">
+              Inspect system
+              <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 3: TOOL SPRAWL -> THE MACHINE BEHIND THEM [VISUAL MOMENT #1]
+         ========================================================================= -->
+<section class="w-full bg-white py-20 border-b border-[#e2e8f0]">
+<div class="max-w-5xl mx-auto px-6 lg:px-12 flex flex-col gap-8">
+<div class="flex flex-col gap-2 max-w-2xl">
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+            You don't need more tools. You need the machine behind them.
+          </h2>
+<p class="text-base text-slate-600 font-medium">
+            One deterministic architecture replaces dozens of disconnected point solutions.
+          </p>
+</div>
+<!-- Transformation Visual -->
+<div class="w-full bg-[#f8f9fa] rounded-2xl border border-[#e2e8f0] p-6 lg:p-8 shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+<!-- Left: Scattered Tool Tags -->
+<div class="lg:col-span-4 flex flex-col gap-3">
+<div class="flex items-center justify-between pb-1 border-b border-rose-200">
+<span class="font-mono text-[11px] font-bold text-rose-600 uppercase">FRAGMENTED TOOLS</span>
+<span class="font-mono text-[10px] text-rose-500">HIGH FRICTION</span>
+</div>
+<div class="flex flex-wrap gap-2 p-3 bg-white rounded-xl border border-rose-200/60">
+<span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-mono text-xs border border-slate-200">CRM</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-mono text-xs border border-slate-200">ADS</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-mono text-xs border border-slate-200">EMAIL</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-mono text-xs border border-slate-200">DATA</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-mono text-xs border border-slate-200">CONTENT</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-mono text-xs border border-slate-200">AI</span>
+</div>
+</div>
+<!-- Center: Gateway -->
+<div class="lg:col-span-2 flex justify-center py-2">
+<div class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-mono text-xs font-bold shadow-xs flex items-center gap-1">
+<span>GATEWAY</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+<!-- Right: Unified Engineered Flow -->
+<div class="lg:col-span-6 flex flex-col gap-3">
+<div class="flex items-center justify-between pb-1 border-b border-blue-200">
+<span class="font-mono text-[11px] font-bold text-blue-700 uppercase">ENGINEERED PIPELINE</span>
+<span class="font-mono text-[10px] text-emerald-600 font-bold">UNIFIED</span>
+</div>
+<div class="p-3 bg-white rounded-xl border border-blue-200 flex items-center justify-between gap-1 overflow-x-auto shadow-xs text-center font-mono text-[11px]">
+<div class="px-2 py-1 bg-blue-50 text-blue-900 font-bold rounded">SIGNALS</div>
+<span class="text-blue-400">→</span>
+<div class="px-2 py-1 bg-blue-50 text-blue-900 font-bold rounded">INTEL</div>
+<span class="text-blue-400">→</span>
+<div class="px-2 py-1 bg-blue-50 text-blue-900 font-bold rounded">AUTO</div>
+<span class="text-blue-400">→</span>
+<div class="px-2 py-1 bg-blue-50 text-blue-900 font-bold rounded">EXECUTE</div>
+<span class="text-blue-400">→</span>
+<div class="px-2 py-1 bg-emerald-50 text-emerald-900 font-bold border border-emerald-200 rounded">MEASURE</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 4: PIPELINE SYSTEM [VISUAL MOMENT #2 - DARK NAVY FEATURE]
+         ========================================================================= -->
+<section class="w-full bg-[#0b0f19] text-white py-24 relative overflow-hidden border-b border-slate-800" id="pipeline">
+<div class="absolute inset-0 grid-pattern-dark pointer-events-none"></div>
+<div class="max-w-5xl mx-auto px-6 lg:px-12 relative z-10 flex flex-col gap-10">
+<div class="flex flex-col gap-2 max-w-2xl">
+<div class="font-mono text-xs font-semibold text-blue-400 tracking-widest uppercase">
+            02 // PIPELINE SYSTEM
+          </div>
+<h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            Give your sales team better signals, <span class="italic text-blue-400 font-serif font-normal">not bigger lists.</span>
+</h2>
+<p class="text-base text-slate-400 font-medium">
+            Turn outbound from a blind numbers game into an automated precision workflow.
+          </p>
+</div>
+<!-- Continuous Blue Line Horizontal Pipeline -->
+<div class="w-full bg-slate-900/90 rounded-2xl border border-white/10 p-6 lg:p-8 backdrop-blur-md">
+<div class="relative w-full py-4">
+<!-- Line -->
+<div class="hidden sm:block absolute top-7 left-6 right-6 h-0.5 bg-blue-600/40 -translate-y-1/2 z-0"></div>
+<div class="grid grid-cols-2 sm:grid-cols-6 gap-4 relative z-10">
+<!-- 1 -->
+<div class="flex flex-col items-center text-center gap-1.5">
+<div class="w-7 h-7 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)]">1</div>
+<span class="font-mono text-xs font-bold text-white mt-1">SIGNAL</span>
+<span class="text-[10px] font-mono text-blue-300">High-intent surge</span>
+</div>
+<!-- 2 -->
+<div class="flex flex-col items-center text-center gap-1.5">
+<div class="w-7 h-7 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)]">2</div>
+<span class="font-mono text-xs font-bold text-white mt-1">QUALIFY</span>
+<span class="text-[10px] font-mono text-blue-300">ICP gate passed</span>
+</div>
+<!-- 3 -->
+<div class="flex flex-col items-center text-center gap-1.5">
+<div class="w-7 h-7 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)]">3</div>
+<span class="font-mono text-xs font-bold text-white mt-1">ENRICH</span>
+<span class="text-[10px] font-mono text-blue-300">Live dossier</span>
+</div>
+<!-- 4 -->
+<div class="flex flex-col items-center text-center gap-1.5">
+<div class="w-7 h-7 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)]">4</div>
+<span class="font-mono text-xs font-bold text-white mt-1">OUTREACH</span>
+<span class="text-[10px] font-mono text-blue-300">Personalized angle</span>
+</div>
+<!-- 5 -->
+<div class="flex flex-col items-center text-center gap-1.5">
+<div class="w-7 h-7 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)]">5</div>
+<span class="font-mono text-xs font-bold text-white mt-1">REPLIES</span>
+<span class="text-[10px] font-mono text-blue-300">Smart triage</span>
+</div>
+<!-- 6 -->
+<div class="flex flex-col items-center text-center gap-1.5">
+<div class="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-mono text-xs font-bold flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.7)]">6</div>
+<span class="font-mono text-xs font-bold text-emerald-400 mt-1">MEETINGS</span>
+<span class="text-[10px] font-mono text-emerald-300">Booked call</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3 Concise Outcome Tags -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="p-3 rounded-xl bg-slate-900/60 border border-white/10 flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-blue-400"></span>
+<span class="font-mono text-xs font-bold text-white">Better signals</span>
+</div>
+<div class="p-3 rounded-xl bg-slate-900/60 border border-white/10 flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-blue-400"></span>
+<span class="font-mono text-xs font-bold text-white">Less manual work</span>
+</div>
+<div class="p-3 rounded-xl bg-slate-900/60 border border-white/10 flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="font-mono text-xs font-bold text-white">More relevant outreach</span>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 5: MARKETING SYSTEM (LIGHTWEIGHT UI)
+         ========================================================================= -->
+<section class="w-full bg-white py-20 border-b border-[#e2e8f0]" id="marketing">
+<div class="max-w-5xl mx-auto px-6 lg:px-12 flex flex-col gap-8">
+<div class="flex flex-col gap-2 max-w-2xl">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+            03 // MARKETING SYSTEM
+          </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+            Turn marketing activity into a <span class="italic text-blue-600 font-serif font-normal">connected revenue engine.</span>
+</h2>
+</div>
+<!-- Simple Editorial UI Funnel -->
+<div class="w-full bg-[#f8f9fa] rounded-2xl border border-[#e2e8f0] p-6 lg:p-8 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+<!-- Inbound Touchpoints -->
+<div class="md:col-span-4 flex flex-col gap-2">
+<span class="font-mono text-[11px] font-bold text-slate-500 uppercase">TOUCHPOINTS</span>
+<div class="p-2.5 rounded bg-white border border-slate-200 font-mono text-xs text-slate-700">Content &amp; SEO</div>
+<div class="p-2.5 rounded bg-white border border-slate-200 font-mono text-xs text-slate-700">Paid Acquisition</div>
+<div class="p-2.5 rounded bg-white border border-slate-200 font-mono text-xs text-slate-700">Website Intent Logs</div>
+<div class="p-2.5 rounded bg-white border border-slate-200 font-mono text-xs text-slate-700">Campaign Traffic</div>
+</div>
+<!-- Funnel arrow -->
+<div class="md:col-span-1 flex justify-center text-blue-500">
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</div>
+<!-- Revenue Signal Engine -->
+<div class="md:col-span-7 flex flex-col gap-4">
+<div class="p-5 rounded-xl bg-white border-2 border-blue-500 shadow-sm flex flex-col gap-2">
+<span class="font-mono text-[10px] text-blue-600 font-bold uppercase">REVENUE SIGNAL ENGINE</span>
+<p class="text-sm text-slate-800 font-medium">Routes verified intent directly into sales qualification queues.</p>
+<div class="p-2.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-900 font-mono text-xs font-semibold flex items-center justify-between">
+<span>Closed-Loop Attribution</span>
+<span class="text-emerald-700">Real-Time</span>
+</div>
+</div>
+<!-- 3 micro pills -->
+<div class="flex items-center gap-2">
+<span class="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 font-mono text-xs">Capture</span>
+<span class="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 font-mono text-xs">Connect</span>
+<span class="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 font-mono text-xs">Optimize</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 6: REVOPS DATA LAYER (PRODUCT CONSOLE INTERFACE)
+         ========================================================================= -->
+<section class="w-full bg-[#f8f9fa] py-20 border-b border-[#e2e8f0]" id="revops">
+<div class="max-w-5xl mx-auto px-6 lg:px-12 flex flex-col gap-8">
+<div class="flex flex-col gap-2 max-w-2xl">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+            04 // REVOPS ARCHITECTURE
+          </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+            Make revenue data <span class="italic text-blue-600 font-serif font-normal">scale and programmable.</span>
+</h2>
+<p class="text-base text-slate-600 font-medium">
+            Unified data architecture with automated schema validation and zero data loss.
+          </p>
+</div>
+<!-- Product Interface Console -->
+<div class="w-full bg-white rounded-2xl border border-[#e2e8f0] p-6 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+<!-- Column 1: Sources -->
+<div class="flex flex-col gap-2">
+<span class="text-slate-400 font-bold uppercase tracking-wider mb-1">SOURCES</span>
+<div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 flex justify-between items-center">
+<span>CRM</span>
+<span class="text-blue-600 font-semibold text-[10px]">SYNCED</span>
+</div>
+<div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 flex justify-between items-center">
+<span>Website Logs</span>
+<span class="text-blue-600 font-semibold text-[10px]">SYNCED</span>
+</div>
+<div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 flex justify-between items-center">
+<span>Product Calls</span>
+<span class="text-blue-600 font-semibold text-[10px]">SYNCED</span>
+</div>
+</div>
+<!-- Column 2: Validation Layer -->
+<div class="flex flex-col gap-2">
+<span class="text-slate-400 font-bold uppercase tracking-wider mb-1">DATA LAYER</span>
+<div class="p-4 bg-blue-50/60 border border-blue-300 rounded-xl flex flex-col justify-center gap-2 h-full text-center">
+<span class="font-bold text-slate-900">SCHEMA LOCK</span>
+<span class="text-slate-600 text-[11px]">Deduplication &amp; identity graph validation</span>
+<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-semibold self-center">ZERO LOSS</span>
+</div>
+</div>
+<!-- Column 3: Outputs -->
+<div class="flex flex-col gap-2">
+<span class="text-slate-400 font-bold uppercase tracking-wider mb-1">OUTPUTS</span>
+<div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 flex justify-between items-center">
+<span>Automated Routing</span>
+<span class="text-emerald-600 font-semibold text-[10px]">LIVE</span>
+</div>
+<div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 flex justify-between items-center">
+<span>Idempotent Events</span>
+<span class="text-emerald-600 font-semibold text-[10px]">LIVE</span>
+</div>
+<div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 flex justify-between items-center">
+<span>Live Reporting</span>
+<span class="text-emerald-600 font-semibold text-[10px]">LIVE</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 7: AI WORKFLOW SYSTEM (SIMPLE LINEAR FLOW)
+         ========================================================================= -->
+<section class="w-full bg-white py-20 border-b border-[#e2e8f0]" id="ai">
+<div class="max-w-5xl mx-auto px-6 lg:px-12 flex flex-col gap-8">
+<div class="flex flex-col gap-2 max-w-2xl">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+            05 // AI WORKFLOW DESIGN
+          </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+            If your team keeps doing the same thing, <span class="italic text-blue-600 font-serif font-normal">the system should probably do it.</span>
+</h2>
+<p class="text-base text-slate-600 font-medium">
+            Automation handles repeatable execution. People stay in control where judgment matters.
+          </p>
+</div>
+<!-- Simple 3-step linear flow -->
+<div class="w-full bg-[#f8f9fa] rounded-2xl border border-[#e2e8f0] p-6 lg:p-8 shadow-sm flex flex-col gap-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- 1 -->
+<div class="p-4 rounded-xl bg-white border border-slate-200 flex flex-col gap-1 shadow-xs">
+<span class="font-mono text-[10px] text-slate-400 font-bold uppercase">01 // INTAKE</span>
+<span class="font-display font-bold text-sm text-slate-900">REPETITIVE TASK</span>
+<span class="text-xs text-slate-500">Structured data inputs</span>
+</div>
+<!-- 2 -->
+<div class="p-4 rounded-xl bg-blue-50 border-2 border-blue-600 flex flex-col gap-1 shadow-xs">
+<span class="font-mono text-[10px] text-blue-600 font-bold uppercase">02 // AGENT</span>
+<span class="font-display font-bold text-sm text-blue-950">AI AGENT</span>
+<span class="text-xs text-blue-700">Autonomous synthesis</span>
+</div>
+<!-- 3 -->
+<div class="p-4 rounded-xl bg-white border border-slate-200 flex flex-col gap-1 shadow-xs">
+<span class="font-mono text-[10px] text-indigo-600 font-bold uppercase">03 // GATE</span>
+<span class="font-display font-bold text-sm text-slate-900">HUMAN REVIEW</span>
+<span class="text-xs text-slate-500">Quality calibration</span>
+</div>
+</div>
+<!-- 3 example pills -->
+<div class="flex items-center gap-2 pt-2 border-t border-slate-200/60 font-mono text-xs">
+<span class="text-slate-500">Applications:</span>
+<span class="px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-700">Research</span>
+<span class="px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-700">Qualification</span>
+<span class="px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-700">Follow-up</span>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 8: ENGINEERING METHODOLOGY ("START WITH THE BOTTLENECK")
+         ========================================================================= -->
+<section class="w-full bg-[#f8f9fa] py-20 border-b border-[#e2e8f0]" id="approach">
+<div class="max-w-5xl mx-auto px-6 lg:px-12 flex flex-col gap-8">
+<div class="flex flex-col gap-2 max-w-2xl">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+            HOW WE APPROACH IT
+          </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+            Start with the bottleneck.
+          </h2>
+<p class="text-base text-slate-600 font-medium">
+            We design around the constraint, not the tool.
+          </p>
+</div>
+<!-- Typography-led Horizontal Sequence with hairline rule -->
+<div class="w-full bg-white rounded-2xl border border-[#e2e8f0] p-6 lg:p-10 shadow-sm relative">
+<div class="relative py-2">
+<div class="hidden sm:block absolute top-4 left-10 right-10 h-px bg-slate-200 z-0"></div>
+<div class="grid grid-cols-1 sm:grid-cols-4 gap-6 relative z-10">
+<!-- 01 -->
+<div class="flex flex-col gap-1">
+<div class="w-8 h-8 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center mb-2">01</div>
+<span class="font-mono text-xs font-bold text-blue-600">IDENTIFY</span>
+<span class="text-sm font-semibold text-slate-900">Isolate friction</span>
+</div>
+<!-- 02 -->
+<div class="flex flex-col gap-1">
+<div class="w-8 h-8 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center mb-2">02</div>
+<span class="font-mono text-xs font-bold text-blue-600">DESIGN</span>
+<span class="text-sm font-semibold text-slate-900">Architect system</span>
+</div>
+<!-- 03 -->
+<div class="flex flex-col gap-1">
+<div class="w-8 h-8 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center mb-2">03</div>
+<span class="font-mono text-xs font-bold text-blue-600">BUILD</span>
+<span class="text-sm font-semibold text-slate-900">Deploy code in 14 days</span>
+</div>
+<!-- 04 -->
+<div class="flex flex-col gap-1">
+<div class="w-8 h-8 rounded-full bg-emerald-500 text-white font-mono text-xs font-bold flex items-center justify-center mb-2">04</div>
+<span class="font-mono text-xs font-bold text-emerald-600">IMPROVE</span>
+<span class="text-sm font-semibold text-slate-900">Continuous telemetry</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 9: DIFFERENT TEAMS (TYPOGRAPHY-LED CONVERGENCE)
+         ========================================================================= -->
+<section class="w-full bg-white py-20 border-b border-[#e2e8f0]">
+<div class="max-w-5xl mx-auto px-6 lg:px-12 flex flex-col gap-8">
+<div class="flex flex-col gap-2 max-w-2xl">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+            SYSTEM CONVERGENCE
+          </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+            Different teams. <span class="italic text-blue-600 font-serif font-normal">One connected system.</span>
+</h2>
+</div>
+<!-- Typography-led relationship component -->
+<div class="w-full bg-[#f8f9fa] rounded-2xl border border-[#e2e8f0] p-6 lg:p-8 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+<div class="md:col-span-4 flex flex-wrap gap-2 font-mono text-xs">
+<span class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-800">Marketing</span>
+<span class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-800">Sales</span>
+<span class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-800">RevOps</span>
+<span class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-800">Operations</span>
+</div>
+<div class="md:col-span-4 flex justify-center">
+<div class="p-4 rounded-xl bg-[#0b0f19] text-white border-2 border-blue-600 text-center w-full">
+<span class="font-display font-bold text-sm tracking-wide">ONE REVENUE SYSTEM</span>
+</div>
+</div>
+<div class="md:col-span-4 flex flex-col gap-2 font-mono text-xs">
+<div class="px-3 py-1.5 rounded bg-blue-50 border border-blue-200 text-blue-900 font-medium">Shared data</div>
+<div class="px-3 py-1.5 rounded bg-blue-50 border border-blue-200 text-blue-900 font-medium">Shared signals</div>
+<div class="px-3 py-1.5 rounded bg-blue-50 border border-blue-200 text-blue-900 font-medium">Shared workflows</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 10: BEFORE VS AFTER [VISUAL MOMENT #3]
+         ========================================================================= -->
+<section class="w-full bg-[#f8f9fa] py-20 border-b border-[#e2e8f0]">
+<div class="max-w-5xl mx-auto px-6 lg:px-12 flex flex-col gap-8">
+<div class="flex flex-col gap-2">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+            OPERATIONAL SHIFT
+          </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+            Before vs. After
+          </h2>
+</div>
+<!-- High-contrast 2-column card -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Left: BEFORE -->
+<div class="p-6 rounded-2xl bg-white border border-rose-200 flex flex-col gap-4">
+<div class="flex items-center justify-between pb-2 border-b border-rose-100 font-mono text-xs font-bold text-rose-700">
+<span>BEFORE: FRAGMENTED STATE</span>
+<span class="text-[10px] bg-rose-50 px-2 py-0.5 rounded text-rose-600">DISCONNECTED</span>
+</div>
+<div class="flex flex-col gap-2.5 font-mono text-xs text-slate-700">
+<div class="p-3 rounded-lg bg-rose-50/50 border border-rose-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-rose-500 text-base">close</span>
+<span>Disconnected tools</span>
+</div>
+<div class="p-3 rounded-lg bg-rose-50/50 border border-rose-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-rose-500 text-base">close</span>
+<span>Manual handoffs</span>
+</div>
+<div class="p-3 rounded-lg bg-rose-50/50 border border-rose-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-rose-500 text-base">close</span>
+<span>Blind outreach</span>
+</div>
+</div>
+</div>
+<!-- Right: AFTER -->
+<div class="p-6 rounded-2xl bg-white border-2 border-blue-600 flex flex-col gap-4 shadow-sm">
+<div class="flex items-center justify-between pb-2 border-b border-blue-100 font-mono text-xs font-bold text-blue-900">
+<span>AFTER: DETERMINISTIC MACHINE</span>
+<span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold">SCALABLE</span>
+</div>
+<div class="flex flex-col gap-2.5 font-mono text-xs text-slate-900">
+<div class="p-3 rounded-lg bg-blue-50/50 border border-blue-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-base">check_circle</span>
+<span>Connected system</span>
+</div>
+<div class="p-3 rounded-lg bg-blue-50/50 border border-blue-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-base">check_circle</span>
+<span>Automated workflows</span>
+</div>
+<div class="p-3 rounded-lg bg-blue-50/50 border border-blue-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-base">check_circle</span>
+<span>Real-time telemetry</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+         SECTION 11: FINAL CTA CONTAINER (DARK THEME)
+         ========================================================================= -->
+<section class="w-full bg-[#f8f9fa] py-20 px-6 lg:px-12" id="contact">
+<div class="max-w-5xl mx-auto">
+<div class="relative w-full rounded-3xl bg-[#0b0f19] text-white p-10 md:p-14 border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center text-center gap-6">
+<div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-60 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-500/30 text-blue-400 font-mono text-xs tracking-wider uppercase">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            NEXT STEP
+          </div>
+<h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight max-w-xl">
+            Don't know what to build yet?
+          </h2>
+<p class="text-base text-slate-300 font-medium max-w-md">
+            That's exactly where the conversation starts.
+          </p>
+<div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 text-white text-sm font-semibold shadow-[0_0_24px_rgba(37,99,235,0.4)] hover:bg-blue-500 transition-all" data-path="start-a-build" href="#">
+              Start a Build
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-transparent border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-all" data-path="what-we-build" href="#">
+              Explore What We Build
+            </a>
+</div>
+<div class="mt-4 pt-6 border-t border-slate-800 w-full flex flex-wrap items-center justify-center gap-6 font-mono text-xs text-slate-400">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-blue-400 text-base">verified</span>
+              Direct Principal Engineer Access
+            </span>
+<span class="text-slate-700 hidden sm:inline">·</span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-blue-400 text-base">timer</span>
+              48h Viability Audit
+            </span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- =========================================================================
+       FOOTER (Locked dark Syntropic standard footer)
+       ========================================================================= -->
+<footer class="w-full bg-[#0b0f19] border-t border-slate-800 py-16 text-slate-400">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 pb-12 border-b border-slate-800">
+<div class="lg:col-span-2 flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="font-display text-xl font-bold text-white tracking-tight">Syntropic</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-800 text-blue-400 font-mono text-[11px] font-semibold tracking-wider uppercase border border-slate-700">
+              v2.4 PROD
+            </span>
+</div>
+<p class="text-xs text-slate-400 leading-relaxed max-w-sm">
+            Deterministic AI and GTM engineering platform. Orchestrating autonomous sales agents, continuous intelligence, and enterprise revenue architectures.
+          </p>
+<div class="flex items-center gap-2 pt-1 font-mono text-[11px]">
+<span class="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300">SOC2 Type II</span>
+<span class="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300">ISO 27001</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-200">Architecture</span>
+<ul class="flex flex-col gap-2 text-xs pt-1">
+<li><a class="hover:text-white transition-colors" data-path="solutions" href="#">Autonomous Outbound</a></li>
+<li><a class="hover:text-white transition-colors" data-path="what-we-build" href="#">Pipeline Synthesis</a></li>
+<li><a class="hover:text-white transition-colors" data-path="what-we-build" href="#">Signal Intelligence</a></li>
+<li><a class="hover:text-white transition-colors" data-path="what-we-build" href="#">Deterministic Scoring</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-200">Resources</span>
+<ul class="flex flex-col gap-2 text-xs pt-1">
+<li><a class="hover:text-white transition-colors" data-path="resources" href="#">Documentation</a></li>
+<li><a class="hover:text-white transition-colors" data-path="case-studies" href="#">Case Studies</a></li>
+<li><a class="hover:text-white transition-colors" data-path="resources" href="#">GTM Frameworks</a></li>
+<li><a class="hover:text-white transition-colors" data-path="resources" href="#">Deterministic AI</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-200">Company</span>
+<ul class="flex flex-col gap-2 text-xs pt-1">
+<li><a class="hover:text-white transition-colors" data-path="about" href="#">Why Syntropic</a></li>
+<li><a class="hover:text-white transition-colors" data-path="about" href="#">Leadership &amp; Eng</a></li>
+<li><a class="hover:text-white transition-colors" data-path="about" href="#">Careers</a></li>
+<li><a class="hover:text-white transition-colors" data-path="book-a-discovery" href="#">Contact</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-200">Compliance</span>
+<ul class="flex flex-col gap-2 text-xs pt-1">
+<li><a class="hover:text-white transition-colors" data-path="privacy-security" href="#">Security Center</a></li>
+<li><a class="hover:text-white transition-colors" data-path="privacy-security" href="#">SOC2 Type II Report</a></li>
+<li><a class="hover:text-white transition-colors" data-path="privacy-security" href="#">GDPR Compliance</a></li>
+<li><a class="hover:text-white transition-colors" data-path="privacy-security" href="#">System Status</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+<p>© 2025 Syntropic AI Technologies Inc. All rights reserved.</p>
+<div class="flex items-center gap-6">
+<a class="hover:text-white transition-colors" data-path="privacy-security" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" data-path="privacy-security" href="#">Terms of Service</a>
+<a class="hover:text-white transition-colors" data-path="privacy-security" href="#">Security Disclosures</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

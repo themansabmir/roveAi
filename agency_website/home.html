@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Syntropic — AI + GTM Engineering</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Newsreader:ital,wght@1,400;1,500&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: "#070A12",
+              navyDark: "#0B0F19",
+              cardDark: "#111726",
+              cardBorderDark: "#1E293B",
+              blue: "#2563EB",
+              blueAccent: "#3B82F6",
+              blueLight: "#EFF6FF",
+              purple: "#7C3AED",
+              purpleLight: "#F5F3FF"
+            }
+          },
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Newsreader"', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+<meta content="web_standard" name="shell-type"/></head>
+<body class="bg-[#FAFAFD] text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white">
+<!-- 1. STICKY NAV -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#FAFAFD]/90 backdrop-blur-md border-b border-slate-200/80 transition-all">
+<div class="max-w-6xl mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+<!-- Logo + Tag -->
+<a class="flex items-center gap-2.5 group" href="#">
+<div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-display font-bold text-sm shadow-sm group-hover:scale-105 transition-transform">
+          S
+        </div>
+<div class="flex items-center gap-2">
+<span class="font-display font-bold text-base tracking-tight text-slate-950">Syntropic</span>
+<span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-medium text-slate-500 bg-slate-100 border border-slate-200">
+            AI + GTM Engineering
+          </span>
+</div>
+</a>
+<!-- Center Links -->
+<nav class="hidden md:flex items-center gap-1 text-[13px] font-medium text-slate-600">
+<a class="px-3 py-1.5 rounded-full hover:text-slate-950 hover:bg-slate-100 transition-colors" href="#what-we-build">What We Build</a>
+<a class="px-3 py-1.5 rounded-full hover:text-slate-950 hover:bg-slate-100 transition-colors" href="#the-system">How It Works</a>
+<a class="px-3 py-1.5 rounded-full hover:text-slate-950 hover:bg-slate-100 transition-colors" href="#proof">Work</a>
+<a class="px-3 py-1.5 rounded-full hover:text-slate-950 hover:bg-slate-100 transition-colors" href="#capabilities">AI Agents</a>
+<a class="px-3 py-1.5 rounded-full hover:text-slate-950 hover:bg-slate-100 transition-colors" href="#faq">About</a>
+</nav>
+<!-- Right CTA -->
+<div class="flex items-center gap-3">
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-950 text-white hover:bg-blue-600 text-xs font-semibold tracking-wide shadow-sm hover:shadow transition-all duration-200" href="#contact">
+<span>Book a Discovery</span>
+<span class="text-slate-400 group-hover:text-white">→</span>
+</a>
+</div>
+</div>
+</header>
+<main class="pt-16"><div class="flex flex-col w-full text-slate-900 antialiased overflow-hidden selection:bg-blue-600 selection:text-white">
+<!-- =========================================================================
+       HERO SECTION (Light background)
+       ========================================================================= -->
+<section class="relative w-full pt-12 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+<!-- Subtle Ambient Backdrop Gradient Glow -->
+<div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[360px] bg-gradient-to-tr from-blue-100/60 via-indigo-100/40 to-transparent blur-3xl pointer-events-none -z-10 rounded-full"></div>
+<div class="flex flex-col items-center text-center max-w-4xl mx-auto space-y-6">
+<!-- Eyebrow Pill -->
+<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50/80 border border-blue-200/60 text-blue-700 text-xs font-mono font-medium tracking-wide shadow-xs">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+        WHAT WE BUILD
+      </div>
+<!-- Main Headline -->
+<h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-950 tracking-tight leading-[1.15]">
+        Systems built around how your business <span class="font-editorial-italic font-normal italic text-blue-600 tracking-normal">actually grows</span>.
+      </h1>
+<!-- Supporting Subtitle -->
+<p class="font-sans text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed">
+        We connect GTM, AI, data, and automation into high-performance systems that help your team find opportunities, act faster, and turn more of the right signals into revenue.
+      </p>
+<!-- Primary Action Buttons -->
+<div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-950 hover:bg-blue-600 text-white text-sm font-semibold tracking-wide shadow-sm hover:shadow-md transition-all duration-200 group" href="#core-systems">
+<span>Find your system</span>
+<span class="group-hover:translate-x-0.5 transition-transform">→</span>
+</a>
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-slate-50 text-slate-800 text-sm font-semibold tracking-wide border border-slate-200 shadow-xs hover:border-slate-300 transition-all duration-200" href="#contact">
+<span>Book a discovery</span>
+<span class="text-slate-400">→</span>
+</a>
+</div>
+</div>
+<!-- UI Telemetry Simulation Stage -->
+<div class="mt-14 max-w-5xl mx-auto">
+<div class="rounded-2xl bg-white border border-slate-200/80 shadow-xl shadow-slate-200/40 p-4 sm:p-6 overflow-hidden relative">
+<!-- Mock Window Top Bar -->
+<div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-rose-400/80 inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-amber-400/80 inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-emerald-400/80 inline-block"></span>
+<span class="ml-2 font-mono text-[11px] font-medium text-slate-400">syntropic.engine // telemetry_pipeline_v4</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+              ACTIVE NODE • 99.98% SYNC
+            </span>
+</div>
+</div>
+<!-- 4-Node Pipeline Schematic -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+<!-- Connector hairline behind nodes (hidden on mobile) -->
+<div class="hidden md:block absolute top-1/2 left-8 right-8 h-[2px] bg-gradient-to-r from-blue-200 via-indigo-200 to-purple-200 -translate-y-1/2 z-0"></div>
+<!-- Step 1 -->
+<div class="relative z-10 bg-slate-50 hover:bg-white border border-slate-200/90 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-blue-300">
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono text-[10px] tracking-wider uppercase text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">01 / SIGNAL</span>
+<span class="material-symbols-outlined text-slate-400 text-lg">radar</span>
+</div>
+<p class="font-display font-bold text-slate-900 text-sm">Account Ingest</p>
+<p class="text-xs text-slate-500 mt-1 line-clamp-2">Hiring shifts, funding &amp; tech adoption across 14 data sources.</p>
+<div class="mt-3 pt-3 border-t border-slate-200/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+<span>Rate</span>
+<span class="font-semibold text-slate-800">4,280 evt/s</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 bg-slate-50 hover:bg-white border border-slate-200/90 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-blue-300">
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono text-[10px] tracking-wider uppercase text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">02 / SCORING</span>
+<span class="material-symbols-outlined text-slate-400 text-lg">psychology</span>
+</div>
+<p class="font-display font-bold text-slate-900 text-sm">Target Scoring</p>
+<p class="text-xs text-slate-500 mt-1 line-clamp-2">Autonomous multi-agent heuristic qualification &amp; tiering.</p>
+<div class="mt-3 pt-3 border-t border-slate-200/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+<span>Confidence</span>
+<span class="font-semibold text-emerald-600 font-bold">96.4%</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 bg-slate-50 hover:bg-white border border-slate-200/90 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-blue-300">
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono text-[10px] tracking-wider uppercase text-purple-600 font-bold bg-purple-50 px-2 py-0.5 rounded">03 / ORCHESTRATE</span>
+<span class="material-symbols-outlined text-slate-400 text-lg">alt_route</span>
+</div>
+<p class="font-display font-bold text-slate-900 text-sm">Autonomous Sync</p>
+<p class="text-xs text-slate-500 mt-1 line-clamp-2">Hyper-tailored context dynamic dispatch across multi-channels.</p>
+<div class="mt-3 pt-3 border-t border-slate-200/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+<span>Latency</span>
+<span class="font-semibold text-slate-800">42ms cold</span>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="relative z-10 bg-slate-50 hover:bg-white border border-slate-200/90 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:border-blue-300">
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono text-[10px] tracking-wider uppercase text-slate-800 font-bold bg-slate-200/70 px-2 py-0.5 rounded">04 / REVOPS</span>
+<span class="material-symbols-outlined text-slate-400 text-lg">database</span>
+</div>
+<p class="font-display font-bold text-slate-900 text-sm">Deterministic CRM</p>
+<p class="text-xs text-slate-500 mt-1 line-clamp-2">Bidirectional clean attribution, auto-enrichment &amp; routing.</p>
+<div class="mt-3 pt-3 border-t border-slate-200/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+<span>Attribution</span>
+<span class="font-semibold text-blue-600">Deterministic</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 01 — THREE CORE SYSTEMS (Light background, visual centerpiece)
+       ========================================================================= -->
+<section class="w-full py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200/70" id="core-systems">
+<div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-mono font-medium uppercase tracking-wider">
+        THREE WAYS WE BUILD
+      </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
+        One goal. <span class="font-editorial-italic font-normal italic text-blue-600">Different systems.</span>
+</h2>
+<p class="text-slate-600 text-base leading-relaxed">
+        Whether you need more pipeline, smarter operations, or an entirely new AI product, we build the deterministic infrastructure behind the outcome.
+      </p>
+</div>
+<!-- The 3 Large Pillar Showcase Cards -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Card 01: GTM Systems -->
+<div class="group flex flex-col justify-between bg-white rounded-2xl p-7 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-blue-400/60 transition-all duration-300">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="px-2.5 py-1 rounded bg-blue-50 text-blue-700 font-mono text-xs font-semibold">01 / GTM SYSTEMS</span>
+<div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">stream</span>
+</div>
+</div>
+<h3 class="font-display text-2xl font-bold text-slate-950 mb-4 tracking-tight">
+            Turn the right signals into pipeline.
+          </h3>
+<p class="text-xs text-slate-500 mb-6 font-mono leading-relaxed">
+            REPLACE SPRAY-AND-PRAY WITH DETERMINISTIC TRIGGER PIPELINES
+          </p>
+<div class="space-y-4 text-sm text-slate-700 mb-8">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-blue-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Signal-Based Outbound:</strong> Identify intent, hiring, and tech stack shifts before competitors.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-blue-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">GTM Strategy:</strong> Engineering high-yield data models and target account scoring engines.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-blue-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Content Engine:</strong> Autonomous research-backed hyper-tailored messaging at scale.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-blue-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Pipeline &amp; RevOps:</strong> Clean automated CRM attribution, routing, and real-time hygiene.</p>
+</div>
+</div>
+</div>
+<div>
+<!-- Mini Workflow Bar -->
+<div class="bg-slate-50 rounded-xl p-3 border border-slate-100 mb-6">
+<div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-2 font-medium">Pipeline Flow</div>
+<div class="flex items-center justify-between text-[11px] font-mono text-slate-700">
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Signal</span>
+<span class="text-slate-300">→</span>
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Research</span>
+<span class="text-slate-300">→</span>
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Qualify</span>
+<span class="text-slate-300">→</span>
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">CRM</span>
+</div>
+</div>
+<a class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 group-hover:text-blue-700" href="#gtm-detail">
+<span>Explore GTM Engineering</span>
+<span class="group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+</div>
+<!-- Card 02: AI Revenue Systems -->
+<div class="group flex flex-col justify-between bg-white rounded-2xl p-7 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-indigo-400/60 transition-all duration-300 relative">
+<div class="absolute -top-3 right-6 bg-indigo-600 text-white font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+          High Demand
+        </div>
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="px-2.5 py-1 rounded bg-indigo-50 text-indigo-700 font-mono text-xs font-semibold">02 / AI REVENUE SYSTEMS</span>
+<div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">smart_toy</span>
+</div>
+</div>
+<h3 class="font-display text-2xl font-bold text-slate-950 mb-4 tracking-tight">
+            Put AI inside the work, not beside it.
+          </h3>
+<p class="text-xs text-slate-500 mb-6 font-mono leading-relaxed">
+            AUTONOMOUS OPERATIONAL LEVERAGE WITH ZERO COPIC-AND-PASTE
+          </p>
+<div class="space-y-4 text-sm text-slate-700 mb-8">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-indigo-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Company Intelligence:</strong> Unified corporate knowledge graph across docs, calls, and chats.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-indigo-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">AI Agents:</strong> Autonomous agents managing research, account profiling, and meeting prep.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-indigo-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Revenue Intelligence:</strong> Deal risk detection, buyer sentiment analysis, and win signals.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-indigo-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Workflow Automation:</strong> High-reliability deterministic pipelines removing manual grind.</p>
+</div>
+</div>
+</div>
+<div>
+<!-- Mini Workflow Bar -->
+<div class="bg-slate-50 rounded-xl p-3 border border-slate-100 mb-6">
+<div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-2 font-medium">Autonomous Loop</div>
+<div class="flex items-center justify-between text-[11px] font-mono text-slate-700">
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Context</span>
+<span class="text-slate-300">→</span>
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Decide</span>
+<span class="text-slate-300">→</span>
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Act</span>
+<span class="text-slate-300">→</span>
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Verify</span>
+</div>
+</div>
+<a class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 group-hover:text-indigo-700" href="#ai-detail">
+<span>Explore AI Systems</span>
+<span class="group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+</div>
+<!-- Card 03: Custom AI Products -->
+<div class="group flex flex-col justify-between bg-white rounded-2xl p-7 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-purple-400/60 transition-all duration-300">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="px-2.5 py-1 rounded bg-purple-50 text-purple-700 font-mono text-xs font-semibold">03 / CUSTOM AI PRODUCTS</span>
+<div class="w-9 h-9 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">terminal</span>
+</div>
+</div>
+<h3 class="font-display text-2xl font-bold text-slate-950 mb-4 tracking-tight">
+            When a tool isn't enough, build the product.
+          </h3>
+<p class="text-xs text-slate-500 mb-6 font-mono leading-relaxed">
+            PROPRIETARY IP AND CLIENT-FACING DIFFERENTIATION
+          </p>
+<div class="space-y-4 text-sm text-slate-700 mb-8">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-purple-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Intelligence Platforms:</strong> Bespoke internal SaaS surfaces tailored to your unique IP.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-purple-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Customer-Facing Products:</strong> Embedded AI copilots and client-facing workflows.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-purple-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Internal AI Tools:</strong> Automated operational cockpits replacing multi-tool subscriptions.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-purple-600 text-base mt-0.5 shrink-0">check_circle</span>
+<p><strong class="font-semibold text-slate-900">Agentic Products:</strong> Multi-agent swarms executing end-to-end domain tasks.</p>
+</div>
+</div>
+</div>
+<div>
+<!-- Mini Workflow Bar -->
+<div class="bg-slate-50 rounded-xl p-3 border border-slate-100 mb-6">
+<div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-2 font-medium">Product Matrix</div>
+<div class="flex items-center justify-between text-[11px] font-mono text-slate-700">
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Data</span>
+<span class="text-slate-300">→</span>
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">AI Models</span>
+<span class="text-slate-300">→</span>
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Product UI</span>
+<span class="text-slate-300">→</span>
+<span class="bg-white px-2 py-0.5 rounded shadow-2xs font-semibold">Users</span>
+</div>
+</div>
+<a class="inline-flex items-center gap-2 text-sm font-semibold text-purple-600 group-hover:text-purple-700" href="#custom-products">
+<span>Explore Custom AI Products</span>
+<span class="group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 02 — SYSTEM CONNECTION (DARK NAVY Background: #070A12)
+       ========================================================================= -->
+<section class="w-full bg-[#070A12] text-slate-300 py-24 px-4 sm:px-6 lg:px-8 border-y border-slate-800 relative overflow-hidden">
+<!-- Atmospheric glows -->
+<div class="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-10 right-1/4 w-80 h-80 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="max-w-6xl mx-auto relative z-10">
+<!-- Section Header -->
+<div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-blue-400 text-xs font-mono font-medium tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+          NOT ISOLATED PROJECTS
+        </div>
+<h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+          Your GTM, AI and data should <span class="font-editorial-italic font-normal italic text-blue-400">work together</span>.
+        </h2>
+<p class="text-slate-400 text-base sm:text-lg">
+          Disjointed point solutions create fragmented records. We engineer a single integrated circuit where each tier compounds the next.
+        </p>
+</div>
+<!-- Architectural System Flow Diagram -->
+<div class="grid grid-cols-1 lg:grid-cols-6 gap-3 mb-12">
+<!-- Node 1: DATA -->
+<div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-colors">
+<div>
+<div class="text-[10px] font-mono text-blue-400 font-bold mb-1">01 / INPUT LAYER</div>
+<div class="text-sm font-bold text-white font-display mb-2">DATA</div>
+<p class="text-xs text-slate-400 leading-tight">CRM · Calls · Docs · Product DB</p>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-500">
+<span>Sources</span>
+<span class="text-slate-300">12 Connected</span>
+</div>
+</div>
+<!-- Node 2: SIGNALS -->
+<div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-colors">
+<div>
+<div class="text-[10px] font-mono text-indigo-400 font-bold mb-1">02 / DETECT</div>
+<div class="text-sm font-bold text-white font-display mb-2">SIGNALS</div>
+<p class="text-xs text-slate-400 leading-tight">Intent · Hiring · Funding · Churn</p>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-500">
+<span>Events</span>
+<span class="text-indigo-300 font-semibold">Real-time</span>
+</div>
+</div>
+<!-- Node 3: INTELLIGENCE -->
+<div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-colors">
+<div>
+<div class="text-[10px] font-mono text-purple-400 font-bold mb-1">03 / SYNTHESIS</div>
+<div class="text-sm font-bold text-white font-display mb-2">INTELLIGENCE</div>
+<p class="text-xs text-slate-400 leading-tight">Research · Scoring · Context Graph</p>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-500">
+<span>Models</span>
+<span class="text-purple-300 font-semibold">Deterministic</span>
+</div>
+</div>
+<!-- Node 4: AI -->
+<div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-colors">
+<div>
+<div class="text-[10px] font-mono text-emerald-400 font-bold mb-1">04 / COGNITION</div>
+<div class="text-sm font-bold text-white font-display mb-2">AI AGENTS</div>
+<p class="text-xs text-slate-400 leading-tight">Decisions · Recommendations</p>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-500">
+<span>Precision</span>
+<span class="text-emerald-300 font-semibold">Zero-hallucination</span>
+</div>
+</div>
+<!-- Node 5: EXECUTION -->
+<div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-colors">
+<div>
+<div class="text-[10px] font-mono text-amber-400 font-bold mb-1">05 / OUTCOME</div>
+<div class="text-sm font-bold text-white font-display mb-2">EXECUTION</div>
+<p class="text-xs text-slate-400 leading-tight">Outbound · Workflows · Content</p>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-500">
+<span>Speed</span>
+<span class="text-amber-300 font-semibold">Autonomous</span>
+</div>
+</div>
+<!-- Node 6: MEASUREMENT -->
+<div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-colors">
+<div>
+<div class="text-[10px] font-mono text-rose-400 font-bold mb-1">06 / TELEMETRY</div>
+<div class="text-sm font-bold text-white font-display mb-2">MEASUREMENT</div>
+<p class="text-xs text-slate-400 leading-tight">Pipeline · Revenue · Loop Back</p>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-500">
+<span>Feedback</span>
+<span class="text-rose-300 font-semibold">Continuous</span>
+</div>
+</div>
+</div>
+<!-- Telemetry Code / Terminal Console Box -->
+<div class="rounded-xl bg-[#03060b] border border-slate-800 p-4 sm:p-5 font-mono text-xs text-slate-400 space-y-2">
+<div class="flex items-center justify-between pb-3 border-b border-slate-800/70 text-slate-500 text-[11px]">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+            LIVE STREAM ARCHITECTURE
+          </span>
+<span>LATENCY: 18ms</span>
+</div>
+<div class="pt-2 text-slate-300">
+<span class="text-blue-400">CONNECT</span> salesforce.leads.stream <span class="text-slate-500">→</span> enrich(apollo, clay, linkedin_signals) <span class="text-slate-500">→</span> agent.evaluateIntent(threshold=0.88)
+        </div>
+<div class="text-slate-300">
+<span class="text-emerald-400">TRIGGER</span> multiChannelDispatch(personalized_context=true, human_in_loop=threshold &lt; 0.95)
+        </div>
+<div class="text-slate-400">
+<span class="text-purple-400">RESOLVE</span> crm.attribution.sync({ stage: 'Meeting Booked', source: 'Autonomous Signal System' })
+        </div>
+</div>
+<!-- Bottom Statement Banner -->
+<div class="mt-12 text-center">
+<p class="font-editorial-italic italic text-slate-200 text-xl sm:text-2xl max-w-2xl mx-auto font-light">
+          "The value isn't in one automation. It's in what happens when the whole system is connected."
+        </p>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 03 — GTM SYSTEMS DETAIL (LIGHT Background)
+       ========================================================================= -->
+<section class="w-full py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="gtm-detail">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+<div class="space-y-2">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-mono font-medium">
+          01 / GTM SYSTEMS
+        </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
+          Turn signals into <span class="font-editorial-italic font-normal italic text-blue-600">pipeline</span>.
+        </h2>
+</div>
+<p class="text-sm text-slate-500 max-w-md mt-4 md:mt-0">
+        Engineered outbound pipelines that discover real buying windows and convert prospects using contextual evidence, not generic templates.
+      </p>
+</div>
+<!-- 4-Card Grid with Micro-UI Previews -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 01 -->
+<div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
+<span class="font-bold text-blue-600">01</span>
+<span>INTENT ENGINE</span>
+</div>
+<h3 class="font-display font-bold text-slate-900 text-base mb-2">Signal-Based Outbound</h3>
+<p class="text-xs text-slate-600 mb-4 leading-relaxed">
+          Monitor trigger events: hiring expansions, leadership turnover, stack churn, and first-party buyer searches.
+        </p>
+<!-- Micro UI preview -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-lg p-3 font-mono text-[11px] space-y-1.5">
+<div class="flex justify-between items-center text-slate-500">
+<span>TRIGGER</span>
+<span class="text-blue-600 font-semibold">VP Sales Hired</span>
+</div>
+<div class="flex justify-between items-center text-slate-500">
+<span>SCORE</span>
+<span class="text-emerald-600 font-bold">98 / 100</span>
+</div>
+<div class="text-[10px] text-slate-400">Match: Series B FinTech</div>
+</div>
+</div>
+<!-- Card 02 -->
+<div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
+<span class="font-bold text-blue-600">02</span>
+<span>MODEL ARCHITECTURE</span>
+</div>
+<h3 class="font-display font-bold text-slate-900 text-base mb-2">GTM Strategy</h3>
+<p class="text-xs text-slate-600 mb-4 leading-relaxed">
+          Data schemas, TAM definition, account tiering formulas, and unit-economic-backed outbound targeting playbooks.
+        </p>
+<!-- Micro UI preview -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-lg p-3 font-mono text-[11px] space-y-1.5">
+<div class="flex justify-between text-slate-500">
+<span>Tier 1 Accounts</span>
+<span class="text-slate-900 font-semibold">1,420</span>
+</div>
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full w-3/4 rounded-full"></div>
+</div>
+<div class="text-[10px] text-slate-400 text-right">ACV Target: $85k+</div>
+</div>
+</div>
+<!-- Card 03 -->
+<div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
+<span class="font-bold text-blue-600">03</span>
+<span>CONTEXT COPY</span>
+</div>
+<h3 class="font-display font-bold text-slate-900 text-base mb-2">Content Engine</h3>
+<p class="text-xs text-slate-600 mb-4 leading-relaxed">
+          Autonomous drafting engines that pull prospect podcast quotes, recent PR, and earnings calls into custom pitches.
+        </p>
+<!-- Micro UI preview -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-lg p-3 font-mono text-[11px] space-y-1">
+<span class="text-blue-600 text-[10px] font-semibold">PROMPT EXTRACT:</span>
+<p class="text-[10px] text-slate-600 truncate">"Noticed your Q3 priority on expanding SDR velocity..."</p>
+<span class="text-[10px] text-emerald-600">✓ 4.8x Reply Rate Lift</span>
+</div>
+</div>
+<!-- Card 04 -->
+<div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
+<span class="font-bold text-blue-600">04</span>
+<span>SYNC &amp; GOVERN</span>
+</div>
+<h3 class="font-display font-bold text-slate-900 text-base mb-2">Pipeline &amp; RevOps</h3>
+<p class="text-xs text-slate-600 mb-4 leading-relaxed">
+          Flawless bi-directional routing, deal attribution logic, automated lead disposition, and zero manual SDR logging.
+        </p>
+<!-- Micro UI preview -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-lg p-3 font-mono text-[11px] space-y-1.5">
+<div class="flex justify-between items-center">
+<span class="text-slate-500">CRM Writeback</span>
+<span class="text-emerald-600 font-semibold">Instant (0.4s)</span>
+</div>
+<div class="text-[10px] text-slate-400">Attio / Salesforce / HubSpot</div>
+</div>
+</div>
+</div>
+<!-- Linear Flow Bar -->
+<div class="mt-10 p-4 rounded-xl bg-slate-100/70 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+<span class="text-slate-400 font-medium">FLOW PIPELINE:</span>
+<div class="flex flex-wrap items-center gap-2 text-slate-800">
+<span class="px-2 py-1 rounded bg-white font-semibold">Signal</span>
+<span class="text-slate-400">→</span>
+<span class="px-2 py-1 rounded bg-white font-semibold">Qualify</span>
+<span class="text-slate-400">→</span>
+<span class="px-2 py-1 rounded bg-white font-semibold">Enrich</span>
+<span class="text-slate-400">→</span>
+<span class="px-2 py-1 rounded bg-white font-semibold">Personalize</span>
+<span class="text-slate-400">→</span>
+<span class="px-2 py-1 rounded bg-white font-semibold">Send</span>
+<span class="text-slate-400">→</span>
+<span class="px-2 py-1 rounded bg-white font-semibold">Reply</span>
+<span class="text-slate-400">→</span>
+<span class="px-2 py-1 rounded bg-blue-600 text-white font-semibold">CRM Auto-Sync</span>
+</div>
+</div>
+<div class="mt-8 text-center">
+<a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 hover:bg-blue-600 text-white text-xs font-semibold tracking-wide transition-all shadow-xs" href="#contact">
+<span>Explore GTM Engineering</span>
+<span>→</span>
+</a>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 04 — AI REVENUE SYSTEMS DETAIL (LIGHT Background)
+       ========================================================================= -->
+<section class="w-full py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200/70" id="ai-detail">
+<div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-mono font-medium">
+        02 / AI REVENUE SYSTEMS
+      </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
+        Put AI where the <span class="font-editorial-italic font-normal italic text-indigo-600">work actually happens</span>.
+      </h2>
+<p class="text-slate-600 text-base">
+        Eliminate tool-switching and manual copy-pasting. We wire generative models and deterministic agents directly into your team's live daily flow.
+      </p>
+</div>
+<!-- 4 High Craft Visual Product-Like Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- System 1: AI Agents -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm hover:shadow-lg transition-all space-y-5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+<span class="font-display font-bold text-slate-900 text-lg">AI Agents</span>
+</div>
+<span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-medium">SUPERVISED AUTONOMY</span>
+</div>
+<p class="text-sm text-slate-600 leading-relaxed">
+          Autonomous agents that parse executive backgrounds, build custom pre-call briefs, and pre-populate deal stages with zero rep effort.
+        </p>
+<!-- Simulated Interface -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 font-mono text-xs space-y-3">
+<div class="flex items-center justify-between text-slate-400 text-[10px]">
+<span>AGENT: REV_RESEARCH_V2</span>
+<span class="text-indigo-600 font-semibold">STATUS: READY_FOR_REVIEW</span>
+</div>
+<div class="grid grid-cols-4 gap-2 text-center text-[10px]">
+<div class="p-2 rounded bg-white border border-slate-200/60 font-semibold text-slate-700">Research</div>
+<div class="p-2 rounded bg-white border border-slate-200/60 font-semibold text-slate-700">Decision</div>
+<div class="p-2 rounded bg-white border border-slate-200/60 font-semibold text-slate-700">Action</div>
+<div class="p-2 rounded bg-indigo-600 text-white font-semibold">Approval</div>
+</div>
+<div class="p-2 rounded bg-indigo-50/70 border border-indigo-100 text-[11px] text-indigo-900">
+            "Identified 3 key challenges from 10-K filing: Cloud cost overruns (+32%), security compliance deadline in Q4."
+          </div>
+</div>
+</div>
+<!-- System 2: Company Intelligence -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm hover:shadow-lg transition-all space-y-5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+<span class="font-display font-bold text-slate-900 text-lg">Company Intelligence</span>
+</div>
+<span class="text-xs font-mono px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">RAG &amp; VECTOR GRAPH</span>
+</div>
+<p class="text-sm text-slate-600 leading-relaxed">
+          Turn your company’s Notion pages, Slack discussions, Google Drive, and call recordings into an instant, unified queryable truth.
+        </p>
+<!-- Simulated Interface -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 font-mono text-xs space-y-3">
+<div class="flex items-center justify-between text-slate-400 text-[10px]">
+<span>KNOWLEDGE INDEX: 42,800 NODES</span>
+<span class="text-emerald-600 font-semibold">SYNCHRONIZED</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-600 bg-white p-2 rounded border border-slate-200/60">
+<span>Docs + CRM + Gong Calls</span>
+<span class="text-slate-400">→</span>
+<span class="font-bold text-blue-600">Intelligence Graph</span>
+<span class="text-slate-400">→</span>
+<span class="font-semibold text-slate-900">Contextual Answer</span>
+</div>
+<div class="p-2 rounded bg-slate-100 text-[11px] text-slate-700">
+            Query: "How did we overcome SOC2 compliance objection on the Acme deal?" <span class="text-blue-600">→ [Found in Call #312 + Notion Spec]</span>
+</div>
+</div>
+</div>
+<!-- System 3: Revenue Intelligence -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm hover:shadow-lg transition-all space-y-5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-purple-600"></span>
+<span class="font-display font-bold text-slate-900 text-lg">Revenue Intelligence</span>
+</div>
+<span class="text-xs font-mono px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">FORECAST ACCURACY</span>
+</div>
+<p class="text-sm text-slate-600 leading-relaxed">
+          Deterministic alerts when critical deal champions go cold, sentiment dips during demos, or competitor names arise in discussions.
+        </p>
+<!-- Simulated Interface -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 font-mono text-xs space-y-3">
+<div class="flex items-center justify-between text-slate-400 text-[10px]">
+<span>DEAL SENTINEL: PIPELINE Q4</span>
+<span class="text-purple-600 font-semibold">ACTIVE MONITOR</span>
+</div>
+<div class="grid grid-cols-4 gap-2 text-center text-[10px]">
+<div class="p-2 rounded bg-white border border-slate-200/60 text-slate-700 font-semibold">Data Stream</div>
+<div class="p-2 rounded bg-white border border-slate-200/60 text-slate-700 font-semibold">Signal Alert</div>
+<div class="p-2 rounded bg-rose-50 border border-rose-200 text-rose-700 font-bold">Deal Risk</div>
+<div class="p-2 rounded bg-purple-600 text-white font-semibold">Action Trigger</div>
+</div>
+<div class="p-2 rounded bg-white border border-slate-200/60 text-[11px] text-slate-800 flex justify-between items-center">
+<span>Opportunity: CloudScale ($120k)</span>
+<span class="text-rose-600 font-semibold">Decision maker changed</span>
+</div>
+</div>
+</div>
+<!-- System 4: Workflow Automation -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm hover:shadow-lg transition-all space-y-5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+<span class="font-display font-bold text-slate-900 text-lg">Workflow Automation</span>
+</div>
+<span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-medium">ZERO BUSYWORK</span>
+</div>
+<p class="text-sm text-slate-600 leading-relaxed">
+          High-reliability webhooks, microservices, and orchestration code that handle non-creative tasks automatically and seamlessly.
+        </p>
+<!-- Simulated Interface -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 font-mono text-xs space-y-3">
+<div class="flex items-center justify-between text-slate-400 text-[10px]">
+<span>FLOW ENGINE: DETERMINISTIC N8N/MAKE</span>
+<span class="text-emerald-600 font-semibold">HEALTH: 100%</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-600 bg-white p-2 rounded border border-slate-200/60">
+<span>Webhook Trigger</span>
+<span class="text-slate-400">→</span>
+<span class="font-semibold text-slate-800">Conditional Logic</span>
+<span class="text-slate-400">→</span>
+<span class="font-semibold text-emerald-600">Action &amp; Record</span>
+</div>
+<div class="text-[10px] text-slate-500">Processed 14,290 automated steps this week without manual intervention.</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 05 — CUSTOM AI PRODUCTS (DARK NAVY Background: #080C16)
+       ========================================================================= -->
+<section class="w-full bg-[#080C16] text-white py-24 px-4 sm:px-6 lg:px-8 border-y border-slate-800 relative" id="custom-products">
+<div class="max-w-6xl mx-auto">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
+<div class="space-y-3">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-950/60 border border-purple-800/60 text-purple-300 text-xs font-mono font-medium">
+            03 / CUSTOM AI PRODUCTS
+          </div>
+<h2 class="font-display text-3xl sm:text-5xl font-extrabold tracking-tight">
+            Build what your business <span class="font-editorial-italic font-normal italic text-purple-400">can't buy</span>.
+          </h2>
+</div>
+<p class="text-sm text-slate-400 max-w-md mt-4 md:mt-0 leading-relaxed">
+          Some workflows are too specific for off-the-shelf software. That’s where custom engineering creates exponential enterprise leverage.
+        </p>
+</div>
+<!-- 3 Real Software Mockups -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Mockup 1: Intelligence Platform -->
+<div class="rounded-2xl bg-slate-900 border border-slate-800 p-6 flex flex-col justify-between hover:border-slate-700 transition-all group">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold">
+                PROPRIETARY ENGINE
+              </span>
+<span class="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> LIVE
+              </span>
+</div>
+<h3 class="font-display text-xl font-bold text-white mb-2">Intelligence Platform</h3>
+<p class="text-xs text-slate-400 leading-relaxed mb-6">
+              Bespoke internal SaaS surfaces tailored to your unique analytical IP, company databases, and domain calculations.
+            </p>
+<!-- Interface Box -->
+<div class="rounded-xl bg-slate-950 border border-slate-800 p-3 font-mono text-[11px] space-y-2 mb-6">
+<div class="flex justify-between text-slate-500 pb-2 border-b border-slate-800">
+<span>Domain IP Suite</span>
+<span>v3.4-prod</span>
+</div>
+<div class="text-slate-300">Target: Global Logistics TAM</div>
+<div class="flex items-center justify-between text-xs text-blue-400">
+<span>Synthesized Nodes</span>
+<span class="text-white font-bold">18,400</span>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-800/80">
+<span class="text-xs text-slate-400">Zero third-party vendor lock-in</span>
+</div>
+</div>
+<!-- Mockup 2: Customer-Facing Product -->
+<div class="rounded-2xl bg-slate-900 border border-slate-800 p-6 flex flex-col justify-between hover:border-slate-700 transition-all group">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="text-[11px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold">
+                CLIENT-FACING
+              </span>
+<span class="inline-flex items-center gap-1 text-[11px] font-mono text-purple-400">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> CONNECTED
+              </span>
+</div>
+<h3 class="font-display text-xl font-bold text-white mb-2">Client Copilots &amp; Portals</h3>
+<p class="text-xs text-slate-400 leading-relaxed mb-6">
+              Embed custom generative copilots inside your customer-facing product to drive stickiness, self-serve onboarding, and upsells.
+            </p>
+<!-- Interface Box -->
+<div class="rounded-xl bg-slate-950 border border-slate-800 p-3 font-mono text-[11px] space-y-2 mb-6">
+<div class="flex justify-between text-slate-500 pb-2 border-b border-slate-800">
+<span>Client Portal Copilot</span>
+<span>Embed SDK</span>
+</div>
+<div class="text-purple-300">Prompt: "Summarize Q3 audit for board"</div>
+<div class="flex items-center justify-between text-xs text-emerald-400">
+<span>Generated PDF Specs</span>
+<span class="text-white font-bold">Done (1.2s)</span>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-800/80">
+<span class="text-xs text-slate-400">Boosts end-user retention by 34%</span>
+</div>
+</div>
+<!-- Mockup 3: Internal AI Tool -->
+<div class="rounded-2xl bg-slate-900 border border-slate-800 p-6 flex flex-col justify-between hover:border-slate-700 transition-all group">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                OPS COCKPIT
+              </span>
+<span class="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> AI-POWERED
+              </span>
+</div>
+<h3 class="font-display text-xl font-bold text-white mb-2">Internal AI Tools</h3>
+<p class="text-xs text-slate-400 leading-relaxed mb-6">
+              Replace 4 different $50/user SaaS subscriptions with a dedicated cockpit built precisely around your operational nuances.
+            </p>
+<!-- Interface Box -->
+<div class="rounded-xl bg-slate-950 border border-slate-800 p-3 font-mono text-[11px] space-y-2 mb-6">
+<div class="flex justify-between text-slate-500 pb-2 border-b border-slate-800">
+<span>Internal Ops Hub</span>
+<span>Active</span>
+</div>
+<div class="text-slate-300">Human-in-the-Loop Review: Enabled</div>
+<div class="flex items-center justify-between text-xs text-amber-400">
+<span>SaaS Tools Replaced</span>
+<span class="text-white font-bold">4 Vendors</span>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-800/80">
+<span class="text-xs text-slate-400">Owned 100% on your cloud stack</span>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<div class="mt-14 flex items-center justify-center">
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold tracking-wide shadow-md transition-all" href="#contact">
+<span>Talk to an engineer</span>
+<span>→</span>
+</a>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 06 — HOW A BUILD HAPPENS (LIGHT Background)
+       ========================================================================= -->
+<section class="w-full py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-mono font-medium">
+        FROM IDEA TO PRODUCTION
+      </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
+        We don't hand you a strategy deck and <span class="font-editorial-italic font-normal italic text-blue-600">disappear</span>.
+      </h2>
+<p class="text-slate-600 text-base">
+        A deterministic four-phase engineering sprint designed to take your core bottleneck into production infrastructure in weeks.
+      </p>
+</div>
+<!-- 4 Numbered Cards in a Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+<!-- Phase 01 -->
+<div class="bg-white rounded-xl border border-slate-200 p-6 flex flex-col justify-between shadow-xs hover:border-blue-400 transition-colors">
+<div>
+<div class="font-mono text-2xl font-black text-blue-600 mb-3">01</div>
+<h3 class="font-display font-bold text-slate-900 text-lg mb-2">Diagnose</h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+            Audit existing pipeline data, lead leakages, manual time-sinks, and discover the highest-value system lever.
+          </p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 text-[11px] font-mono text-slate-400">
+          Duration: Week 1
+        </div>
+</div>
+<!-- Phase 02 -->
+<div class="bg-white rounded-xl border border-slate-200 p-6 flex flex-col justify-between shadow-xs hover:border-blue-400 transition-colors">
+<div>
+<div class="font-mono text-2xl font-black text-blue-600 mb-3">02</div>
+<h3 class="font-display font-bold text-slate-900 text-lg mb-2">Architect</h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+            Design the system blueprints, model orchestration schemes, prompt chains, error handoffs, and success metrics.
+          </p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 text-[11px] font-mono text-slate-400">
+          Duration: Week 2
+        </div>
+</div>
+<!-- Phase 03 -->
+<div class="bg-white rounded-xl border border-slate-200 p-6 flex flex-col justify-between shadow-xs hover:border-blue-400 transition-colors">
+<div>
+<div class="font-mono text-2xl font-black text-blue-600 mb-3">03</div>
+<h3 class="font-display font-bold text-slate-900 text-lg mb-2">Build</h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+            Ship a working, tested production system around your real data, proprietary APIs, and security requirements.
+          </p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 text-[11px] font-mono text-slate-400">
+          Duration: Weeks 3–5
+        </div>
+</div>
+<!-- Phase 04 -->
+<div class="bg-white rounded-xl border border-slate-200 p-6 flex flex-col justify-between shadow-xs hover:border-blue-400 transition-colors">
+<div>
+<div class="font-mono text-2xl font-black text-blue-600 mb-3">04</div>
+<h3 class="font-display font-bold text-slate-900 text-lg mb-2">Improve</h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+            Measure conversion telemetry, adjust models, optimize prompts, and expand what mathematically proves ROI.
+          </p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 text-[11px] font-mono text-slate-400">
+          Duration: Continuous
+        </div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 07 — STACK (LIGHT Background)
+       ========================================================================= -->
+<section class="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200/70">
+<div class="text-center max-w-3xl mx-auto mb-12 space-y-2">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-mono font-medium">
+        YOUR STACK, CONNECTED
+      </div>
+<h2 class="font-display text-3xl font-extrabold text-slate-950 tracking-tight">
+        Use the tools you <span class="font-editorial-italic font-normal italic text-blue-600">already trust</span>.
+      </h2>
+</div>
+<!-- Category Pill Clusters -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+<!-- Cluster 1: CRM -->
+<div class="bg-white rounded-xl border border-slate-200/80 p-4">
+<span class="text-[10px] font-mono text-slate-400 font-bold block mb-3 uppercase">CRM &amp; Records</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">HubSpot</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">Salesforce</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">Attio</span>
+</div>
+</div>
+<!-- Cluster 2: AI -->
+<div class="bg-white rounded-xl border border-slate-200/80 p-4">
+<span class="text-[10px] font-mono text-slate-400 font-bold block mb-3 uppercase">AI Foundation</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium">OpenAI</span>
+<span class="px-2.5 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium">Claude</span>
+<span class="px-2.5 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium">Gemini</span>
+</div>
+</div>
+<!-- Cluster 3: Data -->
+<div class="bg-white rounded-xl border border-slate-200/80 p-4">
+<span class="text-[10px] font-mono text-slate-400 font-bold block mb-3 uppercase">Data Providers</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">Clay</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">Apollo</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">Custom APIs</span>
+</div>
+</div>
+<!-- Cluster 4: Automation -->
+<div class="bg-white rounded-xl border border-slate-200/80 p-4">
+<span class="text-[10px] font-mono text-slate-400 font-bold block mb-3 uppercase">Orchestration</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">n8n</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">Make</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">Zapier</span>
+</div>
+</div>
+<!-- Cluster 5: Communication -->
+<div class="bg-white rounded-xl border border-slate-200/80 p-4">
+<span class="text-[10px] font-mono text-slate-400 font-bold block mb-3 uppercase">Channels</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">Slack</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">Email API</span>
+<span class="px-2.5 py-1 rounded bg-slate-100 text-xs font-medium text-slate-800">LinkedIn</span>
+</div>
+</div>
+</div>
+<div class="mt-8 text-center text-xs font-mono text-slate-500">
+      "The tools can change. The system should keep working."
+    </div>
+</section>
+<!-- =========================================================================
+       SECTION 08 — OWNERSHIP (LIGHT Background)
+       ========================================================================= -->
+<section class="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200/70">
+<div class="text-center max-w-3xl mx-auto mb-14 space-y-2">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-mono font-medium">
+        BUILT ON YOUR SIDE
+      </div>
+<h2 class="font-display text-3xl font-extrabold text-slate-950 tracking-tight">
+        The system should become an asset—<span class="font-editorial-italic font-normal italic text-blue-600">not another dependency</span>.
+      </h2>
+<p class="text-slate-600 text-sm">
+        You retain 100% of the code, schemas, and architecture. We build on your infrastructure, not a walled garden.
+      </p>
+</div>
+<!-- 3 Ownership Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-6 space-y-3">
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-2xl">lock</span>
+</div>
+<h3 class="font-display font-bold text-slate-950 text-lg">Your Data</h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+          Proprietary data pipelines and isolated VPC connections. Zero retention or model training on your internal data assets by external entities.
+        </p>
+</div>
+<!-- Card 2 -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-6 space-y-3">
+<div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-2xl">cloud_done</span>
+</div>
+<h3 class="font-display font-bold text-slate-950 text-lg">Your Infrastructure</h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+          All code and databases deploy natively within your AWS, Google Cloud, or Azure environments. You govern keys and access credentials.
+        </p>
+</div>
+<!-- Card 3 -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-6 space-y-3">
+<div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-2xl">menu_book</span>
+</div>
+<h3 class="font-display font-bold text-slate-950 text-lg">Your Documentation</h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+          Comprehensive architecture documentation, code repositories, step-by-step handover videos, and hands-on enablement for your internal team.
+        </p>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 09 — FIND YOUR STARTING POINT (LIGHT Background)
+       ========================================================================= -->
+<section class="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200/70">
+<div class="text-center max-w-3xl mx-auto mb-12 space-y-2">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-mono font-medium">
+        WHERE SHOULD WE START?
+      </div>
+<h2 class="font-display text-3xl font-extrabold text-slate-950 tracking-tight">
+        Tell us what <span class="font-editorial-italic font-normal italic text-blue-600">needs to move</span>.
+      </h2>
+</div>
+<!-- 4 Interactive Starting Point Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1 -->
+<a class="group bg-white hover:bg-blue-50/50 rounded-xl border border-slate-200/90 hover:border-blue-300 p-5 transition-all block" href="#contact">
+<div class="text-xs font-mono text-slate-400 mb-2">SCENARIO A</div>
+<p class="font-display font-bold text-slate-900 text-base mb-1 group-hover:text-blue-600 transition-colors">
+          Need more pipeline?
+        </p>
+<div class="text-xs font-semibold text-blue-600 flex items-center gap-1 mt-4">
+<span>GTM Systems</span>
+<span class="group-hover:translate-x-1 transition-transform">→</span>
+</div>
+</a>
+<!-- Card 2 -->
+<a class="group bg-white hover:bg-indigo-50/50 rounded-xl border border-slate-200/90 hover:border-indigo-300 p-5 transition-all block" href="#contact">
+<div class="text-xs font-mono text-slate-400 mb-2">SCENARIO B</div>
+<p class="font-display font-bold text-slate-900 text-base mb-1 group-hover:text-indigo-600 transition-colors">
+          Too much manual work?
+        </p>
+<div class="text-xs font-semibold text-indigo-600 flex items-center gap-1 mt-4">
+<span>AI Revenue Systems</span>
+<span class="group-hover:translate-x-1 transition-transform">→</span>
+</div>
+</a>
+<!-- Card 3 -->
+<a class="group bg-white hover:bg-purple-50/50 rounded-xl border border-slate-200/90 hover:border-purple-300 p-5 transition-all block" href="#contact">
+<div class="text-xs font-mono text-slate-400 mb-2">SCENARIO C</div>
+<p class="font-display font-bold text-slate-900 text-base mb-1 group-hover:text-purple-600 transition-colors">
+          Need better visibility?
+        </p>
+<div class="text-xs font-semibold text-purple-600 flex items-center gap-1 mt-4">
+<span>Revenue Intelligence</span>
+<span class="group-hover:translate-x-1 transition-transform">→</span>
+</div>
+</a>
+<!-- Card 4 -->
+<a class="group bg-white hover:bg-blue-50/50 rounded-xl border border-slate-200/90 hover:border-blue-300 p-5 transition-all block" href="#contact">
+<div class="text-xs font-mono text-slate-400 mb-2">SCENARIO D</div>
+<p class="font-display font-bold text-slate-900 text-base mb-1 group-hover:text-blue-600 transition-colors">
+          Need something nobody sells?
+        </p>
+<div class="text-xs font-semibold text-blue-600 flex items-center gap-1 mt-4">
+<span>Custom AI Products</span>
+<span class="group-hover:translate-x-1 transition-transform">→</span>
+</div>
+</a>
+</div>
+</section>
+<!-- =========================================================================
+       11. FINAL CTA (DARK NAVY Rounded Container)
+       ========================================================================= -->
+<section class="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="contact">
+<div class="rounded-3xl bg-[#070A12] border border-slate-800 text-white p-8 sm:p-14 lg:p-16 relative overflow-hidden text-center">
+<!-- Glow ambient backdrop -->
+<div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="relative z-10 max-w-3xl mx-auto space-y-6">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-blue-400 text-xs font-mono font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+          READY TO BUILD
+        </div>
+<h2 class="font-display text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+          Let’s build the system your business needs next.
+        </h2>
+<p class="text-slate-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+          Bring us the bottleneck. We'll help turn it into deterministic, revenue-generating infrastructure.
+        </p>
+<div class="pt-4 flex flex-wrap items-center justify-center gap-4">
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold tracking-wide shadow-md transition-all" href="#">
+<span>Book a discovery</span>
+<span>→</span>
+</a>
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold tracking-wide border border-slate-800 transition-all" href="#core-systems">
+<span>See our work</span>
+<span class="text-slate-500">→</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+</div></main>
+<!-- 12. FOOTER (DARK NAVY) -->
+<footer class="w-full bg-[#070A12] border-t border-slate-800 text-slate-400 pt-16 pb-12">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-12 border-b border-slate-800/80">
+<!-- Brand Info -->
+<div class="space-y-2">
+<div class="flex items-center gap-2.5">
+<div class="w-6 h-6 rounded bg-blue-600 flex items-center justify-center text-white font-display font-bold text-xs">
+              S
+            </div>
+<span class="font-display font-bold text-lg text-white">Syntropic</span>
+<span class="text-xs font-mono text-slate-400 ml-1">AI + GTM Engineering</span>
+</div>
+<p class="text-xs text-slate-500">
+            Architecting deterministic pipeline infrastructure and autonomous revenue systems.
+          </p>
+</div>
+<!-- Links -->
+<div class="flex flex-wrap items-center gap-6 text-xs font-medium text-slate-300">
+<a class="hover:text-white transition-colors" href="#what-we-build">What We Build</a>
+<a class="hover:text-white transition-colors" href="#the-system">How It Works</a>
+<a class="hover:text-white transition-colors" href="#proof">Work</a>
+<a class="hover:text-white transition-colors" href="#capabilities">AI Agents</a>
+<a class="hover:text-white transition-colors" href="#faq">About</a>
+<a class="hover:text-white transition-colors" href="#">Blog</a>
+</div>
+<!-- Button -->
+<a class="px-4 py-2 rounded-full bg-slate-800 hover:bg-blue-600 text-white text-xs font-semibold tracking-wide border border-slate-700 transition-colors" href="#contact">
+          Book a Discovery →
+        </a>
+</div>
+<!-- Legal / Copyright -->
+<div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-600">
+<span>© 2025 Syntropic Technologies Inc. All rights reserved.</span>
+<div class="flex items-center gap-6 text-slate-500">
+<a class="hover:text-slate-300 transition-colors" href="#">Privacy</a>
+<a class="hover:text-slate-300 transition-colors" href="#">Terms</a>
+<a class="hover:text-slate-300 transition-colors" href="#">Security</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- Simple FAQ Accordion Script -->
+<script>
+    document.querySelectorAll('.faq-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const content = button.nextElementSibling;
+        const icon = button.querySelector('.icon');
+        const isOpen = !content.classList.contains('hidden');
+
+        // Close all
+        document.querySelectorAll('.faq-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.faq-btn .icon').forEach(el => el.style.transform = 'rotate(0deg)');
+
+        // Toggle current
+        if (!isOpen) {
+          content.classList.remove('hidden');
+          icon.style.transform = 'rotate(180deg)';
+        }
+      });
+    });
+  </script>
+</body></html>
