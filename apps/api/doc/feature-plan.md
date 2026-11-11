@@ -168,16 +168,23 @@ A single dead website or one model failure never fails the campaign.
 - **Untrusted input:** scraped HTML/review text is data; it can never override model instructions.
 - **Budgets:** monthly ceilings per org refuse work before spend.
 
-## Suggested build order (one Prisma migration per step)
+## Implementation Status & Verification Matrix
 
-1. Auth + Organization/Membership (foundation). *(present)*
-2. Discovery: Campaign, ExclusionDomain, Business, CampaignLead. *(present)*
-3. Evidence: WebsiteSnapshot, SnapshotPage, TechnicalAudit, AuditFinding + fetch plugin.
-4. Local SEO: GbpProfile, Review.
-5. Scoring + AI: opportunityScore, Brief, BriefEvent + LLM plugin.
-6. Competitor: CompetitorSet, Competitor.
-7. Files: StoredFile + R2 plugin (screenshots, PDFs).
-8. CRM: CrmConnection, CrmExport + CSV export.
-9. Phase 3: reauditCadence, AuditChange + scheduler.
+The core opportunity engine and worker pipeline have been implemented and verified:
 
-The schema already defines all of the above so relations are stable; migrations can still land feature-by-feature.
+| Milestone / Capability | Status | Implementation Details |
+| :--- | :---: | :--- |
+| **Dual-Plane Auth & RBAC** | ✅ Built | Better Auth session cookies, `platformRole`, `isSuperAdmin`, `requireSuperAdmin()`, `requireOrgRole()`, and automated superadmin seeding. |
+| **Discovery Pipeline** | ✅ Built | Multi-provider architecture via `DiscoveryProviderRegistry`: Apify Google Maps (primary), Outscraper, SerpAPI, Google Places, and Fixture provider. |
+| **Evidence Crawling** | ✅ Built | `CrawlWorker` with strict SSRF filtering (IP blocklists + redirect re-checks), robots.txt adherence, metadata extraction, and local/GCS storage. |
+| **Performance Audits** | ✅ Built | `PsiWorker` with Google PageSpeed Insights v5 integration, Core Web Vitals (LCP, CLS, INP) parsing, and Lighthouse mobile scoring. |
+| **Join Barrier & Sync** | ✅ Built | `publishIfReady()` barrier using transactional advisory locks (`pg_try_advisory_xact_lock`) to synchronize parallel crawl and PSI completions. |
+| **Deterministic Scoring** | ✅ Built | Mathematical opportunity scoring engine computing `evidenceScore`, `fitScore`, `relevanceScore`, and `total` (0-100 `LeadScore`). |
+| **Interpret AI Engine** | ✅ Built | Multi-provider LLM synthesis (Gemini 1.5/2.0, OpenAI GPT-4o, Deterministic fallback) generating value propositions, cold emails, and call scripts. |
+| **Outbox & Sweep Reliability**| ✅ Built | Transactional outbox dispatch (`job-dispatcher.ts`) with lease mechanism and automated sweeper (`outbox-sweep.ts`) to recover orphaned jobs. |
+| **Dual Queue Drivers** | ✅ Built | Local dev with `pg-boss` and production Cloud Run with Google Cloud Pub/Sub push architecture. |
+| **Dual Storage Drivers** | ✅ Built | Local disk storage (`.data/objects`) and Google Cloud Storage (`GcsStorageProvider`). |
+| **CRM Export & Integrations** | 🔄 Planned | CSV export and webhook handoffs to HubSpot, Pipedrive, and Salesforce. |
+| **Scheduled Re-audits** | 🔄 Planned | Phase 3 cadence-based delta detection (`AuditChange`). |
+
+The schema at `apps/api/prisma/schema.prisma` defines all tables and relationships for current and future phases. All 7 Prisma migrations have been successfully applied.

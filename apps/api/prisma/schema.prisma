@@ -134,6 +134,16 @@ enum AiStatus {
   UNAVAILABLE
 }
 
+// Sales-pipeline lifecycle for a prospect inside a campaign workspace.
+// Completely separate from QualificationStatus (ingestion filter).
+enum ProspectStatus {
+  NEW
+  RESEARCHED
+  QUALIFIED
+  CONTACTED
+  DISMISSED
+}
+
 enum OpportunityConfidence {
   LOW
   MEDIUM
@@ -342,6 +352,7 @@ model User {
   invitationsAccepted Invitation[]     @relation("InvitationAcceptedBy")
   instructions        Instruction[]
   savedLeads          CampaignLead[]   @relation("LeadSavedBy")
+  leadActivityLogs    LeadActivityLog[] @relation("ActivityLogUser")
   notifications       Notification[]
   reviewItemsResolved ReviewItem[]     @relation("ReviewItemResolvedBy")
 
@@ -665,6 +676,9 @@ model Business {
   // Raw provider payload for traceability (Outscraper record, GBP fields).
   providerRaw Json?
 
+  // Field-level verification provenance & Quad-State contract
+  enrichmentState Json?
+
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt @db.Timestamptz
 
@@ -712,6 +726,11 @@ model CampaignLead {
   // Denormalized from LeadScore.total for list sorting.
   opportunityScore Int?
 
+  // Prospect workspace fields (sales pipeline — separate from qualificationStatus which is ingestion-only)
+  prospectStatus ProspectStatus @default(NEW)
+  notes          String?        @db.Text
+  archivedAt     DateTime?      @db.Timestamptz
+
   savedAt       DateTime? @db.Timestamptz
   savedByUserId String?
 
@@ -722,6 +741,7 @@ model CampaignLead {
   business      Business                 @relation(fields: [businessId], references: [id], onDelete: Cascade)
   savedBy       User?                    @relation("LeadSavedBy", fields: [savedByUserId], references: [id], onDelete: SetNull)
   audits        TechnicalAudit[]
+  auditAttempts AuditAttempt[]
   brief         Brief?
   competitorSet CompetitorSet?
   crmExports    CrmExport[]
@@ -731,10 +751,13 @@ model CampaignLead {
   matches       LeadMatch[]
   score         LeadScore?
   reviewItems   ReviewItem[]
+  activityLogs  LeadActivityLog[]
 
   @@unique([campaignId, businessId])
   @@index([campaignId])
   @@index([campaignId, opportunityScore])
+  @@index([campaignId, prospectStatus])
+  @@index([campaignId, archivedAt])
   @@index([savedByUserId])
   @@map("campaign_lead")
 }
@@ -842,6 +865,50 @@ model AuditFinding {
   @@index([auditId])
   @@index([code])
   @@map("audit_finding")
+}
+
+// Immutable execution history log for audit worker attempts
+model AuditAttempt {
+  id            String      @id @default(cuid())
+  leadId        String
+  jobId         String
+  module        AuditModule
+  attemptNumber Int         @default(1)
+  status        AuditStatus
+  score         Int?
+  failureReason String?     @db.VarChar(500)
+  observedAt    DateTime    @db.Timestamptz
+  createdAt     DateTime    @default(now()) @db.Timestamptz
+
+  lead CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  job  Job          @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, module, attemptNumber])
+  @@index([leadId, module, createdAt])
+  @@index([jobId])
+  @@map("audit_attempt")
+}
+
+// ---------------------------------------------------------------------------
+// Prospect Activity Audit History Trail
+// ---------------------------------------------------------------------------
+
+model LeadActivityLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  leadId         String
+  userId         String?
+  action         String   @db.VarChar(60)
+  previousState  Json?
+  newState       Json?
+  createdAt      DateTime @default(now()) @db.Timestamptz
+
+  lead CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user User?        @relation("ActivityLogUser", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([leadId, createdAt])
+  @@index([organizationId, createdAt])
+  @@map("lead_activity_log")
 }
 
 // ---------------------------------------------------------------------------
@@ -993,11 +1060,11 @@ model LeadMatch {
 model LeadScore {
   id             String                @id @default(cuid())
   leadId         String                @unique
-  total          Int
-  evidenceScore  Int
-  fitScore       Int
-  relevanceScore Int
-  confidence     OpportunityConfidence @default(MEDIUM)
+  total          Int?
+  evidenceScore  Int?
+  fitScore       Int?
+  relevanceScore Int?
+  confidence     OpportunityConfidence @default(LOW)
   breakdown      Json
   computedAt     DateTime              @default(now()) @db.Timestamptz
 
@@ -1229,7 +1296,8 @@ model Job {
 
   campaign Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   lead     CampaignLead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  audits   TechnicalAudit[]
+  audits        TechnicalAudit[]
+  auditAttempts AuditAttempt[]
 
   @@index([campaignId, createdAt])
   @@index([organizationId, status])

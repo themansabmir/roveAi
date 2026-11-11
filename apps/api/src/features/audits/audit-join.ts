@@ -1,4 +1,4 @@
-import { AuditModule, AuditStatus, PrismaClient } from "@prisma/client";
+import { AuditModule, AuditStatus, Prisma, PrismaClient } from "@prisma/client";
 import { AuditJobPayload } from "@plugins/queue/queue.types";
 import { JobDispatcher } from "@features/jobs/job-dispatcher";
 import { JobPublisher } from "./audit-scheduler";
@@ -12,6 +12,9 @@ export async function publishIfReady(
   console.log(`[JoinBarrier.publishIfReady] 🔀 Evaluating lead completion for lead: ${payload.leadId} (jobId: ${payload.jobId})`);
   const interpretJobId = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${payload.leadId}, ${0}::bigint))`;
+    await tx.$queryRaw(
+      Prisma.sql`SELECT id FROM "CampaignLead" WHERE id = ${payload.leadId} FOR UPDATE`
+    );
     const audits = await tx.technicalAudit.findMany({
       where: { leadId: payload.leadId, module: { in: REQUIRED_MODULES } },
       orderBy: { createdAt: "desc" },

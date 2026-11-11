@@ -1,7 +1,7 @@
 import { AuditStatus, QualificationStatus, WebsiteClass } from "@prisma/client";
 import { MapsBusiness, MapsProvider, MapsQuotaError } from "@plugins/maps/maps.types";
 import { AuditScheduler } from "@features/audits/audit-scheduler";
-import { CampaignRepository, DiscoveryCampaign } from "./campaign.repository";
+import { CampaignRepository, DiscoveryCampaign, SaveLeadInput } from "./campaign.repository";
 import { classifyWebsite, exclusionMatches, normalizeName, normalizePhone } from "./normalize";
 import { expandQueries } from "./queries";
 
@@ -80,13 +80,17 @@ export class DiscoveryService {
         if (rows == null) return;
         console.log(`[DiscoveryService.discover] 📍 Maps provider returned ${rows.length} results`);
 
+        const candidateInputs: SaveLeadInput[] = [];
         for (const row of rows) {
-          if (saved >= campaign.maxLeads) break;
-          const inserted = await this.ingest(campaign, row);
-          if (inserted) {
-            saved += 1;
-            console.log(`[DiscoveryService.ingest] ✅ Saved lead #${saved}: "${row.name}" (${row.websiteUrl ?? "No website"})`);
-          }
+          if (saved + candidateInputs.length >= campaign.maxLeads) break;
+          const input = this.prepareLeadInput(campaign, row);
+          if (input) candidateInputs.push(input);
+        }
+
+        if (candidateInputs.length > 0) {
+          const insertedCount = await this.repository.saveLeadsBatch(candidateInputs);
+          saved += insertedCount;
+          console.log(`[DiscoveryService.discover] ✅ Batch saved ${insertedCount} leads (total saved: ${saved}/${campaign.maxLeads})`);
         }
       }
     } catch (err) {
@@ -142,20 +146,20 @@ export class DiscoveryService {
     }
   }
 
-  private async ingest(campaign: DiscoveryCampaign, row: MapsBusiness): Promise<boolean> {
+  private prepareLeadInput(campaign: DiscoveryCampaign, row: MapsBusiness): SaveLeadInput | null {
     const name = row.name.trim();
     const providerId = row.providerId.trim();
-    if (!name || !providerId) return false;
+    if (!name || !providerId) return null;
 
     const websiteClass = classifyWebsite(row.websiteUrl);
-    if (!passesFilters(campaign, row, websiteClass)) return false;
+    if (!passesFilters(campaign, row, websiteClass)) return null;
 
     const excluded = exclusionMatches(row.websiteUrl, campaign.exclusionDomains);
     const qualificationStatus: QualificationStatus = excluded ? "EXCLUDED_EXISTING_CLIENT" : "NEW";
     const auditStatus: AuditStatus = auditForClass(websiteClass);
     const city = (row.city ?? campaign.city).trim();
 
-    return this.repository.saveLead({
+    return {
       organizationId: campaign.organizationId,
       campaignId: campaign.id,
       providerId,
@@ -174,7 +178,13 @@ export class DiscoveryService {
       websiteClass,
       qualificationStatus,
       auditStatus,
-    });
+    };
+  }
+
+  async ingest(campaign: DiscoveryCampaign, row: MapsBusiness): Promise<boolean> {
+    const input = this.prepareLeadInput(campaign, row);
+    if (!input) return false;
+    return this.repository.saveLead(input);
   }
 }
 

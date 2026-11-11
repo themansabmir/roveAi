@@ -1,5 +1,24 @@
-import { useState } from "react"
-import { Check, Copy, ExternalLink, Gauge, Sparkles, AlertTriangle, Layers, Globe } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useParams } from "react-router-dom"
+import {
+  Check,
+  Copy,
+  ExternalLink,
+  Gauge,
+  Sparkles,
+  AlertTriangle,
+  Layers,
+  Globe,
+  FileText,
+  Tag as TagIcon,
+  Save,
+  History,
+  Info,
+} from "lucide-react"
+import { useAuth } from "@/features/auth/application/useAuth"
+import { useUpdateLead } from "@/features/campaigns/application/useCampaigns"
+import { getLeadActivity, type LeadActivityLogItem } from "@/features/campaigns/infrastructure/campaignApi"
+import type { ProspectStatus } from "@/features/campaigns/domain/campaign"
 import {
   Sheet,
   SheetContent,
@@ -31,8 +50,33 @@ export function LeadBriefDrawer({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { campaignId } = useParams()
+  const { me } = useAuth()
+  const organizationId = me?.organization?.id ?? ""
+  const updateMutation = useUpdateLead(organizationId, campaignId ?? "")
+
   const [copiedEmail, setCopiedEmail] = useState(false)
   const [copiedScript, setCopiedScript] = useState(false)
+  const [notesText, setNotesText] = useState("")
+  const [notesSaved, setNotesSaved] = useState(false)
+  const [activities, setActivities] = useState<LeadActivityLogItem[]>([])
+  const [loadingActivity, setLoadingActivity] = useState(false)
+
+  useEffect(() => {
+    if (lead) {
+      setNotesText(lead.notes ?? "")
+      setNotesSaved(false)
+    }
+  }, [lead?.id, lead?.notes])
+
+  useEffect(() => {
+    if (!open || !lead || !organizationId || !campaignId) return
+    setLoadingActivity(true)
+    getLeadActivity(organizationId, campaignId, lead.id)
+      .then(setActivities)
+      .catch(() => setActivities([]))
+      .finally(() => setLoadingActivity(false))
+  }, [open, lead?.id, organizationId, campaignId])
 
   const score = lead ? (lead.opportunityScore ?? heuristicScore(lead)) : null
   const perfAudit = lead?.audits?.find((a) => a.module === "PERFORMANCE")
@@ -90,20 +134,74 @@ export function LeadBriefDrawer({
                   <ToneBadge tone={scoreTone(score)}>
                     {score == null ? "—" : `${score} / 100`}
                   </ToneBadge>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    {lead.opportunityScore != null ? "commercial opportunity" : "opportunity (heuristic)"}
+                  <p className="mt-1 text-[11px] text-muted-foreground font-medium">
+                    {lead.scoreBreakdown?.priorityRank != null ? "Priority Rank" : "Estimated Rank"}
                   </p>
                 </div>
               </div>
             </SheetHeader>
 
+            {/* Decomposed Lead Score (3D) & Disclaimer */}
+            {lead.scoreBreakdown && (
+              <div className="mt-4 rounded-lg border bg-muted/30 p-3 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Decomposed Lead Score
+                  </span>
+                  {lead.scoreBreakdown.evidenceFreshness && (
+                    <Badge
+                      variant={lead.scoreBreakdown.evidenceFreshness === "FRESH" ? "outline" : "secondary"}
+                      className="text-[10px] uppercase font-mono px-1.5 py-0"
+                    >
+                      {lead.scoreBreakdown.evidenceFreshness}
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="rounded border bg-background/80 p-2">
+                    <span className="text-[10px] text-muted-foreground uppercase font-medium block">Gap Index</span>
+                    <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
+                      {lead.scoreBreakdown.gapIndex != null ? `${lead.scoreBreakdown.gapIndex}/100` : "—"}
+                    </span>
+                  </div>
+                  <div className="rounded border bg-background/80 p-2">
+                    <span className="text-[10px] text-muted-foreground uppercase font-medium block">Agency Fit</span>
+                    <span className="text-sm font-bold text-sky-600 dark:text-sky-400">
+                      {lead.scoreBreakdown.agencyFitScore != null ? `${lead.scoreBreakdown.agencyFitScore}/100` : "—"}
+                    </span>
+                  </div>
+                  <div className="rounded border bg-background/80 p-2">
+                    <span className="text-[10px] text-muted-foreground uppercase font-medium block">Viability</span>
+                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                      {lead.scoreBreakdown.commercialViability != null ? `${lead.scoreBreakdown.commercialViability}/100` : "—"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-1.5 pt-0.5 text-[11px] text-muted-foreground/80 leading-normal">
+                  <Info className="size-3.5 shrink-0 mt-0.5 text-muted-foreground" />
+                  <span>
+                    {lead.scoreBreakdown.disclaimer ||
+                      "Gap Index reflects technical deficiencies and potential service need. It is NOT a predictive probability of purchase."}
+                  </span>
+                </div>
+              </div>
+            )}
+
             <Tabs defaultValue="brief" className="mt-6 w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="brief" className="gap-1.5">
-                  <Sparkles className="size-3.5" /> Opportunity Brief
+                  <Sparkles className="size-3.5" /> Brief
                 </TabsTrigger>
                 <TabsTrigger value="findings" className="gap-1.5">
-                  <Gauge className="size-3.5" /> Audit Findings
+                  <Gauge className="size-3.5" /> Findings
+                </TabsTrigger>
+                <TabsTrigger value="notes" className="gap-1.5">
+                  <FileText className="size-3.5" /> Notes
+                </TabsTrigger>
+                <TabsTrigger value="activity" className="gap-1.5">
+                  <History className="size-3.5" /> Activity
                 </TabsTrigger>
               </TabsList>
 
@@ -417,6 +515,139 @@ export function LeadBriefDrawer({
                         <span className="font-medium text-muted-foreground">None</span>
                       )}
                     </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* ─── TAB 3: NOTES & CONTEXT ───────────────────────────── */}
+              <TabsContent value="notes" className="mt-4 space-y-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base font-semibold">Sales Notes &amp; Internal Context</CardTitle>
+                    <CardDescription>
+                      Record outreach outcomes, client objections, or specific discovery insights.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <textarea
+                      value={notesText}
+                      onChange={(e) => {
+                        setNotesText(e.target.value)
+                        setNotesSaved(false)
+                      }}
+                      placeholder="Add personal sales notes, callback times, decision-maker names..."
+                      rows={5}
+                      className="w-full rounded-md border border-input bg-background p-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                    />
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">Prospect Status:</span>
+                        <select
+                          value={lead.prospectStatus ?? "NEW"}
+                          onChange={(e) => {
+                            updateMutation.mutate({
+                              leadId: lead.id,
+                              payload: { prospectStatus: e.target.value as ProspectStatus },
+                            })
+                          }}
+                          className="h-8 rounded-md border border-input bg-background px-2 text-xs font-medium"
+                        >
+                          <option value="NEW">New</option>
+                          <option value="RESEARCHED">Researched</option>
+                          <option value="QUALIFIED">Qualified</option>
+                          <option value="CONTACTED">Contacted</option>
+                          <option value="DISMISSED">Dismissed</option>
+                        </select>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        disabled={updateMutation.isPending}
+                        onClick={() => {
+                          updateMutation.mutate(
+                            {
+                              leadId: lead.id,
+                              payload: { notes: notesText },
+                            },
+                            {
+                              onSuccess: () => {
+                                setNotesSaved(true)
+                                setTimeout(() => setNotesSaved(false), 2500)
+                              },
+                            }
+                          )
+                        }}
+                        className="gap-1.5"
+                      >
+                        {notesSaved ? <Check className="size-3.5 text-emerald-400" /> : <Save className="size-3.5" />}
+                        {notesSaved ? "Saved" : updateMutation.isPending ? "Saving..." : "Save Notes"}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Tags Management */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-1.5">
+                      <TagIcon className="size-3.5 text-muted-foreground" />
+                      Assigned Tags
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {(lead.tags ?? []).length === 0 ? (
+                        <p className="text-xs text-muted-foreground">No tags assigned yet.</p>
+                      ) : (
+                        (lead.tags ?? []).map((t) => (
+                          <Badge key={t.id} variant="secondary" className="gap-1">
+                            {t.name}
+                          </Badge>
+                        ))
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* ─── TAB 4: ACTIVITY HISTORY ──────────────────────────── */}
+              <TabsContent value="activity" className="mt-4 space-y-3">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-1.5">
+                      <History className="size-3.5 text-muted-foreground" />
+                      Prospect Activity Trail
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Immutable audit history of status updates, notes, and tags
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {loadingActivity ? (
+                      <p className="text-xs text-muted-foreground py-4 text-center">Loading activity trail...</p>
+                    ) : activities.length === 0 ? (
+                      <p className="text-xs text-muted-foreground py-4 text-center">No recorded activity yet.</p>
+                    ) : (
+                      <div className="relative pl-4 space-y-3 before:absolute before:left-1 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
+                        {activities.map((act) => (
+                          <div key={act.id} className="relative text-xs">
+                            <div className="absolute -left-4 top-1 size-2 rounded-full bg-primary" />
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-semibold text-foreground">
+                                {act.action.replace(/_/g, " ")}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground font-mono">
+                                {new Date(act.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+                            <p className="text-muted-foreground text-[11px] mt-0.5">
+                              {act.userName ? `by ${act.userName}` : "by system"}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>

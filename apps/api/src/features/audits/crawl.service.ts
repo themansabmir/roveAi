@@ -1,24 +1,21 @@
 import { createHash } from "node:crypto";
-import { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { FetchError, PageFetcher } from "@plugins/fetch/fetch.types";
 import { robotsAllows } from "@plugins/fetch/robots";
 import { parseHttpUrl } from "@plugins/fetch/ssrf";
 import { IObjectStorage } from "@plugins/storage/storage.types";
 import { AuditJobPayload } from "@plugins/queue/queue.types";
 import { logger } from "@core/logger";
-import { claimJob, releaseJob } from "@features/jobs/job-lock";
-import { isUniqueViolation } from "@features/campaigns/campaign.repository";
-import { publishIfReady } from "./audit-join";
-import { JobPublisher } from "./audit-scheduler";
+import { AuditWrite, JobPublisher } from "./audit-scheduler";
 import { analyzePages, FindingDraft, inspectPage, PageInspect, scoreFromFindings, selectCrawlUrls } from "./analyzers";
-import { finishJob, replaceAudit } from "./audit-write";
+import { CrawlRepository } from "./crawl.repository";
 import { contentHash } from "./url";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export class CrawlService {
   constructor(
-    private readonly prisma: PrismaClient,
+    private readonly repository: CrawlRepository,
     private readonly fetcher: PageFetcher,
     private readonly storage: IObjectStorage,
     private readonly queue: JobPublisher,
@@ -27,11 +24,11 @@ export class CrawlService {
 
   async run(payload: AuditJobPayload, meta: { retrycount: number; retrylimit: number }): Promise<void> {
     console.log(`[CrawlService.run] 🕷️ Crawl job started for lead: ${payload.leadId} (${payload.url})`);
-    const claim = await claimJob(this.prisma, payload.jobId, this.limits.jobTimeoutMs);
+    const claim = await this.repository.claimJob(payload.jobId, this.limits.jobTimeoutMs);
     console.log(`[CrawlService.run] 🔒 Job claim result: "${claim}" for jobId: ${payload.jobId}`);
     if (claim === "done") {
       console.log(`[CrawlService.run] ⏩ Job already done, calling publishIfReady()`);
-      await publishIfReady(this.prisma, this.queue, payload);
+      await this.repository.publishIfReady(this.queue, payload);
       return;
     }
     if (claim !== "ready") return;
@@ -42,26 +39,23 @@ export class CrawlService {
       if (meta.retrycount >= meta.retrylimit) {
         console.error(`[CrawlService.run] ❌ Crawl terminal failure:`, err);
         await this.failModules(payload, "FAILED", errorMessage(err));
-        await publishIfReady(this.prisma, this.queue, payload);
-        await finishJob(this.prisma, payload.jobId, "FAILED", errorMessage(err));
+        await this.repository.publishIfReady(this.queue, payload);
+        await this.repository.finishJob(payload.jobId, "FAILED", errorMessage(err));
         return;
       }
-      await releaseJob(this.prisma, payload.jobId);
+      await this.repository.releaseJob(payload.jobId);
       throw err;
     }
     console.log(`[CrawlService.run] ✅ Crawl completed for lead: ${payload.leadId}. Triggering publishIfReady()`);
-    await publishIfReady(this.prisma, this.queue, payload);
-    await finishJob(this.prisma, payload.jobId, "COMPLETED");
+    await this.repository.publishIfReady(this.queue, payload);
+    await this.repository.finishJob(payload.jobId, "COMPLETED");
   }
 
   private async execute(payload: AuditJobPayload): Promise<void> {
-    const lead = await this.prisma.campaignLead.findUnique({
-      where: { id: payload.leadId },
-      include: { campaign: true, business: true },
-    });
+    const lead = await this.repository.findLeadForCrawl(payload.leadId);
     if (!lead || lead.campaign.status === "CANCELLED") {
       console.log(`[CrawlService.execute] 🛑 Campaign lead missing or cancelled`);
-      await finishJob(this.prisma, payload.jobId, "CANCELLED");
+      await this.repository.finishJob(payload.jobId, "CANCELLED");
       return;
     }
 
@@ -154,14 +148,7 @@ export class CrawlService {
     const snapshotId = await this.storeSnapshot(payload, homepage.finalUrl, homepage.httpStatus, hash, robotsBody ? "checked" : "unavailable", pages, documents);
     console.log(`[CrawlService.execute] 💾 Stored WebsiteSnapshot ID: ${snapshotId}`);
     await this.writeCompleted(payload, snapshotId, pages);
-    await this.prisma.usageEvent.create({
-      data: {
-        organizationId: payload.organizationId,
-        campaignId: payload.campaignId,
-        kind: "WEBSITE_PAGE",
-        quantity: documents.length,
-      },
-    });
+    await this.repository.recordPageUsage(payload.organizationId, payload.campaignId, documents.length);
     console.log(`[CrawlService.execute] 📊 Recorded WEBSITE_PAGE usage (+${documents.length})`);
   }
 
@@ -171,8 +158,8 @@ export class CrawlService {
     const seoScore = scoreFromFindings(seo);
     const expScore = scoreFromFindings(experience);
     console.log(`[CrawlService.writeCompleted] ✍️ Writing audits -> TECHNICAL_SEO score: ${seoScore} (${seo.length} findings), WEBSITE_EXPERIENCE score: ${expScore} (${experience.length} findings)`);
-    await replaceAudit(this.prisma, payload.jobId, moduleWrite(payload, snapshotId, "TECHNICAL_SEO", seo, home, pages.length));
-    await replaceAudit(this.prisma, payload.jobId, moduleWrite(payload, snapshotId, "WEBSITE_EXPERIENCE", experience, home, pages.length));
+    await this.repository.replaceAudit(payload.jobId, moduleWrite(payload, snapshotId, "TECHNICAL_SEO", seo, home, pages.length));
+    await this.repository.replaceAudit(payload.jobId, moduleWrite(payload, snapshotId, "WEBSITE_EXPERIENCE", experience, home, pages.length));
   }
 
   private async failModules(
@@ -181,7 +168,7 @@ export class CrawlService {
     reason: string
   ): Promise<void> {
     for (const module of ["TECHNICAL_SEO", "WEBSITE_EXPERIENCE"] as const) {
-      await replaceAudit(this.prisma, payload.jobId, {
+      await this.repository.replaceAudit(payload.jobId, {
         organizationId: payload.organizationId,
         leadId: payload.leadId,
         snapshotId: null,
@@ -200,15 +187,11 @@ export class CrawlService {
   }
 
   private async reuseRecent(payload: AuditJobPayload): Promise<{ snapshotId: string; pages: PageInspect[] } | null> {
-    const snapshot = await this.prisma.websiteSnapshot.findFirst({
-      where: {
-        organizationId: payload.organizationId,
-        businessId: payload.businessId,
-        createdAt: { gte: new Date(Date.now() - DAY_MS) },
-      },
-      orderBy: { createdAt: "desc" },
-      include: { pages: { include: { htmlFile: true } } },
-    });
+    const snapshot = await this.repository.findRecentSnapshot(
+      payload.organizationId,
+      payload.businessId,
+      new Date(Date.now() - DAY_MS)
+    );
     if (!snapshot || snapshot.pages.length === 0) return null;
     const pages: PageInspect[] = [];
     for (const page of snapshot.pages) {
@@ -230,78 +213,52 @@ export class CrawlService {
     documents: Array<{ finalUrl: string; httpStatus: number; body: Buffer; contentType: string }>
   ): Promise<string> {
     const home = pages.find((page) => page.role === "home") ?? pages[0];
-    const existing = await this.prisma.websiteSnapshot.findUnique({
-      where: {
-        organizationId_businessId_contentHash: {
-          organizationId: payload.organizationId,
-          businessId: payload.businessId,
-          contentHash: hash,
-        },
-      },
-    });
+    const existing = await this.repository.findSnapshotByHash(
+      payload.organizationId,
+      payload.businessId,
+      hash
+    );
     if (existing) return existing.id;
 
-    try {
-      const snapshot = await this.prisma.websiteSnapshot.create({
-        data: {
-          organizationId: payload.organizationId,
-          businessId: payload.businessId,
-          fetchedUrl: payload.url,
-          finalUrl,
-          httpStatus,
-          contentHash: hash,
-          pageCount: pages.length,
-          robotsOutcome,
-          title: home?.title?.slice(0, 500) ?? null,
-          headings: { h1: home?.h1 ?? [], h2: home?.h2 ?? [] },
-          techStack: home?.techStack ?? [],
-          rawTextSize: home?.textSize ?? 0,
-        },
+    const snapshot = await this.repository.createSnapshot({
+      organizationId: payload.organizationId,
+      businessId: payload.businessId,
+      fetchedUrl: payload.url,
+      finalUrl,
+      httpStatus,
+      contentHash: hash,
+      pageCount: pages.length,
+      robotsOutcome,
+      title: home?.title?.slice(0, 500) ?? null,
+      headings: { h1: home?.h1 ?? [], h2: home?.h2 ?? [] },
+      techStack: home?.techStack ?? [],
+      rawTextSize: home?.textSize ?? 0,
+    });
+    if (!snapshot.created) return snapshot.id;
+
+    for (const document of documents) {
+      const inspected = pages.find((page) => page.url === document.finalUrl);
+      const objectKey = `org/${payload.organizationId}/snapshots/${snapshot.id}/${createHash("sha256").update(document.finalUrl).digest("hex").slice(0, 16)}.html`;
+      const stored = await this.storage.put({
+        objectKey,
+        body: document.body,
+        contentType: "text/html; charset=utf-8",
       });
-      for (const document of documents) {
-        const inspected = pages.find((page) => page.url === document.finalUrl);
-        const objectKey = `org/${payload.organizationId}/snapshots/${snapshot.id}/${createHash("sha256").update(document.finalUrl).digest("hex").slice(0, 16)}.html`;
-        const stored = await this.storage.put({
-          objectKey,
-          body: document.body,
-          contentType: "text/html; charset=utf-8",
-        });
-        const file = await this.prisma.storedFile.create({
-          data: {
-            organizationId: payload.organizationId,
-            kind: "HTML",
-            bucket: stored.bucket,
-            objectKey: stored.objectKey,
-            contentType: "text/html; charset=utf-8",
-            sizeBytes: stored.sizeBytes,
-            checksum: stored.checksum,
-          },
-        });
-        await this.prisma.snapshotPage.create({
-          data: {
-            snapshotId: snapshot.id,
-            url: document.finalUrl.slice(0, 1000),
-            httpStatus: document.httpStatus,
-            role: inspected?.role ?? "page",
-            htmlFileId: file.id,
-            extracted: extractedJson(inspected),
-          },
-        });
-      }
-      return snapshot.id;
-    } catch (err) {
-      if (!isUniqueViolation(err)) throw err;
-      const raced = await this.prisma.websiteSnapshot.findUniqueOrThrow({
-        where: {
-          organizationId_businessId_contentHash: {
-            organizationId: payload.organizationId,
-            businessId: payload.businessId,
-            contentHash: hash,
-          },
-        },
+      await this.repository.createSnapshotPageFile({
+        organizationId: payload.organizationId,
+        snapshotId: snapshot.id,
+        url: document.finalUrl.slice(0, 1000),
+        httpStatus: document.httpStatus,
+        role: inspected?.role ?? "page",
+        bucket: stored.bucket,
+        objectKey: stored.objectKey,
+        contentType: "text/html; charset=utf-8",
+        sizeBytes: stored.sizeBytes,
+        checksum: stored.checksum,
+        extracted: extractedJson(inspected),
       });
-      return raced.id;
     }
+    return snapshot.id;
   }
 
   private async readText(url: string): Promise<{ outcome: "ok"; text: string } | { outcome: "missing" } | { outcome: "blocked" }> {
@@ -323,7 +280,7 @@ function moduleWrite(
   findings: FindingDraft[],
   home: PageInspect | undefined,
   pageCount: number
-): Parameters<typeof replaceAudit>[2] {
+): AuditWrite {
   return {
     organizationId: payload.organizationId,
     leadId: payload.leadId,

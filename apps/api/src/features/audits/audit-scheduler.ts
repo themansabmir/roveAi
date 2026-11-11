@@ -41,6 +41,7 @@ export class AuditScheduler {
         business: { websiteClass: "OWNED_SITE" },
       },
       include: { business: true },
+      orderBy: { id: "asc" },
     });
 
     console.log(`[AuditScheduler.schedule] 🎯 Found ${leads.length} qualified leads with OWNED_SITE in PENDING status`);

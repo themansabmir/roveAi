@@ -64,12 +64,46 @@ export interface BriefView {
   modelName?: string | null
 }
 
+export type ProspectStatus =
+  | "NEW"
+  | "RESEARCHED"
+  | "QUALIFIED"
+  | "CONTACTED"
+  | "DISMISSED"
+
+export interface TagItem {
+  id: string
+  name: string
+}
+
+export interface NextActionItem {
+  label: string
+  tone: "primary" | "warning" | "neutral" | "success" | "danger"
+}
+
+export interface ScoreBreakdownView {
+  gapIndex: number | null
+  agencyFitScore: number | null
+  commercialViability: number | null
+  priorityRank: number | null
+  evalState?: "COMPLETE" | "PARTIAL" | "UNAVAILABLE"
+  evidenceFreshness?: "FRESH" | "STALE" | "DEGRADED" | "UNAUDITED"
+  disclaimer?: string
+}
+
 export interface CampaignLead {
   id: string
   qualificationStatus: string
   auditStatus: string
   aiStatus?: string
+  prospectStatus?: ProspectStatus
   opportunityScore?: number | null
+  scoreBreakdown?: ScoreBreakdownView | null
+  notes?: string | null
+  savedAt?: string | null
+  archivedAt?: string | null
+  tags?: TagItem[]
+  nextAction?: NextActionItem
   business: {
     id: string
     name: string
@@ -163,6 +197,92 @@ export function auditStatusLabel(status: string): string {
       return "Not an owned site"
     default:
       return status.replace(/_/g, " ").toLowerCase()
+  }
+}
+
+export function prospectStatusLabel(status?: string | null): string {
+  switch (status) {
+    case "NEW":
+      return "New"
+    case "RESEARCHED":
+      return "Researched"
+    case "QUALIFIED":
+      return "Qualified"
+    case "CONTACTED":
+      return "Contacted"
+    case "DISMISSED":
+      return "Dismissed"
+    default:
+      return status ? status.replace(/_/g, " ").toLowerCase() : "New"
+  }
+}
+
+export function prospectStatusTone(status?: string | null): LeadTone {
+  switch (status) {
+    case "QUALIFIED":
+      return "success"
+    case "RESEARCHED":
+      return "info"
+    case "CONTACTED":
+      return "warning"
+    case "DISMISSED":
+      return "neutral"
+    case "NEW":
+    default:
+      return "neutral"
+  }
+}
+
+export function computeNextAction(lead: {
+  archivedAt?: string | null
+  prospectStatus?: ProspectStatus | string | null
+  opportunityScore?: number | null
+  auditStatus?: string
+  aiStatus?: string
+  brief?: { id?: string; aiStatus?: string } | null
+}): NextActionItem {
+  if (lead.archivedAt != null) {
+    return { label: "Archived", tone: "neutral" }
+  }
+
+  const status = lead.prospectStatus ?? "NEW"
+  switch (status) {
+    case "DISMISSED":
+      return { label: "Dismissed", tone: "neutral" }
+    case "CONTACTED":
+      return { label: "Follow up", tone: "primary" }
+    case "QUALIFIED": {
+      const briefAiStatus = lead.brief?.aiStatus ?? lead.aiStatus
+      if (briefAiStatus === "COMPLETED") return { label: "Review evidence", tone: "success" }
+      if (briefAiStatus === "PENDING") return { label: "Brief generating", tone: "neutral" }
+      return { label: "Generate brief", tone: "warning" }
+    }
+    case "RESEARCHED":
+      if ((lead.opportunityScore ?? 0) >= 75) {
+        return { label: "Qualify prospect", tone: "success" }
+      }
+      return { label: "Check service fit", tone: "warning" }
+    case "NEW":
+    default: {
+      switch (lead.auditStatus) {
+        case "SKIPPED_NO_WEBSITE":
+          return { label: "Pitch web design", tone: "primary" }
+        case "UNREACHABLE":
+        case "BLOCKED":
+        case "LOW_TEXT":
+        case "SKIPPED_BY_ROBOTS":
+          return { label: "Manual review", tone: "warning" }
+        case "FAILED":
+          return { label: "Retry audit", tone: "danger" }
+        case "COMPLETED":
+          return { label: "Review findings", tone: "primary" }
+        case "PENDING":
+        case "SKIPPED_BUDGET":
+        case "SKIPPED_NOT_OWNED_SITE":
+        default:
+          return { label: "Run research", tone: "neutral" }
+      }
+    }
   }
 }
 
