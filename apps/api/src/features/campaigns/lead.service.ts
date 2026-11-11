@@ -12,6 +12,22 @@ function csvSafe(value: string | null | undefined): string {
 }
 
 // ---------------------------------------------------------------------------
+// ProspectStatus Lifecycle & Transition Validation
+// ---------------------------------------------------------------------------
+export const ALLOWED_PROSPECT_TRANSITIONS: Record<ProspectStatus, ProspectStatus[]> = {
+  NEW: ["RESEARCHED", "QUALIFIED", "DISMISSED"],
+  RESEARCHED: ["QUALIFIED", "CONTACTED", "DISMISSED", "NEW"],
+  QUALIFIED: ["CONTACTED", "RESEARCHED", "DISMISSED", "NEW"],
+  CONTACTED: ["QUALIFIED", "DISMISSED", "RESEARCHED"],
+  DISMISSED: ["NEW", "RESEARCHED", "QUALIFIED"],
+};
+
+export function isValidStatusTransition(from: ProspectStatus, to: ProspectStatus): boolean {
+  if (from === to) return true;
+  return ALLOWED_PROSPECT_TRANSITIONS[from]?.includes(to) ?? false;
+}
+
+// ---------------------------------------------------------------------------
 // computeNextAction — deterministic, no LLM calls
 // AuditStatus values: PENDING | SKIPPED_NO_WEBSITE | SKIPPED_NOT_OWNED_SITE |
 //                     SKIPPED_BY_ROBOTS | SKIPPED_BUDGET | UNREACHABLE | BLOCKED |
@@ -140,17 +156,51 @@ export class LeadService {
       }
     }
 
-    const lead = await this.repository.updateLead(organizationId, campaignId, leadId, {
-      prospectStatus: input.prospectStatus,
-      notes: input.notes,
-      savedAt: input.saved === true ? new Date() : input.saved === false ? null : undefined,
-      savedByUserId: input.saved === true ? userId : input.saved === false ? null : undefined,
-      archivedAt: input.archived === true ? new Date() : input.archived === false ? null : undefined,
-      tagIds: input.tagIds,
-    });
+    // Validate status transition
+    if (input.prospectStatus) {
+      const current = await this.repository.prisma.campaignLead.findFirst({
+        where: { id: leadId, campaignId, campaign: { organizationId } },
+        select: { prospectStatus: true },
+      });
+      if (current && !isValidStatusTransition(current.prospectStatus, input.prospectStatus)) {
+        throw new ConflictError(
+          `Cannot transition prospect status from ${current.prospectStatus} to ${input.prospectStatus}`
+        );
+      }
+    }
+
+    const lead = await this.repository.updateLead(
+      organizationId,
+      campaignId,
+      leadId,
+      {
+        prospectStatus: input.prospectStatus,
+        notes: input.notes,
+        savedAt: input.saved === true ? new Date() : input.saved === false ? null : undefined,
+        savedByUserId: input.saved === true ? userId : input.saved === false ? null : undefined,
+        archivedAt: input.archived === true ? new Date() : input.archived === false ? null : undefined,
+        tagIds: input.tagIds,
+      },
+      userId
+    );
 
     if (!lead) throw new NotFoundError("Lead not found");
     return lead;
+  }
+
+  async getActivity(
+    organizationId: string,
+    campaignId: string,
+    leadId: string,
+  ): Promise<Array<{
+    id: string;
+    action: string;
+    previousState: unknown;
+    newState: unknown;
+    createdAt: string;
+    userName: string | null;
+  }>> {
+    return this.repository.getActivityLogs(organizationId, campaignId, leadId);
   }
 
   async bulk(

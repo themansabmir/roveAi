@@ -31,6 +31,7 @@ export function campaignsRouter(deps: { prisma: PrismaClient; queue: IQueueServi
   // Prospect workspace: Leads endpoints
   router.get("/:campaignId/leads", leadController.listLeads);
   router.get("/:campaignId/leads/:leadId", leadController.getLead);
+  router.get("/:campaignId/leads/:leadId/activity", leadController.getLeadActivity);
   router.patch("/:campaignId/leads/:leadId", leadController.updateLead);
   router.post("/:campaignId/leads/bulk", leadController.bulkLeads);
   router.get("/:campaignId/export", leadController.exportCsv);

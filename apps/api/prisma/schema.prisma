@@ -352,6 +352,7 @@ model User {
   invitationsAccepted Invitation[]     @relation("InvitationAcceptedBy")
   instructions        Instruction[]
   savedLeads          CampaignLead[]   @relation("LeadSavedBy")
+  leadActivityLogs    LeadActivityLog[] @relation("ActivityLogUser")
   notifications       Notification[]
   reviewItemsResolved ReviewItem[]     @relation("ReviewItemResolvedBy")
 
@@ -750,6 +751,7 @@ model CampaignLead {
   matches       LeadMatch[]
   score         LeadScore?
   reviewItems   ReviewItem[]
+  activityLogs  LeadActivityLog[]
 
   @@unique([campaignId, businessId])
   @@index([campaignId])
@@ -885,6 +887,28 @@ model AuditAttempt {
   @@index([leadId, module, createdAt])
   @@index([jobId])
   @@map("audit_attempt")
+}
+
+// ---------------------------------------------------------------------------
+// Prospect Activity Audit History Trail
+// ---------------------------------------------------------------------------
+
+model LeadActivityLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  leadId         String
+  userId         String?
+  action         String   @db.VarChar(60)
+  previousState  Json?
+  newState       Json?
+  createdAt      DateTime @default(now()) @db.Timestamptz
+
+  lead CampaignLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user User?        @relation("ActivityLogUser", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([leadId, createdAt])
+  @@index([organizationId, createdAt])
+  @@map("lead_activity_log")
 }
 
 // ---------------------------------------------------------------------------

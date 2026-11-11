@@ -99,6 +99,26 @@ export async function deleteTag(organizationId: string, tagId: string): Promise<
   await axiosInstance.delete(`${tagsPath(organizationId)}/${tagId}`)
 }
 
+export interface LeadActivityLogItem {
+  id: string
+  action: string
+  previousState: Record<string, unknown> | null
+  newState: Record<string, unknown> | null
+  createdAt: string
+  userName: string | null
+}
+
+export async function getLeadActivity(
+  organizationId: string,
+  campaignId: string,
+  leadId: string,
+): Promise<LeadActivityLogItem[]> {
+  const response = await axiosInstance.get<LeadActivityLogItem[]>(
+    `${campaignsPath(organizationId)}/${campaignId}/leads/${leadId}/activity`
+  )
+  return response.data
+}
+
 export async function downloadCampaignCsv(organizationId: string, campaignId: string, leadIds?: string[]): Promise<void> {
   const query = leadIds?.length ? `?leadIds=${encodeURIComponent(leadIds.join(","))}` : ""
   const response = await axiosInstance.get(`${campaignsPath(organizationId)}/${campaignId}/export${query}`, {

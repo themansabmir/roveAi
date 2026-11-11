@@ -1,4 +1,4 @@
-import { OpportunityConfidence, PrismaClient } from "@prisma/client";
+import { OpportunityConfidence, Prisma, PrismaClient } from "@prisma/client";
 import { AiBriefResult, BriefData } from "@plugins/ai/ai.types";
 import { claimJob, JobClaim, releaseJob } from "@features/jobs/job-lock";
 import { finishJob } from "./audit-write";
@@ -78,6 +78,12 @@ export class InterpretRepository {
     techStack: string[];
   }): Promise<void> {
     await this.prisma.$transaction(async (tx) => {
+      // Deterministic row lock on CampaignLead to strictly follow the ORDER BY id ASC protocol
+      // and prevent deadlocks with concurrent bulk user edits
+      await tx.$queryRaw(
+        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id = ${input.leadId} FOR UPDATE`
+      );
+
       await persistLeadScore(tx, input.leadId, input.scoreBreakdown);
 
       const briefFields = {

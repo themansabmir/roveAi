@@ -1,6 +1,7 @@
 import {
   AiStatus,
   AuditStatus,
+  Business,
   CampaignStatus,
   Prisma,
   PrismaClient,
@@ -13,6 +14,7 @@ import { claimJob, JobClaim, releaseJob as releaseJobLock } from "@features/jobs
 import { DISCOVER_QUEUE } from "@plugins/queue/queue.types";
 import { loadConfig } from "@core/config";
 import { hostOf } from "./normalize";
+import { buildInitialEnrichmentState } from "@features/audits/evidence-state";
 
 // export const MAPS_PROVIDER = "outscraper";
 export const MAPS_PROVIDER = "apify";
@@ -190,6 +192,27 @@ const detailInclude = {
 } satisfies Prisma.CampaignInclude;
 
 type DetailRow = Prisma.CampaignGetPayload<{ include: typeof detailInclude }>;
+
+export interface SaveLeadInput {
+  organizationId: string;
+  campaignId: string;
+  providerId: string;
+  name: string;
+  normalizedName: string;
+  phone: string | null;
+  normalizedPhone: string | null;
+  address: string | null;
+  city: string | null;
+  identityCity: string | null;
+  region: string | null;
+  country: string | null;
+  rating: number | null;
+  reviewCount: number | null;
+  websiteUrl: string | null;
+  websiteClass: WebsiteClass;
+  qualificationStatus: QualificationStatus;
+  auditStatus: AuditStatus;
+}
 
 export class CampaignRepository {
   constructor(public readonly prisma: PrismaClient) { }
@@ -395,112 +418,259 @@ export class CampaignRepository {
     });
   }
 
-  async saveLead(input: {
-    organizationId: string;
-    campaignId: string;
-    providerId: string;
-    name: string;
-    normalizedName: string;
-    phone: string | null;
-    normalizedPhone: string | null;
-    address: string | null;
-    city: string | null;
-    identityCity: string | null;
-    region: string | null;
-    country: string | null;
-    rating: number | null;
-    reviewCount: number | null;
-    websiteUrl: string | null;
-    websiteClass: WebsiteClass;
-    qualificationStatus: QualificationStatus;
-    auditStatus: AuditStatus;
-  }): Promise<boolean> {
-    const domain = hostOf(input.websiteUrl);
-    const existingByProvider = await this.prisma.business.findUnique({
-      where: {
-        organizationId_provider_providerId: {
-          organizationId: input.organizationId,
-          provider: MAPS_PROVIDER,
-          providerId: input.providerId,
-        },
-      },
-    });
+  async saveLead(input: SaveLeadInput): Promise<boolean> {
+    const saved = await this.saveLeadsBatch([input]);
+    return saved > 0;
+  }
 
-    const existingByIdentity = existingByProvider
-      ? existingByProvider
-      : await this.prisma.business.findFirst({
-        where: {
-          organizationId: input.organizationId,
-          normalizedName: input.normalizedName,
-          normalizedPhone: input.normalizedPhone,
-          ...(input.identityCity
-            ? { city: { equals: input.identityCity, mode: "insensitive" } }
-            : { city: null }),
-        },
-      });
+  async saveLeadsBatch(inputs: SaveLeadInput[]): Promise<number> {
+    const first = inputs[0];
+    if (!first) return 0;
 
-    let business = existingByIdentity;
-    if (!business) {
-      try {
-        business = await this.prisma.business.create({
-          data: {
-            organizationId: input.organizationId,
-            provider: MAPS_PROVIDER,
-            providerId: input.providerId,
-            name: input.name.slice(0, 255),
-            normalizedName: input.normalizedName,
-            phone: input.phone,
-            normalizedPhone: input.normalizedPhone,
-            address: input.address,
-            city: input.city,
-            region: input.region,
-            country: input.country,
-            rating: input.rating,
-            reviewCount: input.reviewCount,
-            websiteUrl: input.websiteUrl,
-            normalizedDomain: domain,
-            websiteClass: input.websiteClass,
-          },
-        });
-      } catch (err) {
-        if (!isUniqueViolation(err)) throw err;
-        const raced = await this.prisma.business.findUnique({
-          where: {
-            organizationId_provider_providerId: {
-              organizationId: input.organizationId,
-              provider: MAPS_PROVIDER,
-              providerId: input.providerId,
-            },
-          },
-        });
-        if (!raced) throw err;
-        business = raced;
+    const organizationId = first.organizationId;
+    const campaignId = first.campaignId;
+
+    // Deduplicate inputs in this batch by providerId
+    const uniqueInputs: SaveLeadInput[] = [];
+    const seenProviders = new Set<string>();
+    for (const inp of inputs) {
+      if (!seenProviders.has(inp.providerId)) {
+        seenProviders.add(inp.providerId);
+        uniqueInputs.push(inp);
       }
     }
 
-    try {
-      await this.prisma.campaignLead.create({
-        data: {
-          campaignId: input.campaignId,
-          businessId: business.id,
-          qualificationStatus: input.qualificationStatus,
-          auditStatus: input.auditStatus,
-        },
-      });
-    } catch (err) {
-      if (isUniqueViolation(err)) return false;
-      throw err;
-    }
-
-    await this.prisma.usageEvent.create({
-      data: {
-        organizationId: input.organizationId,
-        campaignId: input.campaignId,
-        kind: "MAPS_RECORD",
-        quantity: 1,
+    // 1. Batch fetch existing businesses by providerId in a single query
+    const providerIds = uniqueInputs.map((i) => i.providerId);
+    const existingByProvider = await this.prisma.business.findMany({
+      where: {
+        organizationId,
+        provider: MAPS_PROVIDER,
+        providerId: { in: providerIds },
       },
     });
-    return true;
+
+    const businessMap = new Map<string, Business>();
+    for (const b of existingByProvider) {
+      businessMap.set(b.providerId, b);
+    }
+
+    // 2. For inputs not matched by providerId, check by verified phone or domain
+    const unmatchedInputs = uniqueInputs.filter((i) => !businessMap.has(i.providerId));
+    if (unmatchedInputs.length > 0) {
+      const identityOrConditions: Prisma.BusinessWhereInput[] = [];
+      for (const input of unmatchedInputs) {
+        const domain = hostOf(input.websiteUrl);
+        if (input.normalizedPhone || domain) {
+          identityOrConditions.push({
+            organizationId,
+            normalizedName: input.normalizedName,
+            ...(input.normalizedPhone
+              ? { normalizedPhone: input.normalizedPhone }
+              : domain
+                ? { normalizedDomain: domain }
+                : {}),
+            ...(input.identityCity
+              ? { city: { equals: input.identityCity, mode: "insensitive" } }
+              : {}),
+          });
+        }
+      }
+
+      if (identityOrConditions.length > 0) {
+        const existingByIdentity = await this.prisma.business.findMany({
+          where: {
+            organizationId,
+            OR: identityOrConditions,
+          },
+        });
+
+        for (const input of unmatchedInputs) {
+          const domain = hostOf(input.websiteUrl);
+          const matched = existingByIdentity.find((b) => {
+            if (b.normalizedName !== input.normalizedName) return false;
+            if (input.normalizedPhone && b.normalizedPhone === input.normalizedPhone) return true;
+            if (domain && b.normalizedDomain === domain) return true;
+            return false;
+          });
+          if (matched) {
+            businessMap.set(input.providerId, matched);
+          }
+        }
+      }
+    }
+
+    // 3. Resolve each business (update existing or create new)
+    const matchesIdentity = (b: Business, input: SaveLeadInput): boolean => {
+      if (b.normalizedName !== input.normalizedName) return false;
+      const domain = hostOf(input.websiteUrl);
+      const phoneOrDomainMatches =
+        (input.normalizedPhone && b.normalizedPhone === input.normalizedPhone) ||
+        (domain && b.normalizedDomain === domain);
+      if (!phoneOrDomainMatches) return false;
+      if (input.identityCity && b.city && b.city.toLowerCase() !== input.identityCity.toLowerCase()) {
+        return false;
+      }
+      return true;
+    };
+
+    const resolvedBusinesses: { businessId: string; input: SaveLeadInput }[] = [];
+
+    for (const input of uniqueInputs) {
+      let business = businessMap.get(input.providerId);
+      if (!business) {
+        // Check if any business already resolved or created in this batch matches identity
+        for (const prev of businessMap.values()) {
+          if (matchesIdentity(prev, input)) {
+            business = prev;
+            businessMap.set(input.providerId, business);
+            break;
+          }
+        }
+      }
+
+      const domain = hostOf(input.websiteUrl);
+
+      if (business) {
+        // Reconcile/update missing or refreshed fields on existing business
+        const needsUpdate =
+          (!business.phone && input.phone) ||
+          (!business.websiteUrl && input.websiteUrl) ||
+          (!business.address && input.address) ||
+          (input.rating != null && business.rating !== input.rating) ||
+          (input.reviewCount != null && business.reviewCount !== input.reviewCount) ||
+          !business.enrichmentState;
+
+        if (needsUpdate) {
+          const enrichmentState = buildInitialEnrichmentState({
+            phone: business.phone ?? input.phone,
+            websiteUrl: business.websiteUrl ?? input.websiteUrl,
+            address: business.address ?? input.address,
+            rating: input.rating ?? business.rating,
+            reviewCount: input.reviewCount ?? business.reviewCount,
+            source: MAPS_PROVIDER,
+          });
+
+          business = await this.prisma.business.update({
+            where: { id: business.id },
+            data: {
+              phone: business.phone ?? input.phone,
+              normalizedPhone: business.normalizedPhone ?? input.normalizedPhone,
+              websiteUrl: business.websiteUrl ?? input.websiteUrl,
+              normalizedDomain: business.normalizedDomain ?? domain,
+              address: business.address ?? input.address,
+              rating: input.rating ?? business.rating,
+              reviewCount: input.reviewCount ?? business.reviewCount,
+              enrichmentState: enrichmentState as unknown as Prisma.InputJsonValue,
+            },
+          });
+          businessMap.set(input.providerId, business);
+        }
+        resolvedBusinesses.push({ businessId: business.id, input });
+      } else {
+        const enrichmentState = buildInitialEnrichmentState({
+          phone: input.phone,
+          websiteUrl: input.websiteUrl,
+          address: input.address,
+          rating: input.rating,
+          reviewCount: input.reviewCount,
+          source: MAPS_PROVIDER,
+        });
+
+        try {
+          const created = await this.prisma.business.create({
+            data: {
+              organizationId,
+              provider: MAPS_PROVIDER,
+              providerId: input.providerId,
+              name: input.name.slice(0, 255),
+              normalizedName: input.normalizedName,
+              phone: input.phone,
+              normalizedPhone: input.normalizedPhone,
+              address: input.address,
+              city: input.city,
+              region: input.region,
+              country: input.country,
+              rating: input.rating,
+              reviewCount: input.reviewCount,
+              websiteUrl: input.websiteUrl,
+              normalizedDomain: domain,
+              websiteClass: input.websiteClass,
+              enrichmentState: enrichmentState as unknown as Prisma.InputJsonValue,
+            },
+          });
+          businessMap.set(input.providerId, created);
+          resolvedBusinesses.push({ businessId: created.id, input });
+        } catch (err) {
+          if (!isUniqueViolation(err)) throw err;
+          const raced = await this.prisma.business.findUnique({
+            where: {
+              organizationId_provider_providerId: {
+                organizationId,
+                provider: MAPS_PROVIDER,
+                providerId: input.providerId,
+              },
+            },
+          });
+          if (!raced) throw err;
+          businessMap.set(input.providerId, raced);
+          resolvedBusinesses.push({ businessId: raced.id, input });
+        }
+      }
+    }
+
+    // 4. Batch query existing CampaignLead rows for this campaign to avoid N+1 and duplicates
+    const allBusinessIds = Array.from(new Set(resolvedBusinesses.map((r) => r.businessId)));
+    const existingCampaignLeads = await this.prisma.campaignLead.findMany({
+      where: {
+        campaignId,
+        businessId: { in: allBusinessIds },
+      },
+      select: { businessId: true },
+    });
+    const existingBusinessIdSet = new Set(existingCampaignLeads.map((cl) => cl.businessId));
+
+    // Filter to only new leads to insert
+    const newLeadsData: Prisma.CampaignLeadCreateManyInput[] = [];
+    const seenLeadBizIds = new Set<string>();
+
+    for (const item of resolvedBusinesses) {
+      if (!existingBusinessIdSet.has(item.businessId) && !seenLeadBizIds.has(item.businessId)) {
+        seenLeadBizIds.add(item.businessId);
+        newLeadsData.push({
+          campaignId,
+          businessId: item.businessId,
+          qualificationStatus: item.input.qualificationStatus,
+          auditStatus: item.input.auditStatus,
+        });
+      }
+    }
+
+    if (newLeadsData.length === 0) {
+      return 0;
+    }
+
+    // Sort deterministically to maintain ordered inserts
+    newLeadsData.sort((a, b) => a.businessId.localeCompare(b.businessId));
+
+    // 5. Batch insert CampaignLead rows and usage event
+    await this.prisma.$transaction(async (tx) => {
+      await tx.campaignLead.createMany({
+        data: newLeadsData,
+        skipDuplicates: true,
+      });
+
+      await tx.usageEvent.create({
+        data: {
+          organizationId,
+          campaignId,
+          kind: "MAPS_RECORD",
+          quantity: newLeadsData.length,
+        },
+      });
+    });
+
+    return newLeadsData.length;
   }
 
   // ---------------------------------------------------------------------------
@@ -705,15 +875,28 @@ export class CampaignRepository {
       archivedAt?: Date | null;
       tagIds?: string[];
     },
+    userId?: string,
   ): Promise<LeadView | null> {
-    // Verify ownership
+    // Verify ownership and load previous state
     const existing = await this.prisma.campaignLead.findFirst({
       where: { id: leadId, campaignId, campaign: { organizationId } },
-      select: { id: true },
+      select: {
+        id: true,
+        prospectStatus: true,
+        notes: true,
+        savedAt: true,
+        archivedAt: true,
+        tags: { select: { tagId: true } },
+      },
     });
     if (!existing) return null;
 
     await this.prisma.$transaction(async (tx) => {
+      // Deterministic row lock to prevent deadlock with concurrent updates
+      await tx.$queryRaw(
+        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id = ${leadId} FOR UPDATE`
+      );
+
       await tx.campaignLead.update({
         where: { id: leadId },
         data: {
@@ -733,6 +916,72 @@ export class CampaignRepository {
           });
         }
       }
+
+      // Record Activity History Trail
+      if (patch.prospectStatus && patch.prospectStatus !== existing.prospectStatus) {
+        await tx.leadActivityLog.create({
+          data: {
+            organizationId,
+            leadId,
+            userId: userId ?? null,
+            action: "STATUS_CHANGE",
+            previousState: { prospectStatus: existing.prospectStatus },
+            newState: { prospectStatus: patch.prospectStatus },
+          },
+        });
+      }
+
+      if (patch.notes !== undefined && patch.notes !== existing.notes) {
+        await tx.leadActivityLog.create({
+          data: {
+            organizationId,
+            leadId,
+            userId: userId ?? null,
+            action: "NOTES_UPDATED",
+            previousState: { notes: existing.notes },
+            newState: { notes: patch.notes },
+          },
+        });
+      }
+
+      if (patch.savedAt !== undefined && (patch.savedAt !== null) !== (existing.savedAt !== null)) {
+        await tx.leadActivityLog.create({
+          data: {
+            organizationId,
+            leadId,
+            userId: userId ?? null,
+            action: patch.savedAt ? "SAVED" : "UNSAVED",
+          },
+        });
+      }
+
+      if (patch.archivedAt !== undefined && (patch.archivedAt !== null) !== (existing.archivedAt !== null)) {
+        await tx.leadActivityLog.create({
+          data: {
+            organizationId,
+            leadId,
+            userId: userId ?? null,
+            action: patch.archivedAt ? "ARCHIVED" : "UNARCHIVED",
+          },
+        });
+      }
+
+      if (patch.tagIds !== undefined) {
+        const prevTags = existing.tags.map((t) => t.tagId).sort();
+        const nextTags = [...patch.tagIds].sort();
+        if (JSON.stringify(prevTags) !== JSON.stringify(nextTags)) {
+          await tx.leadActivityLog.create({
+            data: {
+              organizationId,
+              leadId,
+              userId: userId ?? null,
+              action: "TAGS_UPDATED",
+              previousState: { tagIds: prevTags },
+              newState: { tagIds: nextTags },
+            },
+          });
+        }
+      }
     });
 
     return this.getLeadDetail(organizationId, campaignId, leadId);
@@ -749,7 +998,11 @@ export class CampaignRepository {
     action: string,
     opts: { prospectStatus?: ProspectStatus; tagIds?: string[]; userId?: string },
   ): Promise<{ updatedCount: number }> {
-    const dedupedIds = [...new Set(leadIds)];
+    // 1. Sort deterministically to enforce global lock acquisition order across transactions
+    const dedupedIds = [...new Set(leadIds)].sort();
+    if (dedupedIds.length === 0) {
+      return { updatedCount: 0 };
+    }
 
     // Pre-flight: verify all leadIds belong to this campaign/org
     const owned = await this.prisma.campaignLead.findMany({
@@ -772,6 +1025,11 @@ export class CampaignRepository {
     }
 
     await this.prisma.$transaction(async (tx) => {
+      // Deterministic row locking in strictly ascending ID order to eliminate database deadlocks
+      await tx.$queryRaw(
+        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id IN (${Prisma.join(dedupedIds)}) ORDER BY id ASC FOR UPDATE`
+      );
+
       switch (action) {
         case "UPDATE_STATUS":
           await tx.campaignLead.updateMany({
@@ -779,14 +1037,19 @@ export class CampaignRepository {
             data: { prospectStatus: opts.prospectStatus },
           });
           break;
-        case "ADD_TAGS":
-          for (const leadId of dedupedIds) {
+        case "ADD_TAGS": {
+          const tagIds = [...new Set(opts.tagIds ?? [])].sort();
+          if (tagIds.length > 0) {
+            const tagAssignments = dedupedIds.flatMap((leadId) =>
+              tagIds.map((tagId) => ({ leadId, tagId }))
+            );
             await tx.leadTag.createMany({
-              data: (opts.tagIds ?? []).map((tagId) => ({ leadId, tagId })),
+              data: tagAssignments,
               skipDuplicates: true,
             });
           }
           break;
+        }
         case "REMOVE_TAGS":
           await tx.leadTag.deleteMany({
             where: { leadId: { in: dedupedIds }, tagId: { in: opts.tagIds ?? [] } },
@@ -817,9 +1080,59 @@ export class CampaignRepository {
           });
           break;
       }
+
+      // Record activity logs in a single batch query (eliminates N+1 query bottleneck)
+      await tx.leadActivityLog.createMany({
+        data: dedupedIds.map((leadId) => ({
+          organizationId,
+          leadId,
+          userId: opts.userId ?? null,
+          action: `BULK_${action}`,
+          newState: { action, prospectStatus: opts.prospectStatus, tagIds: opts.tagIds },
+        })),
+      });
     });
 
     return { updatedCount: dedupedIds.length };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Activity Log Trail
+  // ---------------------------------------------------------------------------
+
+  async getActivityLogs(
+    organizationId: string,
+    campaignId: string,
+    leadId: string,
+  ): Promise<Array<{
+    id: string;
+    action: string;
+    previousState: unknown;
+    newState: unknown;
+    createdAt: string;
+    userName: string | null;
+  }>> {
+    const lead = await this.prisma.campaignLead.findFirst({
+      where: { id: leadId, campaignId, campaign: { organizationId } },
+      select: { id: true },
+    });
+    if (!lead) return [];
+
+    const rows = await this.prisma.leadActivityLog.findMany({
+      where: { leadId, organizationId },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      include: { user: { select: { name: true, email: true } } },
+    });
+
+    return rows.map((r) => ({
+      id: r.id,
+      action: r.action,
+      previousState: r.previousState,
+      newState: r.newState,
+      createdAt: r.createdAt.toISOString(),
+      userName: r.user?.name ?? r.user?.email ?? null,
+    }));
   }
 
   // ---------------------------------------------------------------------------

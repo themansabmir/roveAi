@@ -30,6 +30,18 @@ export class LeadController {
     }
   };
 
+  // GET /campaigns/:campaignId/leads/:leadId/activity
+  getLeadActivity = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const organizationId = requiredOrg(req);
+      const campaignId = requiredParam(req, "campaignId");
+      const leadId = requiredParam(req, "leadId");
+      res.json(await this.service.getActivity(organizationId, campaignId, leadId));
+    } catch (err) {
+      next(err);
+    }
+  };
+
   // PATCH /campaigns/:campaignId/leads/:leadId
   updateLead = async (req: Request, res: Response, next: NextFunction) => {
     try {

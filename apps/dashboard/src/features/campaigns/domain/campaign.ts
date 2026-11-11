@@ -81,6 +81,16 @@ export interface NextActionItem {
   tone: "primary" | "warning" | "neutral" | "success" | "danger"
 }
 
+export interface ScoreBreakdownView {
+  gapIndex: number | null
+  agencyFitScore: number | null
+  commercialViability: number | null
+  priorityRank: number | null
+  evalState?: "COMPLETE" | "PARTIAL" | "UNAVAILABLE"
+  evidenceFreshness?: "FRESH" | "STALE" | "DEGRADED" | "UNAUDITED"
+  disclaimer?: string
+}
+
 export interface CampaignLead {
   id: string
   qualificationStatus: string
@@ -88,7 +98,7 @@ export interface CampaignLead {
   aiStatus?: string
   prospectStatus?: ProspectStatus
   opportunityScore?: number | null
-  scoreBreakdown?: unknown
+  scoreBreakdown?: ScoreBreakdownView | null
   notes?: string | null
   savedAt?: string | null
   archivedAt?: string | null

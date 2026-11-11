@@ -342,3 +342,48 @@ export function resolveFreshness(
   // 4. Latest attempt succeeded and is recent
   return "FRESH";
 }
+
+/**
+ * Builds initial typed enrichmentState JSON to be saved on Business creation or update.
+ */
+export function buildInitialEnrichmentState(input: {
+  phone?: string | null;
+  email?: string | null;
+  websiteUrl?: string | null;
+  address?: string | null;
+  category?: string | null;
+  rating?: number | null;
+  reviewCount?: number | null;
+  source?: string;
+  providerRaw?: unknown;
+}): { fields: BusinessEvidenceProfile; updatedAt: string } {
+  const source = input.source ?? "discovery";
+  const now = new Date().toISOString();
+  return {
+    fields: {
+      phone: input.phone
+        ? present(input.phone, source, now)
+        : extractLegacyFieldState<string>(null, "phone", input.providerRaw, source),
+      email: input.email
+        ? present(input.email, source, now)
+        : extractLegacyFieldState<string>(null, "email", input.providerRaw, source),
+      websiteUrl: input.websiteUrl
+        ? present(input.websiteUrl, source, now)
+        : extractLegacyFieldState<string>(null, "websiteUrl", input.providerRaw, source),
+      address: input.address
+        ? present(input.address, source, now)
+        : extractLegacyFieldState<string>(null, "address", input.providerRaw, source),
+      category: input.category
+        ? present(input.category, source, now)
+        : extractLegacyFieldState<string>(null, "category", input.providerRaw, source),
+      rating: input.rating != null
+        ? present(input.rating, source, now)
+        : extractLegacyFieldState<number>(null, "rating", input.providerRaw, source),
+      reviewCount: input.reviewCount != null
+        ? present(input.reviewCount, source, now)
+        : extractLegacyFieldState<number>(null, "reviewCount", input.providerRaw, source),
+    },
+    updatedAt: now,
+  };
+}
+
