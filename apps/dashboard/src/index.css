@@ -1,13 +1,80 @@
 /*
  * App-level entry. Design tokens + Tailwind layers come from the shared
- * design system (@rove/ui/styles.css). Keep only app-specific base here.
+ * design system (@rove/ui/styles.css).
+ * Kinetix (Kinetic Obsidian) Light Theme token overrides are scoped exclusively
+ * to this dashboard application.
  */
 @import "@rove/ui/styles.css";
 
 @layer base {
+  :root {
+    /* Kinetic Obsidian Light Theme Tokens */
+    --background: 60 12% 97.6%; /* #FAFAF8 - Canvas Base */
+    --foreground: 240 8% 7.3%; /* #111114 - Primary Near-black */
+
+    --card: 0 0% 100%; /* #FFFFFF - Surface Elevation */
+    --card-foreground: 240 8% 7.3%; /* #111114 */
+
+    --popover: 0 0% 100%; /* #FFFFFF */
+    --popover-foreground: 240 8% 7.3%;
+
+    --primary: 252 100% 66.9%; /* #7856FF - Electric Violet */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --secondary: 60 6% 95.3%; /* #F4F4F2 - Subtle Surface / Hover */
+    --secondary-foreground: 240 8% 7.3%; /* #111114 */
+
+    --muted: 60 6% 95.3%; /* #F4F4F2 */
+    --muted-foreground: 240 4% 54.1%; /* #85858F - Structural labels */
+
+    --accent: 60 6% 95.3%; /* #F4F4F2 */
+    --accent-foreground: 240 8% 7.3%; /* #111114 */
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5% 92.2%; /* #EAEAEC - 1px Hairline */
+    --input: 240 5% 92.2%; /* #EAEAEC */
+    --ring: 252 100% 66.9%; /* #7856FF - Focus ring */
+
+    --radius: 0.5rem; /* 8px base radius */
+
+    /* Sidebar Kinetix Theme */
+    --sidebar: 0 0% 100%; /* #FFFFFF */
+    --sidebar-foreground: 240 8% 7.3%;
+    --sidebar-primary: 252 100% 66.9%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 60 6% 95.3%; /* #F4F4F2 */
+    --sidebar-accent-foreground: 240 8% 7.3%;
+    --sidebar-border: 240 5% 92.2%; /* #EAEAEC */
+    --sidebar-ring: 252 100% 66.9%;
+
+    /* Kinetix Direct Token Utilities */
+    --kinetix-violet: #7856ff;
+    --kinetix-violet-hover: #6644ee;
+    --kinetix-canvas: #fafaf8;
+    --kinetix-surface: #ffffff;
+    --kinetix-hover: #f4f4f2;
+    --kinetix-border: #eaeaec;
+    --kinetix-text: #111114;
+    --kinetix-muted: #85858f;
+    --kinetix-badge-bg: #f0f0ee;
+    --kinetix-badge-text: #61626b;
+  }
+
   body {
     margin: 0;
-    font-family: system-ui, sans-serif;
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
     font-size: 14px;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
