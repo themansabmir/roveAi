@@ -1,25 +1,11 @@
 import { PgBoss, type Job, type WorkHandler } from "pg-boss";
-import { IPlugin, IPluginRegistry } from "../../interfaces/plugin.interface";
+import { IPluginRegistry } from "../../interfaces/plugin.interface";
 import { loadConfig } from "../../core/config";
 import { logger } from "../../core/logger";
+import { IQueueService, JobHandler, QUEUE_PLUGIN } from "./queue.types";
 
-export const QUEUE_PLUGIN = "QueuePlugin";
-
-export type JobHandler<T> = (
-  payload: T,
-  jobId: string,
-  meta: { retrycount: number; retrylimit: number }
-) => Promise<void>;
-
-export interface IQueueService extends IPlugin {
-  publish<T extends object>(
-    queue: string,
-    payload: T,
-    opts?: { singletonKey?: string }
-  ): Promise<string | null>;
-  subscribe<T>(queue: string, handler: JobHandler<T>, opts?: { localConcurrency?: number }): Promise<void>;
-  isHealthy(): boolean;
-}
+export type { IQueueService, JobHandler };
+export { QUEUE_PLUGIN };
 
 export class PgBossPlugin implements IQueueService {
   public name = QUEUE_PLUGIN;

@@ -2,6 +2,7 @@ export interface AuthUser {
   id: string
   email: string
   name: string | null
+  platformRole?: "SUPER_ADMIN" | "MEMBER" | "SUPPORT" | null
   isSuperAdmin: boolean
 }
 

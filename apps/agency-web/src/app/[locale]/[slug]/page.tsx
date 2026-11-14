@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, permanentRedirect } from "next/navigation"
 import type { Metadata } from "next"
 import { AGENCY_RESERVED_SEGMENTS } from "@rove/cms/constants"
 import { agencyPageBySlugQuery, agencyPageSlugsQuery } from "@rove/cms/queries"
@@ -7,10 +7,13 @@ import { sanityFetch } from "@/lib/sanity/fetch"
 import { getSanityDataset, getSanityProjectId, getSiteUrl, isSanityConfigured } from "@/lib/env"
 import { localePath } from "@/lib/i18n"
 import { SectionRenderer } from "@/components/sections/SectionRenderer"
+import { SiteChrome } from "@/components/site/SiteChrome"
+import { PageIntro } from "@/components/site/PageIntro"
+import { getLegacySiteRedirect, reservedSiteSlugs } from "@/content/siteMap"
 import type { Locale } from "@rove/cms/constants"
 import type { CmsSection } from "@rove/cms/types"
 
-const reserved = new Set<string>(AGENCY_RESERVED_SEGMENTS)
+const reserved = new Set<string>([...AGENCY_RESERVED_SEGMENTS, ...reservedSiteSlugs])
 
 type Doc = {
   title: string
@@ -31,9 +34,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>
 }): Promise<Metadata> {
   const { locale, slug } = await params
-  if (reserved.has(slug)) return { title: "Not found" }
+  if (reserved.has(slug)) return { title: "Page not found" }
   const doc = await sanityFetch<Doc>({ query: agencyPageBySlugQuery, params: { slug } })
-  if (!doc) return { title: "Page" }
+  if (!doc) return { title: "Page not found", robots: { index: false, follow: true } }
   return mapSeoToMetadata(doc.seo, {
     siteUrl: getSiteUrl(),
     title: doc.title,
@@ -43,18 +46,26 @@ export async function generateMetadata({
   })
 }
 
-export default async function AgencyCmsPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
-  const { slug } = await params
+export default async function AgencyCmsPage({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}) {
+  const { locale, slug } = await params
+  const redirectTo = getLegacySiteRedirect(slug)
+  if (redirectTo) permanentRedirect(localePath(locale as Locale, redirectTo))
   if (reserved.has(slug)) notFound()
   const doc = await sanityFetch<Doc>({ query: agencyPageBySlugQuery, params: { slug } })
   if (!doc) notFound()
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-3xl font-semibold">{doc.title}</h1>
-      <div className="mt-10">
-        <SectionRenderer sections={doc.sections} />
-      </div>
-    </main>
+    <SiteChrome locale={locale as Locale}>
+      <main>
+        <PageIntro title={doc.title} />
+        <div className="rv-container py-16">
+          <SectionRenderer sections={doc.sections} />
+        </div>
+      </main>
+    </SiteChrome>
   )
 }

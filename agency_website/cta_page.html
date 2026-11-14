@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>Syntropic | Start a Build // Project Intake</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Newsreader:ital,wght@1,400;1,500;1,600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            navy: '#0b0f19',
+            dark: '#0f131d',
+            accent: '#2563eb',
+            electric: '#3b82f6',
+            surface: '#f8f9fa',
+            lightcard: '#ffffff',
+            border: '#e2e8f0',
+            muted: '#64748b'
+          }
+        },
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          display: ['Plus Jakarta Sans', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+          serif: ['Newsreader', 'serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body {
+    background-color: #f8f9fa;
+    color: #0b0f19;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+  .grid-pattern {
+    background-image: radial-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .grid-pattern-dark {
+    background-image: radial-gradient(rgba(59, 130, 246, 0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body class="bg-[#f8f9fa] text-[#0b0f19] antialiased selection:bg-blue-600 selection:text-white">
+<!-- =========================================================================
+     NAVIGATION (Locked Syntropic standard dark theme)
+     ========================================================================= -->
+<header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#0b0f19]/90 backdrop-blur-xl border-b border-slate-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+<div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<a class="flex items-center gap-3 group" data-path="what-we-build" href="#">
+<span class="font-display text-xl md:text-2xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">Syntropic</span>
+<span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full bg-slate-800/80 text-blue-400 font-mono text-[11px] font-semibold tracking-wider border border-blue-500/20 uppercase">
+          AI + GTM ENGINEERING
+        </span>
+</a>
+</div>
+<nav class="hidden xl:flex items-center gap-8 text-sm">
+<a class="text-slate-400 hover:text-white transition-colors" data-path="what-we-build" href="#">What We Build</a>
+<a class="text-slate-400 hover:text-white transition-colors" data-path="solutions" href="#">Solutions</a>
+<a class="text-slate-400 hover:text-white transition-colors" data-path="case-studies" href="#">Case Studies</a>
+<a class="text-slate-400 hover:text-white transition-colors" data-path="resources" href="#">Resources</a>
+<a class="text-slate-400 hover:text-white transition-colors" data-path="about" href="#">About</a>
+</nav>
+<div class="flex items-center gap-3">
+<a class="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-full bg-slate-800 text-slate-200 text-xs font-semibold hover:bg-slate-700 hover:text-white transition-all border border-slate-700" data-path="book-a-discovery" href="#direct-call">
+        Book a Discovery
+      </a>
+<a class="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-blue-600 text-white text-xs font-semibold shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-blue-500/50 transition-all" data-path="start-a-build" href="#intake-form">
+        Start a Build
+      </a>
+<div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[17px]">person</span>
+</div>
+</div>
+</div>
+</header>
+<main class="w-full pt-20">
+<!-- =========================================================================
+       SECTION 1: HERO (BENCHMARK EDITORIAL QUALITY & SYSTEM SIGNAL GRID)
+       ========================================================================= -->
+<section class="relative w-full bg-[#f8f9fa] border-b border-[#e2e8f0] py-20 lg:py-28 overflow-hidden">
+<div class="absolute inset-0 grid-pattern pointer-events-none"></div>
+<!-- Subtle architectural system flow watermark -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl pointer-events-none opacity-[0.035] hidden md:flex items-center justify-between font-mono text-xs tracking-widest uppercase select-none">
+<span>[ PROBLEM ]</span>
+<span class="w-24 h-px bg-slate-900"></span>
+<span>[ SYSTEM ]</span>
+<span class="w-24 h-px bg-slate-900"></span>
+<span>[ BUILD ]</span>
+</div>
+<div class="max-w-4xl mx-auto px-6 lg:px-12 relative z-10 text-center flex flex-col items-center gap-6">
+<!-- Eyebrow Pill -->
+<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-semibold tracking-wider uppercase shadow-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+        START A BUILD // PROJECT INTAKE
+      </div>
+<!-- Editorial Headline -->
+<h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0b0f19] tracking-tight leading-[1.1] max-w-3xl">
+        Let’s build the system your business <span class="italic text-blue-600 font-serif font-normal">needs next.</span>
+</h1>
+<!-- Concise Single-Sentence Narrative -->
+<p class="text-base sm:text-lg text-slate-600 font-medium max-w-2xl leading-relaxed">
+        Tell us what you're looking to solve, automate, or rethink. We engineer the deterministic architecture behind it.
+      </p>
+<!-- Dual CTA Buttons -->
+<div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 text-white text-sm font-semibold shadow-[0_8px_20px_-4px_rgba(37,99,235,0.4)] hover:bg-blue-700 transition-all" href="#intake-form">
+          Start a Conversation
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-[#e2e8f0] text-slate-800 text-sm font-semibold hover:border-slate-400 hover:bg-slate-50 transition-all shadow-sm" href="#direct-call">
+          Book a Call
+          <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+</a>
+</div>
+<!-- Trust Indicators Bar -->
+<div class="pt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-xs text-slate-500">
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Zero Sales Pressure
+        </span>
+<span class="text-slate-300">/</span>
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+          48h Feasibility Review
+        </span>
+<span class="text-slate-300">/</span>
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+          Direct Principal Engineer Access
+        </span>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 2: WHAT ARE YOU LOOKING TO IMPROVE? (SYSTEM SELECTION)
+       ========================================================================= -->
+<section class="w-full bg-white py-20 border-b border-[#e2e8f0]" id="system-selection">
+<div class="max-w-6xl mx-auto px-6 lg:px-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+<!-- Left Column: 5 Streamlined Options (~45%) -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+              01 // SYSTEM SPECIFICATION
+            </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+              What are you looking to improve?
+            </h2>
+<p class="text-sm sm:text-base text-slate-600 font-medium">
+              Select your priority bottleneck. Our team provisions custom deterministic topologies matching these profiles.
+            </p>
+</div>
+<div class="flex flex-col gap-2.5" id="spec-picker">
+<!-- 1. GTM Systems (Selected) -->
+<button class="spec-btn w-full text-left p-4 rounded-xl border-2 border-blue-600 bg-blue-50/50 shadow-sm transition-all flex items-center justify-between" data-spec="gtm" type="button">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+<div>
+<div class="font-display font-bold text-sm text-[#0b0f19]">GTM Systems</div>
+<div class="text-xs text-slate-500">Outbound pipeline synthesis, continuous signals, and revenue workflows</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-blue-600 text-lg">check_circle</span>
+</button>
+<!-- 2. Autonomous AI Agents -->
+<button class="spec-btn w-full text-left p-4 rounded-xl border border-slate-200 bg-[#f8f9fa] hover:border-slate-300 hover:bg-slate-100 transition-all flex items-center justify-between" data-spec="agents" type="button">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-slate-400"></span>
+<div>
+<div class="font-display font-semibold text-sm text-slate-800">Autonomous AI Agents</div>
+<div class="text-xs text-slate-500">Autonomous account enrichment, deterministic rubric scoring, and triage</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg">radio_button_unchecked</span>
+</button>
+<!-- 3. RevOps & Infrastructure -->
+<button class="spec-btn w-full text-left p-4 rounded-xl border border-slate-200 bg-[#f8f9fa] hover:border-slate-300 hover:bg-slate-100 transition-all flex items-center justify-between" data-spec="revops" type="button">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-slate-400"></span>
+<div>
+<div class="font-display font-semibold text-sm text-slate-800">RevOps &amp; Infrastructure</div>
+<div class="text-xs text-slate-500">Schema lock, dual CRM synchrony, deduplication, and pipeline telemetry</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg">radio_button_unchecked</span>
+</button>
+<!-- 4. Internal & External AI Products -->
+<button class="spec-btn w-full text-left p-4 rounded-xl border border-slate-200 bg-[#f8f9fa] hover:border-slate-300 hover:bg-slate-100 transition-all flex items-center justify-between" data-spec="products" type="button">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-slate-400"></span>
+<div>
+<div class="font-display font-semibold text-sm text-slate-800">Internal &amp; External AI Products</div>
+<div class="text-xs text-slate-500">Production LLM interfaces, vertical micro-apps, and client work engines</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg">radio_button_unchecked</span>
+</button>
+<!-- 5. Something Else -->
+<button class="spec-btn w-full text-left p-4 rounded-xl border border-slate-200 bg-[#f8f9fa] hover:border-slate-300 hover:bg-slate-100 transition-all flex items-center justify-between" data-spec="custom" type="button">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-slate-400"></span>
+<div>
+<div class="font-display font-semibold text-sm text-slate-800">Something Else</div>
+<div class="text-xs text-slate-500">Bespoke technical pipelines, custom data streams, or new architectures</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg">radio_button_unchecked</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Crisp Dark Midnight Blueprint Container (~55%) -->
+<div class="lg:col-span-7">
+<div class="bg-[#0b0f19] text-white rounded-2xl border border-slate-800/80 p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col gap-6">
+<div class="absolute -top-24 -right-24 w-72 h-72 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Console Header -->
+<div class="flex items-center justify-between pb-3 border-b border-slate-800 text-xs font-mono">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 font-semibold uppercase tracking-wider">
+                  SYSTEM BLUEPRINT // V2.4
+                </span>
+<span class="text-slate-500 hidden sm:inline">LATENCY &lt;120MS</span>
+</div>
+<div class="flex items-center gap-1.5 text-emerald-400 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                ACTIVE KERNEL
+              </div>
+</div>
+<!-- Compact Problem vs Opportunity -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+<div class="p-3.5 rounded-xl bg-slate-900/90 border border-rose-500/20 flex flex-col gap-1">
+<span class="font-mono text-[10px] text-rose-400 font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">warning</span> CURRENT BOTTLENECK
+                </span>
+<p class="text-slate-300 leading-snug">Manual account research, delayed lead response, and fragmented spreadsheets.</p>
+</div>
+<div class="p-3.5 rounded-xl bg-slate-900/90 border border-blue-500/30 flex flex-col gap-1">
+<span class="font-mono text-[10px] text-blue-400 font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">auto_awesome</span> ARCHITECTED SPEC
+                </span>
+<p class="text-slate-300 leading-snug">Continuous intent ingest with zero-latency qualification and automated CRM sync.</p>
+</div>
+</div>
+<!-- Compact Engineered 4-Node Linear Chain -->
+<div class="flex flex-col gap-2 relative">
+<div class="flex items-center justify-between font-mono text-[11px] text-slate-400 pb-1">
+<span class="uppercase tracking-wider">PIPELINE TOPOLOGY</span>
+<span class="text-blue-400">AUTONOMY LEVEL: 4</span>
+</div>
+<!-- Node 1: INPUT -->
+<div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="w-6 h-6 rounded-md bg-blue-500/20 text-blue-400 flex items-center justify-center font-mono text-[11px] font-bold">IN</span>
+<div class="font-mono text-xs text-white font-medium">Multimodal Signals &amp; Intent</div>
+</div>
+<span class="font-mono text-[10px] text-blue-400 bg-blue-950/80 px-2 py-0.5 rounded border border-blue-500/30">INPUT</span>
+</div>
+<div class="flex justify-center -my-1 text-slate-600">
+<span class="material-symbols-outlined text-sm">south</span>
+</div>
+<!-- Node 2: REASONING -->
+<div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="w-6 h-6 rounded-md bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-mono text-[11px] font-bold">AI</span>
+<div class="font-mono text-xs text-white font-medium">Deep Account Enrichment &amp; Rubric Gate</div>
+</div>
+<span class="font-mono text-[10px] text-indigo-400 bg-indigo-950/80 px-2 py-0.5 rounded border border-indigo-500/30">REASONING</span>
+</div>
+<div class="flex justify-center -my-1 text-slate-600">
+<span class="material-symbols-outlined text-sm">south</span>
+</div>
+<!-- Node 3: ACTION -->
+<div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="w-6 h-6 rounded-md bg-sky-500/20 text-sky-400 flex items-center justify-center font-mono text-[11px] font-bold">GO</span>
+<div class="font-mono text-xs text-white font-medium">Contextual Personalization &amp; Dispatch</div>
+</div>
+<span class="font-mono text-[10px] text-sky-400 bg-sky-950/80 px-2 py-0.5 rounded border border-sky-500/30">ACTION</span>
+</div>
+<div class="flex justify-center -my-1 text-slate-600">
+<span class="material-symbols-outlined text-sm">south</span>
+</div>
+<!-- Node 4: SYNC -->
+<div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="w-6 h-6 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono text-[11px] font-bold">OK</span>
+<div class="font-mono text-xs text-white font-medium">Dual CRM Sync &amp; Telemetry</div>
+</div>
+<span class="font-mono text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/30">SYNC</span>
+</div>
+</div>
+<!-- Console Footer -->
+<div class="pt-3 border-t border-slate-800 flex items-center justify-between font-mono text-[11px] text-slate-500">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-blue-400">shield</span> Zero Data Retention
+              </span>
+<span class="text-blue-400 font-semibold">TYPICAL SPRINT: 14 DAYS</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 3: FORM SECTION — QUALIFICATION INTERFACE (MAX-W-4XL)
+       ========================================================================= -->
+<section class="w-full bg-[#f8f9fa] py-20 border-b border-[#e2e8f0]" id="intake-form">
+<div class="max-w-4xl mx-auto px-6 lg:px-12 flex flex-col gap-8">
+<!-- Section Title & Narrative -->
+<div class="flex flex-col gap-2 text-center max-w-2xl mx-auto">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+          02 // PROJECT QUALIFICATION
+        </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+          Tell us a little about what’s happening.
+        </h2>
+<p class="text-sm sm:text-base text-slate-600 font-medium">
+          You don't need a perfectly defined scope. Start with the bottleneck, and our systems engineers will reverse-engineer the solution.
+        </p>
+</div>
+<!-- Qualification Card -->
+<div class="bg-white rounded-2xl border border-[#e2e8f0] p-6 sm:p-10 shadow-sm flex flex-col gap-8">
+<!-- Header with Micro-Flow Indicator Badge -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+<span class="font-mono text-xs font-bold text-slate-500 uppercase tracking-wider">PROJECT SPECIFICATION</span>
+<div class="font-mono text-[11px] px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold self-start sm:self-auto">
+            YOUR INPUT <span class="text-blue-400">──→</span> DIAGNOSIS <span class="text-blue-400">──→</span> SYSTEM DESIGN <span class="text-blue-400">──→</span> BUILD
+          </div>
+</div>
+<form class="flex flex-col gap-6" onsubmit="event.preventDefault(); document.getElementById('intake-toast').classList.remove('hidden');">
+<!-- 3 Essential Inputs Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="font-mono text-xs font-semibold text-slate-700 uppercase">
+                Your Name <span class="text-blue-600">*</span>
+</label>
+<input class="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-[#f8f9fa] text-sm text-[#0b0f19] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all" placeholder="Alex Vance" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-mono text-xs font-semibold text-slate-700 uppercase">
+                Work Email <span class="text-blue-600">*</span>
+</label>
+<input class="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-[#f8f9fa] text-sm text-[#0b0f19] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all" placeholder="alex@company.com" required="" type="email"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-mono text-xs font-semibold text-slate-700 uppercase">
+                Company Website <span class="text-blue-600">*</span>
+</label>
+<input class="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-[#f8f9fa] text-sm text-[#0b0f19] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all" placeholder="company.com" required="" type="text"/>
+</div>
+</div>
+<!-- Bottleneck Textarea -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-mono text-xs font-semibold text-slate-700 uppercase">
+                What are you trying to improve? <span class="text-blue-600">*</span>
+</label>
+<span class="font-mono text-[11px] text-slate-400">PLAIN TEXT OR METRICS</span>
+</div>
+<textarea class="w-full px-3.5 py-3 rounded-lg border border-slate-200 bg-[#f8f9fa] text-sm text-[#0b0f19] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all" placeholder="Describe the core constraint: e.g. Outbound SDRs spend 15 hrs/wk manually scraping LinkedIn; inbound leads take 3 hours to route; CRM synchronization breaks during peak syncs..." required="" rows="4"></textarea>
+</div>
+<!-- Current Stage Selector (Visually connected horizontal 3-step pill selector) -->
+<div class="flex flex-col gap-2 pt-1">
+<span class="font-mono text-xs font-semibold text-slate-700 uppercase">
+              Current Project Stage
+            </span>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="stage-picker">
+<!-- Stage 1 -->
+<button class="stage-btn p-3 rounded-xl border border-slate-200 bg-[#f8f9fa] hover:bg-slate-100 text-left transition-all flex flex-col gap-1" data-stage="1" type="button">
+<div class="flex items-center justify-between font-mono text-[11px] text-slate-500 font-semibold">
+<span>STAGE 01</span>
+<span class="material-symbols-outlined text-[16px] text-slate-400">radio_button_unchecked</span>
+</div>
+<div class="font-display font-bold text-xs text-[#0b0f19]">Exploring</div>
+<p class="text-[11px] text-slate-500 leading-tight">Evaluating feasibility and ROI</p>
+</button>
+<!-- Stage 2 -->
+<button class="stage-btn p-3 rounded-xl border border-slate-200 bg-[#f8f9fa] hover:bg-slate-100 text-left transition-all flex flex-col gap-1" data-stage="2" type="button">
+<div class="flex items-center justify-between font-mono text-[11px] text-slate-500 font-semibold">
+<span>STAGE 02</span>
+<span class="material-symbols-outlined text-[16px] text-slate-400">radio_button_unchecked</span>
+</div>
+<div class="font-display font-bold text-xs text-[#0b0f19]">Planning</div>
+<p class="text-[11px] text-slate-500 leading-tight">Problem scoped, looking for partner</p>
+</button>
+<!-- Stage 3 (Active) -->
+<button class="stage-btn p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-left shadow-xs transition-all flex flex-col gap-1" data-stage="3" type="button">
+<div class="flex items-center justify-between font-mono text-[11px] text-blue-700 font-bold">
+<span>STAGE 03</span>
+<span class="material-symbols-outlined text-[16px] text-blue-600">check_circle</span>
+</div>
+<div class="font-display font-bold text-xs text-[#0b0f19]">Ready to Build</div>
+<p class="text-[11px] text-slate-600 leading-tight">Clear friction, ready to deploy</p>
+</button>
+</div>
+</div>
+<!-- Submit CTA + Metadata -->
+<div class="pt-3 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-blue-600 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[0_8px_20px_-4px_rgba(37,99,235,0.4)] hover:bg-blue-700 transition-all" type="submit">
+              Send Project Specification
+              <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<p class="text-xs text-slate-500 text-center sm:text-right max-w-xs font-mono">
+              Reviewed by our Principal GTM Engineer. Feasibility report delivered within 24h.
+            </p>
+</div>
+<!-- Toast Notification -->
+<div class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-mono flex items-center gap-2" id="intake-toast">
+<span class="material-symbols-outlined text-emerald-600 text-base">task_alt</span>
+<span>Specification dispatched to engineering queue. Initial feasibility brief queued within 24h.</span>
+</div>
+</form>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 4: SKIP THE FORM (MINIMALIST CALM BLOCK)
+       ========================================================================= -->
+<section class="w-full bg-white py-16 border-b border-[#e2e8f0]" id="direct-call">
+<div class="max-w-4xl mx-auto px-6 lg:px-12">
+<div class="bg-[#f8f9fa] rounded-2xl border border-[#e2e8f0] p-8 sm:p-10 text-center flex flex-col items-center gap-4 shadow-xs">
+<div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">calendar_today</span>
+</div>
+<div class="flex flex-col gap-1 max-w-lg">
+<div class="font-mono text-xs font-semibold text-blue-600 uppercase tracking-widest">
+            DIRECT ARCHITECT ACCESS
+          </div>
+<h3 class="font-display text-2xl sm:text-3xl font-extrabold text-[#0b0f19] tracking-tight">
+            Skip the form.
+          </h3>
+<p class="text-sm text-slate-600 font-medium">
+            Prefer to talk it through directly with a principal engineer? Start straight with the technical bottleneck.
+          </p>
+</div>
+<div class="pt-1">
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#0b0f19] text-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-slate-800 transition-all shadow-sm" href="#">
+            Book a Technical Call
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="pt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-mono text-[11px] text-slate-500">
+<span>30-minute session</span>
+<span class="text-slate-300">·</span>
+<span>Problem-first framework</span>
+<span class="text-slate-300">·</span>
+<span>Zero sales pitch</span>
+<span class="text-slate-300">·</span>
+<span>Direct principal engineer access</span>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 5: A SIMPLE PATH FROM PROBLEM TO BUILD (HORIZONTAL PROCESS)
+       ========================================================================= -->
+<section class="w-full bg-[#f8f9fa] py-20 border-b border-[#e2e8f0]" id="process">
+<div class="max-w-5xl mx-auto px-6 lg:px-12 flex flex-col gap-10">
+<div class="flex flex-col gap-2 max-w-2xl">
+<div class="font-mono text-xs font-semibold text-blue-600 tracking-widest uppercase">
+          SYSTEM ONBOARDING
+        </div>
+<h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0b0f19] tracking-tight">
+          A simple path from problem to build.
+        </h2>
+<p class="text-base text-slate-600 font-medium">
+          How we move from first contact to production-grade revenue infrastructure.
+        </p>
+</div>
+<!-- Horizontal Engineering Timeline (Thin continuous rule) -->
+<div class="w-full bg-white rounded-2xl border border-[#e2e8f0] p-6 lg:p-10 shadow-sm relative">
+<div class="relative py-2">
+<!-- Continuous thin horizontal connector line -->
+<div class="hidden md:block absolute top-4 left-10 right-10 h-px bg-slate-200 z-0"></div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
+<!-- Step 01 -->
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center mb-1 shadow-xs">01</div>
+<div class="font-mono text-xs font-bold text-blue-600 uppercase">01 // INTAKE</div>
+<h4 class="font-display font-bold text-base text-[#0b0f19]">We Review</h4>
+<p class="text-xs text-slate-600 leading-relaxed">
+                We ingest your friction points and test stack dependencies to formulate initial architecture.
+              </p>
+</div>
+<!-- Step 02 -->
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center mb-1 shadow-xs">02</div>
+<div class="font-mono text-xs font-bold text-blue-600 uppercase">02 // DIAGNOSTIC</div>
+<h4 class="font-display font-bold text-base text-[#0b0f19]">We Understand</h4>
+<p class="text-xs text-slate-600 leading-relaxed">
+                We isolate mechanical bottlenecks and data hygiene drag across your current pipeline.
+              </p>
+</div>
+<!-- Step 03 -->
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-blue-600 text-white font-mono text-xs font-bold flex items-center justify-center mb-1 shadow-xs">03</div>
+<div class="font-mono text-xs font-bold text-blue-600 uppercase">03 // BLUEPRINT</div>
+<h4 class="font-display font-bold text-base text-[#0b0f19]">We Recommend</h4>
+<p class="text-xs text-slate-600 leading-relaxed">
+                We present a rigorous architecture specification with clear human-in-the-loop guardrails.
+              </p>
+</div>
+<!-- Step 04 -->
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-emerald-500 text-white font-mono text-xs font-bold flex items-center justify-center mb-1 shadow-xs">04</div>
+<div class="font-mono text-xs font-bold text-emerald-600 uppercase">04 // SPRINT</div>
+<h4 class="font-display font-bold text-base text-[#0b0f19]">We Build</h4>
+<p class="text-xs text-slate-600 leading-relaxed">
+                Our engineering team deploys deterministic code and validated pipelines in 14 days.
+              </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 6: PRIVACY & DATA REASSURANCE STRIP (COMPACT GOVERNANCE)
+       ========================================================================= -->
+<section class="w-full bg-white py-12 border-b border-[#e2e8f0]">
+<div class="max-w-5xl mx-auto px-6 lg:px-12">
+<div class="p-6 rounded-xl bg-slate-50 border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-blue-600 text-xl pt-0.5">lock</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-mono text-xs font-bold text-slate-900 uppercase tracking-wider">
+              YOUR INFORMATION STAYS STRICTLY PRIVATE
+            </span>
+<p class="text-xs text-slate-600 font-medium">
+              Your details are only used to inspect technical feasibility and scope the architecture.
+            </p>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-2 font-mono text-[11px]">
+<span class="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-700 shadow-xs">No sales spam</span>
+<span class="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-700 shadow-xs">Mutual NDA by default</span>
+<span class="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-700 shadow-xs">SOC-2 Type II</span>
+<span class="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-700 shadow-xs">Zero Data Retention</span>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 7: CLOSING CONVERSION CTA CONTAINER (MIDNIGHT DARK THEME)
+       ========================================================================= -->
+<section class="w-full bg-[#f8f9fa] py-20 px-6 lg:px-12">
+<div class="max-w-5xl mx-auto">
+<div class="relative w-full rounded-3xl bg-[#0b0f19] text-white p-10 md:p-14 border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center text-center gap-6">
+<div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-60 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-500/30 text-blue-400 font-mono text-xs tracking-wider uppercase">
+<span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+          ARCHITECTURE // IMMEDIATE ENGAGEMENT
+        </div>
+<h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight max-w-xl">
+          Have a system worth building?
+        </h2>
+<p class="text-base text-slate-300 font-medium max-w-md">
+          Let’s figure out what’s possible. Bring us the friction, and we’ll construct the production-ready engine.
+        </p>
+<div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 text-white text-sm font-semibold shadow-[0_0_24px_rgba(37,99,235,0.4)] hover:bg-blue-500 transition-all" href="#intake-form">
+            Start a Conversation
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-transparent border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-all" data-path="what-we-build" href="#">
+            Explore What We Build
+            <span class="material-symbols-outlined text-[18px]">north_east</span>
+</a>
+</div>
+<div class="mt-4 pt-6 border-t border-slate-800 w-full flex flex-wrap items-center justify-center gap-6 font-mono text-xs text-slate-400">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-blue-400 text-base">verified</span>
+            Direct Principal Engineer Access
+          </span>
+<span class="text-slate-700 hidden sm:inline">·</span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-blue-400 text-base">timer</span>
+            48h Viability Audit
+          </span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- =========================================================================
+     FOOTER (Locked dark Syntropic standard footer)
+     ========================================================================= -->
+<footer class="w-full bg-[#0b0f19] border-t border-slate-800 py-16 text-slate-400">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 pb-12 border-b border-slate-800">
+<div class="lg:col-span-2 flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="font-display text-xl font-bold text-white tracking-tight">Syntropic</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-800 text-blue-400 font-mono text-[11px] font-semibold tracking-wider uppercase border border-slate-700">
+            v2.4 PROD
+          </span>
+</div>
+<p class="text-xs text-slate-400 leading-relaxed max-w-sm">
+          Deterministic AI and GTM engineering platform. Orchestrating autonomous sales agents, continuous intelligence, and enterprise revenue architectures.
+        </p>
+<div class="flex items-center gap-2 pt-1 font-mono text-[11px]">
+<span class="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300">SOC2 Type II</span>
+<span class="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300">ISO 27001</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-200">Architecture</span>
+<ul class="flex flex-col gap-2 text-xs pt-1">
+<li><a class="hover:text-white transition-colors" data-path="solutions" href="#">Autonomous Outbound</a></li>
+<li><a class="hover:text-white transition-colors" data-path="what-we-build" href="#">Pipeline Synthesis</a></li>
+<li><a class="hover:text-white transition-colors" data-path="what-we-build" href="#">Signal Intelligence</a></li>
+<li><a class="hover:text-white transition-colors" data-path="what-we-build" href="#">Deterministic Scoring</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-200">Resources</span>
+<ul class="flex flex-col gap-2 text-xs pt-1">
+<li><a class="hover:text-white transition-colors" data-path="resources" href="#">Documentation</a></li>
+<li><a class="hover:text-white transition-colors" data-path="case-studies" href="#">Case Studies</a></li>
+<li><a class="hover:text-white transition-colors" data-path="resources" href="#">GTM Frameworks</a></li>
+<li><a class="hover:text-white transition-colors" data-path="resources" href="#">Deterministic AI</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-200">Company</span>
+<ul class="flex flex-col gap-2 text-xs pt-1">
+<li><a class="hover:text-white transition-colors" data-path="about" href="#">Why Syntropic</a></li>
+<li><a class="hover:text-white transition-colors" data-path="about" href="#">Leadership &amp; Eng</a></li>
+<li><a class="hover:text-white transition-colors" data-path="about" href="#">Careers</a></li>
+<li><a class="hover:text-white transition-colors" data-path="book-a-discovery" href="#">Contact</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-200">Compliance</span>
+<ul class="flex flex-col gap-2 text-xs pt-1">
+<li><a class="hover:text-white transition-colors" data-path="privacy-security" href="#">Security Center</a></li>
+<li><a class="hover:text-white transition-colors" data-path="privacy-security" href="#">SOC2 Type II Report</a></li>
+<li><a class="hover:text-white transition-colors" data-path="privacy-security" href="#">GDPR Compliance</a></li>
+<li><a class="hover:text-white transition-colors" data-path="privacy-security" href="#">System Status</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+<p>© 2025 Syntropic Systems Inc. All rights reserved.</p>
+<div class="flex items-center gap-6">
+<a class="hover:text-white transition-colors" data-path="privacy-security" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" data-path="privacy-security" href="#">Terms of Service</a>
+<a class="hover:text-white transition-colors" data-path="privacy-security" href="#">Security Disclosures</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- Interactive toggles script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Spec picker toggle
+    const specBtns = document.querySelectorAll('.spec-btn');
+    specBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        specBtns.forEach(b => {
+          b.className = 'spec-btn w-full text-left p-4 rounded-xl border border-slate-200 bg-[#f8f9fa] hover:border-slate-300 hover:bg-slate-100 transition-all flex items-center justify-between';
+          const dot = b.querySelector('.w-2.5, .w-2');
+          if (dot) dot.className = 'w-2 h-2 rounded-full bg-slate-400';
+          const icon = b.querySelector('.material-symbols-outlined');
+          if (icon) {
+            icon.textContent = 'radio_button_unchecked';
+            icon.className = 'material-symbols-outlined text-slate-400 text-lg';
+          }
+        });
+        btn.className = 'spec-btn w-full text-left p-4 rounded-xl border-2 border-blue-600 bg-blue-50/50 shadow-sm transition-all flex items-center justify-between';
+        const activeDot = btn.querySelector('.w-2');
+        if (activeDot) activeDot.className = 'w-2 h-2 rounded-full bg-blue-600';
+        const activeIcon = btn.querySelector('.material-symbols-outlined');
+        if (activeIcon) {
+          activeIcon.textContent = 'check_circle';
+          activeIcon.className = 'material-symbols-outlined text-blue-600 text-lg';
+        }
+      });
+    });
+
+    // Stage toggle buttons
+    const stageBtns = document.querySelectorAll('.stage-btn');
+    stageBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        stageBtns.forEach(b => {
+          b.className = 'stage-btn p-3 rounded-xl border border-slate-200 bg-[#f8f9fa] hover:bg-slate-100 text-left transition-all flex flex-col gap-1';
+          const header = b.querySelector('div:first-child');
+          if (header) header.className = 'flex items-center justify-between font-mono text-[11px] text-slate-500 font-semibold';
+          const icon = b.querySelector('.material-symbols-outlined');
+          if (icon) {
+            icon.textContent = 'radio_button_unchecked';
+            icon.className = 'material-symbols-outlined text-[16px] text-slate-400';
+          }
+        });
+        btn.className = 'stage-btn p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-left shadow-xs transition-all flex flex-col gap-1';
+        const activeHeader = btn.querySelector('div:first-child');
+        if (activeHeader) activeHeader.className = 'flex items-center justify-between font-mono text-[11px] text-blue-700 font-bold';
+        const activeIcon = btn.querySelector('.material-symbols-outlined');
+        if (activeIcon) {
+          activeIcon.textContent = 'check_circle';
+          activeIcon.className = 'material-symbols-outlined text-[16px] text-blue-600';
+        }
+      });
+    });
+  });
+</script>
+</body></html>

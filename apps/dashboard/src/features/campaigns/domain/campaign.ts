@@ -24,10 +24,86 @@ export interface CampaignSummary {
   createdAt: string
 }
 
+export interface AuditFindingView {
+  id: string
+  code: string
+  severity: string
+  source: string
+  confidence: number
+  message: string
+  evidence?: Record<string, unknown> | null
+}
+
+export interface TechnicalAuditView {
+  id: string
+  module: string
+  status: string
+  score: number | null
+  metrics?: Record<string, unknown> | null
+  toolName?: string | null
+  deviceProfile?: string | null
+  observedAt: string
+  findings: AuditFindingView[]
+}
+
+export interface BriefView {
+  id: string
+  status: string
+  aiStatus: string
+  headlineOpportunity: string | null
+  suggestedService: string | null
+  confidence: string
+  valueProposition: string | null
+  outreachAngle: string | null
+  coldEmailDraft: string | null
+  callScriptDraft: string | null
+  content?: {
+    keyFindings?: string[]
+    metricsSummary?: Record<string, unknown>
+  } | null
+  modelName?: string | null
+}
+
+export type ProspectStatus =
+  | "NEW"
+  | "RESEARCHED"
+  | "QUALIFIED"
+  | "CONTACTED"
+  | "DISMISSED"
+
+export interface TagItem {
+  id: string
+  name: string
+}
+
+export interface NextActionItem {
+  label: string
+  tone: "primary" | "warning" | "neutral" | "success" | "danger"
+}
+
+export interface ScoreBreakdownView {
+  gapIndex: number | null
+  agencyFitScore: number | null
+  commercialViability: number | null
+  priorityRank: number | null
+  evalState?: "COMPLETE" | "PARTIAL" | "UNAVAILABLE"
+  evidenceFreshness?: "FRESH" | "STALE" | "DEGRADED" | "UNAUDITED"
+  disclaimer?: string
+}
+
 export interface CampaignLead {
   id: string
   qualificationStatus: string
   auditStatus: string
+  aiStatus?: string
+  prospectStatus?: ProspectStatus
+  opportunityScore?: number | null
+  scoreBreakdown?: ScoreBreakdownView | null
+  notes?: string | null
+  savedAt?: string | null
+  archivedAt?: string | null
+  tags?: TagItem[]
+  nextAction?: NextActionItem
   business: {
     id: string
     name: string
@@ -37,6 +113,8 @@ export interface CampaignLead {
     websiteUrl: string | null
     websiteClass: string
   }
+  audits?: TechnicalAuditView[]
+  brief?: BriefView | null
 }
 
 export interface CampaignDetail extends CampaignSummary {
@@ -122,9 +200,98 @@ export function auditStatusLabel(status: string): string {
   }
 }
 
+export function prospectStatusLabel(status?: string | null): string {
+  switch (status) {
+    case "NEW":
+      return "New"
+    case "RESEARCHED":
+      return "Researched"
+    case "QUALIFIED":
+      return "Qualified"
+    case "CONTACTED":
+      return "Contacted"
+    case "DISMISSED":
+      return "Dismissed"
+    default:
+      return status ? status.replace(/_/g, " ").toLowerCase() : "New"
+  }
+}
+
+export function prospectStatusTone(status?: string | null): LeadTone {
+  switch (status) {
+    case "QUALIFIED":
+      return "success"
+    case "RESEARCHED":
+      return "info"
+    case "CONTACTED":
+      return "warning"
+    case "DISMISSED":
+      return "neutral"
+    case "NEW":
+    default:
+      return "neutral"
+  }
+}
+
+export function computeNextAction(lead: {
+  archivedAt?: string | null
+  prospectStatus?: ProspectStatus | string | null
+  opportunityScore?: number | null
+  auditStatus?: string
+  aiStatus?: string
+  brief?: { id?: string; aiStatus?: string } | null
+}): NextActionItem {
+  if (lead.archivedAt != null) {
+    return { label: "Archived", tone: "neutral" }
+  }
+
+  const status = lead.prospectStatus ?? "NEW"
+  switch (status) {
+    case "DISMISSED":
+      return { label: "Dismissed", tone: "neutral" }
+    case "CONTACTED":
+      return { label: "Follow up", tone: "primary" }
+    case "QUALIFIED": {
+      const briefAiStatus = lead.brief?.aiStatus ?? lead.aiStatus
+      if (briefAiStatus === "COMPLETED") return { label: "Review evidence", tone: "success" }
+      if (briefAiStatus === "PENDING") return { label: "Brief generating", tone: "neutral" }
+      return { label: "Generate brief", tone: "warning" }
+    }
+    case "RESEARCHED":
+      if ((lead.opportunityScore ?? 0) >= 75) {
+        return { label: "Qualify prospect", tone: "success" }
+      }
+      return { label: "Check service fit", tone: "warning" }
+    case "NEW":
+    default: {
+      switch (lead.auditStatus) {
+        case "SKIPPED_NO_WEBSITE":
+          return { label: "Pitch web design", tone: "primary" }
+        case "UNREACHABLE":
+        case "BLOCKED":
+        case "LOW_TEXT":
+        case "SKIPPED_BY_ROBOTS":
+          return { label: "Manual review", tone: "warning" }
+        case "FAILED":
+          return { label: "Retry audit", tone: "danger" }
+        case "COMPLETED":
+          return { label: "Review findings", tone: "primary" }
+        case "PENDING":
+        case "SKIPPED_BUDGET":
+        case "SKIPPED_NOT_OWNED_SITE":
+        default:
+          return { label: "Run research", tone: "neutral" }
+      }
+    }
+  }
+}
+
 /** A short, human headline describing why a lead might be an opportunity. */
 export function primarySignal(lead: CampaignLead): string {
   if (lead.qualificationStatus === "EXCLUDED_EXISTING_CLIENT") return "Existing client — excluded"
+  if (lead.brief?.headlineOpportunity) return lead.brief.headlineOpportunity
+  const perf = lead.audits?.find((a) => a.module === "PERFORMANCE")
+  if (perf?.score != null && perf.score < 50) return `Slow mobile site (${perf.score}/100)`
   switch (lead.business.websiteClass) {
     case "MISSING":
       return "No website — high need"
@@ -142,12 +309,12 @@ export function primarySignal(lead: CampaignLead): string {
 }
 
 /**
- * Heuristic opportunity indicator (0–100) from available fields. This is a
- * placeholder for the real evidence-based score. Higher = more likely to need
- * the agency's service. Returns null when the lead is excluded.
+ * Opportunity indicator (0–100). Returns the real database opportunityScore
+ * when available, or falls back to the heuristic indicator.
  */
 export function heuristicScore(lead: CampaignLead): number | null {
   if (lead.qualificationStatus === "EXCLUDED_EXISTING_CLIENT") return null
+  if (lead.opportunityScore != null) return lead.opportunityScore
   if (lead.auditStatus === "FAILED") return 0
 
   let score = 40

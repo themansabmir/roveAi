@@ -1,1 +1,274 @@
 @import "@rove/ui/styles.css";
+
+/* ElqoraLabs design tokens. Emerald = automated flow, amber = a human checkpoint. */
+:root {
+  --rv-ink: #0b1324;
+  --rv-ink-2: #121c31;
+  --rv-ink-line: #24314a;
+  --rv-ink-muted: #a3aec0;
+  --rv-paper: #f3f5f4;
+  --rv-surface: #ffffff;
+  --rv-line: #d9dfe3;
+  --rv-quiet: #4d5869;
+  --rv-brand: #0b7a5a;
+  --rv-brand-deep: #075a43;
+  --rv-brand-bright: #4be0a4;
+  --rv-brand-tint: #e2f3ec;
+  --rv-gate: #f0a92e;
+  --rv-gate-text: #8a5300;
+  --rv-gate-tint: #fcefd6;
+
+  --rv-ink-c: 11 19 36;
+  --rv-ink-2-c: 18 28 49;
+  --rv-ink-line-c: 36 49 74;
+  --rv-ink-muted-c: 163 174 192;
+  --rv-paper-c: 243 245 244;
+  --rv-surface-c: 255 255 255;
+  --rv-line-c: 217 223 227;
+  --rv-quiet-c: 77 88 105;
+  --rv-brand-c: 11 122 90;
+  --rv-brand-deep-c: 7 90 67;
+  --rv-brand-bright-c: 75 224 164;
+  --rv-brand-tint-c: 226 243 236;
+  --rv-gate-c: 240 169 46;
+  --rv-gate-text-c: 138 83 0;
+  --rv-gate-tint-c: 252 239 214;
+
+  --background: 150 8% 96%;
+  --foreground: 220 53% 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 53% 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 53% 9%;
+  --primary: 163 83% 26%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 150 8% 92%;
+  --secondary-foreground: 220 53% 9%;
+  --muted: 150 8% 92%;
+  --muted-foreground: 216 15% 36%;
+  --accent: 155 45% 92%;
+  --accent-foreground: 163 85% 19%;
+  --border: 204 15% 87%;
+  --input: 204 15% 87%;
+  --ring: 163 83% 26%;
+  --radius: 0.625rem;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--rv-paper);
+  color: var(--rv-ink);
+  font-family: var(--font-home-inter), system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--rv-brand);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--rv-brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+section[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+/* Component classes (rv-container, rv-btn-*, rv-heading, rv-prose…) are registered in tailwind.config.ts. */
+
+/* Scroll reveal. Content stays visible without JS; the class is added before observation. */
+.rv-reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--rv-i, 0) * 80ms);
+}
+.rv-reveal-ready [data-reveal][data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Bars inside a revealed block grow from the left, staggered by --rv-g. */
+.rv-reveal-ready [data-reveal] .rv-grow {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--rv-g, 0) * 140ms + 250ms);
+}
+.rv-reveal-ready [data-reveal][data-shown="true"] .rv-grow {
+  transform: none;
+}
+
+/* Track holds two identical runs, so -50% lands exactly on the start of the second run. */
+@keyframes rv-marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.rv-marquee-track {
+  animation: rv-marquee var(--rv-marquee-duration, 40s) linear infinite;
+  will-change: transform;
+}
+
+.rv-marquee:hover .rv-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes rv-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(3px, -4px, 0);
+  }
+}
+
+@keyframes rv-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes rv-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes rv-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes rv-drop {
+  from {
+    transform: translate3d(0, -100%, 0);
+  }
+  to {
+    transform: translate3d(0, 300%, 0);
+  }
+}
+
+@keyframes rv-sweep {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(400%, 0, 0);
+  }
+}
+
+@keyframes rv-pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes rv-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rv-plate-l {
+  from {
+    transform: translate3d(-18%, 0, 0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes rv-plate-r {
+  from {
+    transform: translate3d(18%, 0, 0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes rv-pop {
+  0% {
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.rv-intro > * {
+  animation: rv-fade-up 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.rv-intro > *:nth-child(2) {
+  animation-delay: 80ms;
+}
+.rv-intro > *:nth-child(3) {
+  animation-delay: 160ms;
+}
+.rv-intro > *:nth-child(4) {
+  animation-delay: 240ms;
+}
+.rv-intro > *:nth-child(5) {
+  animation-delay: 320ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .rv-reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  .rv-reveal-ready [data-reveal] .rv-grow {
+    transform: none;
+  }
+  .rv-marquee-track {
+    animation: none;
+  }
+}

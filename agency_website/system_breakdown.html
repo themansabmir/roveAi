@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>Syntropic AI + GTM Engineering</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Newsreader:ital,wght@1,400;1,600&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "inverse-on-surface": "#2c303b", "surface-dim": "#0f131d", "outline": "#8c909f", "secondary": "#c0c1ff", "secondary-fixed": "#e1e0ff", "on-tertiary-fixed-variant": "#5516be", "secondary-container": "#3131c0", "tertiary-fixed-dim": "#d0bcff", "on-secondary-fixed-variant": "#2f2ebe", "on-surface": "#dfe2f1", "surface-container-highest": "#313540", "on-primary-fixed": "#001a42", "inverse-surface": "#dfe2f1", "error-container": "#93000a", "on-error-container": "#ffdad6", "surface-tint": "#adc6ff", "primary-fixed-dim": "#adc6ff", "surface-container-lowest": "#0a0e18", "surface-container-low": "#171b26", "on-error": "#690005", "on-primary-fixed-variant": "#004395", "on-primary": "#002e6a", "inverse-primary": "#005ac2", "error": "#ffb4ab", "primary-fixed": "#d8e2ff", "tertiary-fixed": "#e9ddff", "primary": "#adc6ff", "on-secondary-fixed": "#07006c", "on-surface-variant": "#c2c6d6", "on-tertiary": "#3c0091", "surface-container": "#1c1f2a", "outline-variant": "#424754", "secondary-fixed-dim": "#c0c1ff", "on-background": "#dfe2f1", "on-primary-container": "#00285d", "tertiary": "#d0bcff", "on-secondary": "#1000a9", "on-secondary-container": "#b0b2ff", "surface-container-high": "#262a35", "surface": "#0f131d", "on-tertiary-fixed": "#23005c", "background": "#0f131d", "surface-bright": "#353944", "surface-variant": "#313540", "primary-container": "#4d8eff", "tertiary-container": "#a078ff", "on-tertiary-container": "#340080" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "1.5rem", "space-lg": "1.5rem", "space-3xl": "6rem", "space-2xl": "4rem", "space-xs": "0.25rem", "space-xl": "2.5rem", "gutter-lg": "2rem", "space-md": "1rem", "margin-lg": "6rem", "margin-md": "3rem", "gutter-sm": "1rem", "gutter": "1.5rem", "space-sm": "0.5rem" }, "fontFamily": { "headline-lg": ["Plus Jakarta Sans"], "label-mono-sm": ["JetBrains Mono"], "body-lg": ["Inter"], "label-mono-md": ["JetBrains Mono"], "label-ui": ["Inter"], "body-sm": ["Inter"], "headline-md": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "display-xl": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Inter"], "display-lg-mobile": ["Plus Jakarta Sans"], "editorial-italic": ["Newsreader"], "display-lg": ["Plus Jakarta Sans"], "display-xl-mobile": ["Plus Jakarta Sans"] }, "fontSize": { "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-mono-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500" }], "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "label-mono-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "500" }], "label-ui": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }], "body-sm": ["13px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-sm": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "display-xl": ["72px", { "lineHeight": "80px", "letterSpacing": "-0.03em", "fontWeight": "700" }], "headline-lg-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-md": ["15px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "editorial-italic": ["24px", { "lineHeight": "34px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.025em", "fontWeight": "600" }], "display-xl-mobile": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 left-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.25)]"><div class="h-20 max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex items-center justify-between"><a class="flex items-center gap-space-sm group" data-path="work" href="#"><span class="font-headline-md text-headline-sm md:text-headline-md font-bold tracking-tight text-on-surface group-hover:text-primary transition-colors">Syntropic</span><div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span><span class="font-label-mono-sm text-label-mono-sm uppercase text-primary tracking-wider">AI + GTM Engineering</span></div></a><nav class="hidden lg:flex items-center p-1 rounded-xl bg-surface-container-lowest" data-active-classes="bg-surface-container text-primary font-semibold shadow-sm"><a class="px-space-md py-space-xs rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-path="what-we-build" href="#">What We Build</a><a class="px-space-md py-space-xs rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-path="how-it-works" href="#">How It Works</a><a class="px-space-md py-space-xs rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-path="work" href="#">Work</a><a class="px-space-md py-space-xs rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-path="ai-agents" href="#">AI Agents</a><a class="px-space-md py-space-xs rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-path="about" href="#">About</a></nav><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-primary-container text-on-primary-container font-label-ui text-label-ui hover:bg-primary hover:text-on-primary shadow-[0_0_24px_-6px_rgba(77,142,255,0.4)] transition-all" data-path="book-a-discovery" href="#">Book a Discovery</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-surface flex-1"><div class="flex flex-col w-full">
+<!-- 01 HERO SECTION: Asymmetric Split (Engineered Specimen Header) -->
+<section class="w-full bg-[#f8f9fa] text-slate-900 py-16 lg:py-24 relative overflow-hidden">
+<!-- Subtle technical dot grid background -->
+<div class="absolute inset-0 opacity-[0.04] pointer-events-none" style="background-image: radial-gradient(#0f172a 1px, transparent 1px); background-size: 24px 24px;"></div>
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<!-- Left: Strategic Narrative -->
+<div class="lg:col-span-6 flex flex-col gap-6">
+<div class="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-blue-50 text-blue-700 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+<span class="font-label-mono-sm text-label-mono-sm tracking-wider font-semibold uppercase">Case Study // Series B Revenue Infrastructure</span>
+</div>
+<h1 class="font-headline-lg text-4xl lg:text-5xl font-bold tracking-tight text-slate-950 leading-[1.15]">
+            Systems that turned messy revenue problems into <span class="font-editorial-italic italic font-normal text-blue-600">working infrastructure</span>.
+          </h1>
+<p class="font-body-lg text-body-lg text-slate-600 max-w-xl">
+            How an enterprise GTM motion was re-architected around live buyer signals, deterministic routing, and intelligent agent execution.
+          </p>
+<!-- Compact Metadata Strip -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 px-4 rounded-xl bg-white shadow-sm">
+<div>
+<span class="block font-label-mono-sm text-[10px] uppercase text-slate-400 font-semibold tracking-wider">Client</span>
+<span class="font-label-mono-md text-label-mono-md text-slate-800 font-semibold">Series B SaaS</span>
+</div>
+<div>
+<span class="block font-label-mono-sm text-[10px] uppercase text-slate-400 font-semibold tracking-wider">System</span>
+<span class="font-label-mono-md text-label-mono-md text-slate-800 font-semibold">Signal Outbound</span>
+</div>
+<div>
+<span class="block font-label-mono-sm text-[10px] uppercase text-slate-400 font-semibold tracking-wider">Deployment</span>
+<span class="font-label-mono-md text-label-mono-md text-slate-800 font-semibold">14 Days</span>
+</div>
+<div>
+<span class="block font-label-mono-sm text-[10px] uppercase text-slate-400 font-semibold tracking-wider">Status</span>
+<span class="inline-flex items-center gap-1.5 font-label-mono-md text-label-mono-md text-emerald-600 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active Prod
+              </span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-4 pt-2">
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 text-white font-label-ui text-label-ui hover:bg-blue-700 shadow-sm transition-all" href="#system-blueprint">
+<span>Explore the System</span>
+<span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+</a>
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-slate-800 hover:text-blue-600 shadow-sm font-label-ui text-label-ui transition-all" href="#build-protocol">
+<span>Implementation Protocol</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Right: Engineered Compact Live Product Specimen -->
+<div class="lg:col-span-6 relative">
+<div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden">
+<!-- Header bar of the UI preview -->
+<div class="flex items-center justify-between pb-4 border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-slate-200"></span>
+<span class="w-3 h-3 rounded-full bg-slate-200"></span>
+<span class="w-3 h-3 rounded-full bg-slate-200"></span>
+<span class="font-label-mono-sm text-label-mono-sm text-slate-400 ml-2">syntropic.agent_stream:v4.2</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-label-mono-sm text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                LIVE PIPELINE
+              </div>
+</div>
+<!-- Flow Visual Diagram -->
+<div class="py-5 flex flex-col gap-3">
+<!-- Tier 1: Input -->
+<div class="p-3.5 rounded-xl bg-slate-50 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">sensors</span>
+</div>
+<div>
+<span class="font-label-mono-sm text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">01 Raw Signals</span>
+<span class="font-label-mono-md text-label-mono-md text-slate-800 font-semibold">Unstructured Inputs &amp; Hiring Webhooks</span>
+</div>
+</div>
+<span class="font-label-mono-sm text-[11px] px-2 py-0.5 rounded bg-slate-200 text-slate-700">142 evt/min</span>
+</div>
+<!-- Connector -->
+<div class="flex items-center justify-center py-0.5 text-blue-500">
+<span class="material-symbols-outlined text-[18px] animate-bounce">south</span>
+</div>
+<!-- Tier 2: Validation Gate -->
+<div class="p-3.5 rounded-xl bg-blue-50/70 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</div>
+<div>
+<span class="font-label-mono-sm text-[10px] text-blue-600 uppercase tracking-wider block font-semibold">02 Deterministic Gate</span>
+<span class="font-label-mono-md text-label-mono-md text-slate-900 font-semibold">Zero-Drift ICP Scoring Engine</span>
+</div>
+</div>
+<span class="font-label-mono-sm text-[11px] font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">&lt;38ms Latency</span>
+</div>
+<!-- Connector -->
+<div class="flex items-center justify-center py-0.5 text-blue-500">
+<span class="material-symbols-outlined text-[18px]">south</span>
+</div>
+<!-- Tier 3: Agentic Synthesis -->
+<div class="p-3.5 rounded-xl bg-purple-50/60 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+</div>
+<div>
+<span class="font-label-mono-sm text-[10px] text-purple-600 uppercase tracking-wider block font-semibold">03 Autonomous Synthesis</span>
+<span class="font-label-mono-md text-label-mono-md text-slate-900 font-semibold">Deep Context Research &amp; Drafts</span>
+</div>
+</div>
+<span class="font-label-mono-sm text-[11px] font-semibold text-purple-700 bg-purple-100 px-2 py-0.5 rounded">Claude 3.5 Sonnet</span>
+</div>
+<!-- Connector -->
+<div class="flex items-center justify-center py-0.5 text-emerald-500">
+<span class="material-symbols-outlined text-[18px]">south</span>
+</div>
+<!-- Tier 4: Revenue Impact -->
+<div class="p-3.5 rounded-xl bg-emerald-50 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</div>
+<div>
+<span class="font-label-mono-sm text-[10px] text-emerald-700 uppercase tracking-wider block font-semibold">04 Revenue System</span>
+<span class="font-label-mono-md text-label-mono-md text-emerald-950 font-bold">Bi-Directional CRM Sync &amp; Dispatch</span>
+</div>
+</div>
+<span class="font-label-mono-sm text-[11px] font-bold text-emerald-700 bg-white shadow-sm px-2 py-0.5 rounded">+320% Velocity</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 02 THE PROBLEM: Fragile Disconnected State -->
+<section class="w-full bg-white text-slate-900 py-20 relative">
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg">
+<div class="text-center max-w-2xl mx-auto mb-16 flex flex-col gap-3">
+<span class="font-label-mono-sm text-label-mono-sm tracking-wider uppercase text-red-600 font-bold">
+          01 // The Problem — Operational Analysis
+        </span>
+<h2 class="font-headline-lg text-3xl md:text-4xl font-bold tracking-tight text-slate-950">
+          The team had the data. <span class="font-editorial-italic italic font-normal text-blue-600">The system didn't.</span>
+</h2>
+<p class="font-body-md text-body-md text-slate-600">
+          Revenue talent was losing 15+ hours weekly manually bridging disconnected tools and outdated spreadsheets.
+        </p>
+</div>
+<!-- Disconnected Islands Diagram -->
+<div class="p-8 lg:p-12 rounded-2xl bg-slate-50 relative overflow-hidden mb-12 shadow-inner">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
+<!-- Island 1 -->
+<div class="bg-white p-5 rounded-xl shadow-sm flex flex-col gap-2 relative">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-[10px] font-bold text-red-500 uppercase">Island 01</span>
+<span class="material-symbols-outlined text-red-500 text-[18px]">warning</span>
+</div>
+<h3 class="font-headline-sm text-base font-bold text-slate-900">Stale CRM Records</h3>
+<p class="font-body-sm text-xs text-slate-500">Contact metadata 6+ months decayed without update events.</p>
+<div class="mt-2 text-center text-xs font-label-mono-sm text-red-600 bg-red-50 py-1 rounded">40% Data Decay</div>
+</div>
+<!-- Island 2 -->
+<div class="bg-white p-5 rounded-xl shadow-sm flex flex-col gap-2 relative">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-[10px] font-bold text-red-500 uppercase">Island 02</span>
+<span class="material-symbols-outlined text-amber-500 text-[18px]">table_view</span>
+</div>
+<h3 class="font-headline-sm text-base font-bold text-slate-900">Manual Spreadsheets</h3>
+<p class="font-body-sm text-xs text-slate-500">Scraped prospect lists duct-taped via CSV imports across tabs.</p>
+<div class="mt-2 text-center text-xs font-label-mono-sm text-amber-700 bg-amber-50 py-1 rounded">High Human Drag</div>
+</div>
+<!-- Island 3 -->
+<div class="bg-white p-5 rounded-xl shadow-sm flex flex-col gap-2 relative">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-[10px] font-bold text-red-500 uppercase">Island 03</span>
+<span class="material-symbols-outlined text-red-500 text-[18px]">unsubscribe</span>
+</div>
+<h3 class="font-headline-sm text-base font-bold text-slate-900">Blind SDR Outreach</h3>
+<p class="font-body-sm text-xs text-slate-500">Generic outbound copy sent with zero contextual event triggers.</p>
+<div class="mt-2 text-center text-xs font-label-mono-sm text-red-600 bg-red-50 py-1 rounded">&lt;1.2% Response</div>
+</div>
+<!-- Island 4 -->
+<div class="bg-white p-5 rounded-xl shadow-sm flex flex-col gap-2 relative">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-[10px] font-bold text-red-500 uppercase">Island 04</span>
+<span class="material-symbols-outlined text-red-500 text-[18px]">link_off</span>
+</div>
+<h3 class="font-headline-sm text-base font-bold text-slate-900">Broken Handoffs</h3>
+<p class="font-body-sm text-xs text-slate-500">Zero feedback loop connecting meetings booked to sequence hooks.</p>
+<div class="mt-2 text-center text-xs font-label-mono-sm text-red-600 bg-red-50 py-1 rounded">Blind Telemetry</div>
+</div>
+</div>
+<!-- Failure state banner -->
+<div class="mt-8 text-center flex items-center justify-center gap-2 font-label-mono-sm text-xs text-slate-500 uppercase">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+          State of Failure: Fragmented tooling converted high-value sales reps into data-entry clerking.
+        </div>
+</div>
+<!-- 3 Compact Problem Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-6 rounded-xl bg-slate-50 shadow-sm flex flex-col gap-2">
+<div class="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center mb-1">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<h4 class="font-headline-sm text-lg font-bold text-slate-900">Fragmented Data</h4>
+<p class="font-body-md text-sm text-slate-600">Information lived across 7 disconnected browser tabs and brittle weekly manual exports.</p>
+</div>
+<div class="p-6 rounded-xl bg-slate-50 shadow-sm flex flex-col gap-2">
+<div class="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center mb-1">
+<span class="material-symbols-outlined">content_paste_go</span>
+</div>
+<h4 class="font-headline-sm text-lg font-bold text-slate-900">Manual Handoffs</h4>
+<p class="font-body-md text-sm text-slate-600">Reps spent hours copy-pasting notes between Salesforce and outreach sequences instead of selling.</p>
+</div>
+<div class="p-6 rounded-xl bg-slate-50 shadow-sm flex flex-col gap-2">
+<div class="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center mb-1">
+<span class="material-symbols-outlined">visibility_off</span>
+</div>
+<h4 class="font-headline-sm text-lg font-bold text-slate-900">Limited Visibility</h4>
+<p class="font-body-md text-sm text-slate-600">Leadership had zero closed-loop telemetry to understand why outbound pipelines stalled.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 03 TRANSFORMATION PIPELINE (Continuous Process Ribbon) -->
+<section class="w-full bg-[#f8f9fa] text-slate-900 py-20 relative">
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg">
+<div class="text-center max-w-2xl mx-auto mb-12">
+<span class="font-label-mono-sm text-label-mono-sm tracking-wider uppercase text-blue-600 font-bold block mb-2">Transformation Pipeline</span>
+<h2 class="font-headline-lg text-3xl font-bold tracking-tight text-slate-950">
+          The 3-Second Evolution
+        </h2>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+<!-- Stage 1: BEFORE -->
+<div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<span class="px-2.5 py-1 rounded bg-red-100 text-red-700 font-label-mono-sm text-xs font-bold uppercase">Before</span>
+<span class="material-symbols-outlined text-red-500 text-[20px]">error_outline</span>
+</div>
+<h3 class="font-headline-sm text-xl font-bold text-slate-900 mb-2">Fragile Workflows</h3>
+<p class="font-body-sm text-slate-600 text-sm mb-4">Manual scraping, subjective ICP guessing, and spreadsheet duct-tape held together with sheer rep effort.</p>
+<ul class="flex flex-col gap-2 text-xs font-label-mono-sm text-slate-500">
+<li class="flex items-center gap-2"><span class="text-red-500">✕</span> Unfiltered contact dumps</li>
+<li class="flex items-center gap-2"><span class="text-red-500">✕</span> Hallucinated outreach messaging</li>
+<li class="flex items-center gap-2"><span class="text-red-500">✕</span> Zero CRM bi-directional sync</li>
+</ul>
+</div>
+<!-- Stage 2: CORE ADAPTER (Engineered Centerpiece) -->
+<div class="lg:col-span-4 bg-blue-600 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<span class="px-2.5 py-1 rounded bg-white/20 text-white font-label-mono-sm text-xs font-bold uppercase">Syntropic Adapter Core</span>
+<span class="material-symbols-outlined text-white text-[20px]">memory</span>
+</div>
+<h3 class="font-headline-sm text-xl font-bold text-white mb-2">Deterministic Engine</h3>
+<p class="font-body-sm text-blue-100 text-sm mb-4">Live signal ingestion, automated rubric gate, multi-agent enrichment, and rate-regulated dispatch.</p>
+<ul class="flex flex-col gap-2 text-xs font-label-mono-sm text-blue-100">
+<li class="flex items-center gap-2"><span class="text-emerald-300">✓</span> Event-driven trigger validation</li>
+<li class="flex items-center gap-2"><span class="text-emerald-300">✓</span> Strict schema-validated LLM context</li>
+<li class="flex items-center gap-2"><span class="text-emerald-300">✓</span> Real-time pipeline telemetry</li>
+</ul>
+</div>
+<!-- Stage 3: AFTER -->
+<div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-label-mono-sm text-xs font-bold uppercase">After</span>
+<span class="material-symbols-outlined text-emerald-600 text-[20px]">check_circle</span>
+</div>
+<h3 class="font-headline-sm text-xl font-bold text-slate-900 mb-2">Continuous Velocity</h3>
+<p class="font-body-sm text-slate-600 text-sm mb-4">Real-time CRM sync, verified attribution, zero rep administrative busywork, and accelerated pipeline growth.</p>
+<ul class="flex flex-col gap-2 text-xs font-label-mono-sm text-slate-600">
+<li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> +320% Target ICP velocity</li>
+<li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> 18.5 hours saved per rep/week</li>
+<li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> 100% deterministic attribution</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- 04 MAJOR DARK ARCHITECTURE (Strictly Reserved Midnight Canvas) -->
+<section class="w-full bg-[#0a0e18] text-on-surface py-24 relative overflow-hidden" id="system-blueprint">
+<!-- Ambient directional glow -->
+<div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg relative z-10">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-16">
+<div>
+<span class="font-label-mono-sm text-label-mono-sm text-primary uppercase tracking-widest font-semibold block mb-2">
+            02 // System Blueprint — Production Architecture
+          </span>
+<h2 class="font-headline-lg text-4xl lg:text-5xl font-bold tracking-tight text-white">
+            One connected revenue system.
+          </h2>
+<p class="font-body-lg text-body-lg text-slate-400 mt-2 max-w-xl">
+            Built around the way the revenue team actually works. 100% client-owned VPC deployment with zero platform lock-in.
+          </p>
+</div>
+<div class="flex items-center gap-3">
+<div class="px-3.5 py-1.5 rounded-lg bg-surface-container-high flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="font-label-mono-sm text-xs text-slate-300">Error Rate: 0.002%</span>
+</div>
+<div class="px-3.5 py-1.5 rounded-lg bg-surface-container-high flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">speed</span>
+<span class="font-label-mono-sm text-xs text-slate-300">P99 Latency: &lt;65ms</span>
+</div>
+</div>
+</div>
+<!-- Layered Blueprint Schema -->
+<div class="flex flex-col gap-4">
+<!-- Tier 01 -->
+<div class="p-6 rounded-2xl bg-surface-container flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">radar</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-mono-sm text-xs text-primary font-semibold uppercase">Tier 01</span>
+<span class="text-xs text-slate-500">|</span>
+<h3 class="font-headline-sm text-lg font-bold text-white">Signals &amp; Event Ingestion</h3>
+</div>
+<p class="font-body-sm text-slate-400 text-sm mt-0.5">Captures hiring spikes, tech-stack migrations, funding events, and 10-K filing triggers.</p>
+</div>
+</div>
+<div class="flex items-center gap-2 self-start lg:self-center font-label-mono-sm text-xs">
+<span class="px-2.5 py-1 rounded bg-surface-container-highest text-slate-300">AWS EventBridge</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-highest text-slate-300">HTTP Webhook Mesh</span>
+</div>
+</div>
+<div class="flex items-center justify-center text-slate-600 my-[-6px] z-10">
+<span class="font-label-mono-sm text-[11px] uppercase tracking-wider bg-[#0a0e18] px-3 py-0.5 rounded text-slate-400">↓ Deterministic Data Bus</span>
+</div>
+<!-- Tier 02 -->
+<div class="p-6 rounded-2xl bg-surface-container flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">filter_alt</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-mono-sm text-xs text-indigo-300 font-semibold uppercase">Tier 02</span>
+<span class="text-xs text-slate-500">|</span>
+<h3 class="font-headline-sm text-lg font-bold text-white">Deterministic Qualification Gate</h3>
+</div>
+<p class="font-body-sm text-slate-400 text-sm mt-0.5">Hard-coded programmatic filters discard non-ICP accounts prior to executing any AI calls.</p>
+</div>
+</div>
+<div class="flex items-center gap-2 self-start lg:self-center font-label-mono-sm text-xs">
+<span class="px-2.5 py-1 rounded bg-indigo-950/80 text-indigo-300">Zero Hallucination</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-highest text-slate-300">FastAPI Gateway</span>
+</div>
+</div>
+<div class="flex items-center justify-center text-slate-600 my-[-6px] z-10">
+<span class="font-label-mono-sm text-[11px] uppercase tracking-wider bg-[#0a0e18] px-3 py-0.5 rounded text-slate-400">↓ Context Extraction Pipe</span>
+</div>
+<!-- Tier 03 -->
+<div class="p-6 rounded-2xl bg-surface-container flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">smart_toy</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-mono-sm text-xs text-purple-300 font-semibold uppercase">Tier 03</span>
+<span class="text-xs text-slate-500">|</span>
+<h3 class="font-headline-sm text-lg font-bold text-white">Autonomous Agent Synthesis</h3>
+</div>
+<p class="font-body-sm text-slate-400 text-sm mt-0.5">Multi-agent worker builds account dossiers, aligns buyer friction points, and preps tailored messaging.</p>
+</div>
+</div>
+<div class="flex items-center gap-2 self-start lg:self-center font-label-mono-sm text-xs">
+<span class="px-2.5 py-1 rounded bg-purple-950/80 text-purple-300">Anthropic Claude 3.5</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-highest text-slate-300">LangGraph Orchestrator</span>
+</div>
+</div>
+<div class="flex items-center justify-center text-slate-600 my-[-6px] z-10">
+<span class="font-label-mono-sm text-[11px] uppercase tracking-wider bg-[#0a0e18] px-3 py-0.5 rounded text-slate-400">↓ Rate-Regulated Dispatcher</span>
+</div>
+<!-- Tier 04 -->
+<div class="p-6 rounded-2xl bg-surface-container flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">forward_to_inbox</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-mono-sm text-xs text-primary font-semibold uppercase">Tier 04</span>
+<span class="text-xs text-slate-500">|</span>
+<h3 class="font-headline-sm text-lg font-bold text-white">Multi-Channel Delivery &amp; Triage</h3>
+</div>
+<p class="font-body-sm text-slate-400 text-sm mt-0.5">Dispatches personalized touchpoints with automatic human-in-the-loop review on tier-1 target accounts.</p>
+</div>
+</div>
+<div class="flex items-center gap-2 self-start lg:self-center font-label-mono-sm text-xs">
+<span class="px-2.5 py-1 rounded bg-surface-container-highest text-slate-300">Zero Spam Score</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-highest text-slate-300">Smart Inbox Mesh</span>
+</div>
+</div>
+<div class="flex items-center justify-center text-slate-600 my-[-6px] z-10">
+<span class="font-label-mono-sm text-[11px] uppercase tracking-wider bg-[#0a0e18] px-3 py-0.5 rounded text-slate-400">↓ Closed-Loop Attribution Feedback</span>
+</div>
+<!-- Tier 05 -->
+<div class="p-6 rounded-2xl bg-surface-container flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">database</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-mono-sm text-xs text-emerald-400 font-semibold uppercase">Tier 05</span>
+<span class="text-xs text-slate-500">|</span>
+<h3 class="font-headline-sm text-lg font-bold text-white">System of Record &amp; Closed-Loop Telemetry</h3>
+</div>
+<p class="font-body-sm text-slate-400 text-sm mt-0.5">Bi-directional CRM sync writes conversation context, updates lifecycle status, and triggers AE alerts.</p>
+</div>
+</div>
+<div class="flex items-center gap-2 self-start lg:self-center font-label-mono-sm text-xs">
+<span class="px-2.5 py-1 rounded bg-emerald-950/80 text-emerald-300">Salesforce &amp; HubSpot Sync</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-highest text-slate-300">Postgres Analytics</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 05 UNDER THE HOOD (Exploded System View: Light Canvas) -->
+<section class="w-full bg-white text-slate-900 py-20 relative">
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg">
+<div class="max-w-2xl mb-12">
+<span class="font-label-mono-sm text-label-mono-sm uppercase text-blue-600 font-bold block mb-2">03 // Under the Hood</span>
+<h2 class="font-headline-lg text-3xl md:text-4xl font-bold tracking-tight text-slate-950">
+          Engineered directly into production.
+        </h2>
+<p class="font-body-md text-body-md text-slate-600 mt-2">
+          Deconstructed engineering components driving continuous performance without operational fragility.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Comp 1 -->
+<div class="p-6 rounded-2xl bg-[#f8f9fa] shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[22px]">satellite_alt</span>
+</div>
+<span class="font-label-mono-sm text-[11px] font-bold text-blue-600 uppercase tracking-wider block mb-1">01 Signals</span>
+<h3 class="font-headline-sm text-lg font-bold text-slate-900 mb-2">Event-Driven Feeds</h3>
+<p class="font-body-sm text-sm text-slate-600">Continuous event-driven triggers replace static scrapers, ingesting live buyer indicators within minutes of release.</p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-200/60 font-label-mono-sm text-xs text-slate-500">
+            Latency: &lt;2.4s from event trigger
+          </div>
+</div>
+<!-- Comp 2 -->
+<div class="p-6 rounded-2xl bg-[#f8f9fa] shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[22px]">cognition</span>
+</div>
+<span class="font-label-mono-sm text-[11px] font-bold text-purple-600 uppercase tracking-wider block mb-1">02 Intelligence</span>
+<h3 class="font-headline-sm text-lg font-bold text-slate-900 mb-2">LLM Context Engine</h3>
+<p class="font-body-sm text-sm text-slate-600">Deterministic reasoning engines evaluate operational fit against hard qualification schemas before drafting.</p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-200/60 font-label-mono-sm text-xs text-slate-500">
+            Accuracy: 99.4% schema compliance
+          </div>
+</div>
+<!-- Comp 3 -->
+<div class="p-6 rounded-2xl bg-[#f8f9fa] shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[22px]">send_time_extension</span>
+</div>
+<span class="font-label-mono-sm text-[11px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">03 Execution</span>
+<h3 class="font-headline-sm text-lg font-bold text-slate-900 mb-2">Idempotent Delivery</h3>
+<p class="font-body-sm text-sm text-slate-600">Idempotent event queues dispatch personalized outreach across inboxes without double-sends or collisions.</p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-200/60 font-label-mono-sm text-xs text-slate-500">
+            Reliability: 100% collision prevention
+          </div>
+</div>
+<!-- Comp 4 -->
+<div class="p-6 rounded-2xl bg-[#f8f9fa] shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[22px]">update</span>
+</div>
+<span class="font-label-mono-sm text-[11px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">04 Learning</span>
+<h3 class="font-headline-sm text-lg font-bold text-slate-900 mb-2">Closed Telemetry</h3>
+<p class="font-body-sm text-sm text-slate-600">Real-time meeting conversions and objection classifications continuously tune underlying routing rules.</p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-200/60 font-label-mono-sm text-xs text-slate-500">
+            Loop: Automated weekly prompt delta
+          </div>
+</div>
+</div>
+</div>
+</section>
+<!-- 06 WHAT CHANGED: Before vs After Matrix + Verified Metrics -->
+<section class="w-full bg-[#f8f9fa] text-slate-900 py-20 relative">
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<span class="font-label-mono-sm text-label-mono-sm uppercase text-blue-600 font-bold block mb-2">04 // The Outcome</span>
+<h2 class="font-headline-lg text-3xl md:text-4xl font-bold tracking-tight text-slate-950">
+          Measurable operational transformation.
+        </h2>
+</div>
+<!-- Verified Metrics Strip -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+<div class="p-6 rounded-2xl bg-white shadow-sm flex flex-col">
+<span class="font-display-lg text-4xl lg:text-5xl font-bold text-blue-600 tracking-tight">+320%</span>
+<span class="font-headline-sm text-sm font-semibold text-slate-900 mt-2">Pipeline Velocity</span>
+<span class="font-body-sm text-xs text-slate-500 mt-1">Across primary Tier-1 target ICP accounts within 90 days</span>
+</div>
+<div class="p-6 rounded-2xl bg-white shadow-sm flex flex-col">
+<span class="font-display-lg text-4xl lg:text-5xl font-bold text-emerald-600 tracking-tight">−68%</span>
+<span class="font-headline-sm text-sm font-semibold text-slate-900 mt-2">Research Grind Eliminated</span>
+<span class="font-body-sm text-xs text-slate-500 mt-1">Manual tab-hopping and contact qualification eliminated entirely</span>
+</div>
+<div class="p-6 rounded-2xl bg-white shadow-sm flex flex-col">
+<span class="font-display-lg text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">18.5h</span>
+<span class="font-headline-sm text-sm font-semibold text-slate-900 mt-2">Saved / Rep / Week</span>
+<span class="font-body-sm text-xs text-slate-500 mt-1">Directly re-allocated to live calls and proposal reviews</span>
+</div>
+<div class="p-6 rounded-2xl bg-white shadow-sm flex flex-col">
+<span class="font-display-lg text-4xl lg:text-5xl font-bold text-purple-600 tracking-tight">14d</span>
+<span class="font-headline-sm text-sm font-semibold text-slate-900 mt-2">To Full Production</span>
+<span class="font-body-sm text-xs text-slate-500 mt-1">From discovery audit to live deployment inside client VPC</span>
+</div>
+</div>
+<!-- Before / After Matrix Table -->
+<div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+<div class="grid grid-cols-2 p-5 bg-slate-100/70 border-b border-slate-200 font-label-mono-sm text-xs uppercase tracking-wider font-bold">
+<div class="text-slate-500">Legacy Architecture (Before)</div>
+<div class="text-blue-600">Syntropic Engineered Infrastructure (After)</div>
+</div>
+<div class="divide-y divide-slate-100">
+<div class="grid grid-cols-2 p-5 items-center">
+<div class="flex items-center gap-3 pr-4">
+<span class="text-red-500 text-sm font-bold">✕</span>
+<span class="text-slate-600 text-sm">Manual lead qualification across multiple spreadsheets</span>
+</div>
+<div class="flex items-center gap-3 pl-4">
+<span class="text-emerald-600 text-sm font-bold">✓</span>
+<span class="text-slate-900 font-medium text-sm">Deterministic programmatic triage with &lt;40ms scoring</span>
+</div>
+</div>
+<div class="grid grid-cols-2 p-5 items-center">
+<div class="flex items-center gap-3 pr-4">
+<span class="text-red-500 text-sm font-bold">✕</span>
+<span class="text-slate-600 text-sm">Static quarterly prospect lists with 30%+ decay rate</span>
+</div>
+<div class="flex items-center gap-3 pl-4">
+<span class="text-emerald-600 text-sm font-bold">✓</span>
+<span class="text-slate-900 font-medium text-sm">Real-time webhook ingestion triggered by buyer hiring &amp; tech signals</span>
+</div>
+</div>
+<div class="grid grid-cols-2 p-5 items-center">
+<div class="flex items-center gap-3 pr-4">
+<span class="text-red-500 text-sm font-bold">✕</span>
+<span class="text-slate-600 text-sm">SDRs crafting cold copy with generic persona templates</span>
+</div>
+<div class="flex items-center gap-3 pl-4">
+<span class="text-emerald-600 text-sm font-bold">✓</span>
+<span class="text-slate-900 font-medium text-sm">Multi-agent context synthesis calibrated to specific account initiatives</span>
+</div>
+</div>
+<div class="grid grid-cols-2 p-5 items-center">
+<div class="flex items-center gap-3 pr-4">
+<span class="text-red-500 text-sm font-bold">✕</span>
+<span class="text-slate-600 text-sm">Fragmented reporting with zero conversion feedback loop</span>
+</div>
+<div class="flex items-center gap-3 pl-4">
+<span class="text-emerald-600 text-sm font-bold">✓</span>
+<span class="text-slate-900 font-medium text-sm">100% closed-loop CRM telemetry with auto-calibrating parameters</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 07 THE SYSTEM BECAME PART OF THE TEAM (Human + AI Workflow) -->
+<section class="w-full bg-white text-slate-900 py-20 relative">
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<span class="font-label-mono-sm text-label-mono-sm uppercase text-blue-600 font-bold block mb-2">05 // Workflow Cohesion</span>
+<h2 class="font-headline-lg text-3xl md:text-4xl font-bold tracking-tight text-slate-950">
+          Automation didn’t replace the team. <br class="hidden sm:inline"/><span class="font-editorial-italic italic font-normal text-blue-600">It removed the friction around them.</span>
+</h2>
+</div>
+<!-- Human + AI Cohesion Flowchart -->
+<div class="p-8 lg:p-12 rounded-2xl bg-slate-50 relative shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-6 gap-4 relative">
+<!-- Step 1: Human -->
+<div class="p-4 rounded-xl bg-white shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-label-mono-sm bg-blue-100 text-blue-800 font-bold uppercase">Human</span>
+<span class="material-symbols-outlined text-blue-600 text-[18px]">person</span>
+</div>
+<h4 class="font-headline-sm text-sm font-bold text-slate-900">Strategic Intent</h4>
+<p class="font-body-sm text-xs text-slate-500 mt-1">Leadership defines target criteria, accounts, and positioning angles.</p>
+</div>
+</div>
+<!-- Step 2: AI -->
+<div class="p-4 rounded-xl bg-white shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-label-mono-sm bg-purple-100 text-purple-800 font-bold uppercase">AI Agent</span>
+<span class="material-symbols-outlined text-purple-600 text-[18px]">smart_toy</span>
+</div>
+<h4 class="font-headline-sm text-sm font-bold text-slate-900">Signal Crawl</h4>
+<p class="font-body-sm text-xs text-slate-500 mt-1">Continuous ingestion detects verified buying events across webhooks.</p>
+</div>
+</div>
+<!-- Step 3: AI -->
+<div class="p-4 rounded-xl bg-white shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-label-mono-sm bg-purple-100 text-purple-800 font-bold uppercase">AI Agent</span>
+<span class="material-symbols-outlined text-purple-600 text-[18px]">psychology</span>
+</div>
+<h4 class="font-headline-sm text-sm font-bold text-slate-900">Context Synthesis</h4>
+<p class="font-body-sm text-xs text-slate-500 mt-1">Builds structured account dossier and tailored talking points.</p>
+</div>
+</div>
+<!-- Step 4: Human Gate -->
+<div class="p-4 rounded-xl bg-amber-50/60 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-label-mono-sm bg-amber-200 text-amber-900 font-bold uppercase">Human Gate</span>
+<span class="material-symbols-outlined text-amber-700 text-[18px]">verified</span>
+</div>
+<h4 class="font-headline-sm text-sm font-bold text-slate-900">Review &amp; Polish</h4>
+<p class="font-body-sm text-xs text-slate-600 mt-1">Rep validates high-stake enterprise contacts with a single click.</p>
+</div>
+</div>
+<!-- Step 5: System -->
+<div class="p-4 rounded-xl bg-white shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-label-mono-sm bg-indigo-100 text-indigo-800 font-bold uppercase">System</span>
+<span class="material-symbols-outlined text-indigo-600 text-[18px]">send</span>
+</div>
+<h4 class="font-headline-sm text-sm font-bold text-slate-900">Smart Dispatch</h4>
+<p class="font-body-sm text-xs text-slate-500 mt-1">Multi-channel routing ensures timely delivery and inbox warmup.</p>
+</div>
+</div>
+<!-- Step 6: Human -->
+<div class="p-4 rounded-xl bg-emerald-50/60 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-label-mono-sm bg-emerald-200 text-emerald-900 font-bold uppercase">Human</span>
+<span class="material-symbols-outlined text-emerald-700 text-[18px]">handshake</span>
+</div>
+<h4 class="font-headline-sm text-sm font-bold text-slate-900">Commercial Close</h4>
+<p class="font-body-sm text-xs text-slate-600 mt-1">AE leads discovery call backed by synthesized context data.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 08 BUILD PROCESS (Horizontal 5-Stage Timeline) -->
+<section class="w-full bg-[#f8f9fa] text-slate-900 py-20 relative" id="build-protocol">
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<span class="font-label-mono-sm text-label-mono-sm uppercase text-blue-600 font-bold block mb-2">06 // Implementation Protocol</span>
+<h2 class="font-headline-lg text-3xl md:text-4xl font-bold tracking-tight text-slate-950">
+          From friction to production in 14 days.
+        </h2>
+</div>
+<!-- Horizontal Process Timeline -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+<!-- Day 1 -->
+<div class="bg-white p-5 rounded-xl shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-xs font-bold text-blue-600 uppercase">Day 01</span>
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+</div>
+<h3 class="font-headline-sm text-base font-bold text-slate-900">Discover</h3>
+<p class="font-body-sm text-xs text-slate-500">Isolate operational friction, evaluate tool silos, and extract ICP criteria.</p>
+</div>
+<!-- Day 2-3 -->
+<div class="bg-white p-5 rounded-xl shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-xs font-bold text-blue-600 uppercase">Day 02–03</span>
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+</div>
+<h3 class="font-headline-sm text-base font-bold text-slate-900">Design</h3>
+<p class="font-body-sm text-xs text-slate-500">Draft data schemas, qualification state machines, and webhook endpoints.</p>
+</div>
+<!-- Day 4-10 -->
+<div class="bg-white p-5 rounded-xl shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-xs font-bold text-blue-600 uppercase">Day 04–10</span>
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+</div>
+<h3 class="font-headline-sm text-base font-bold text-slate-900">Build</h3>
+<p class="font-body-sm text-xs text-slate-500">Code idempotent agent orchestrators, CRM connectors, and telemetry pipes.</p>
+</div>
+<!-- Day 11-13 -->
+<div class="bg-white p-5 rounded-xl shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-xs font-bold text-blue-600 uppercase">Day 11–13</span>
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+</div>
+<h3 class="font-headline-sm text-base font-bold text-slate-900">Deploy</h3>
+<p class="font-body-sm text-xs text-slate-500">Deploy into client AWS/GCP VPC, test fallback failovers, and verify telemetry.</p>
+</div>
+<!-- Day 14+ -->
+<div class="bg-white p-5 rounded-xl shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-sm text-xs font-bold text-emerald-600 uppercase">Day 14+</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<h3 class="font-headline-sm text-base font-bold text-slate-900">Improve</h3>
+<p class="font-body-sm text-xs text-slate-500">Weekly automated prompt tuning and continuous ICP weight adjustment.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 09 EDITORIAL CASE STUDY INSIGHT -->
+<section class="w-full bg-white text-slate-900 py-16 relative">
+<div class="max-w-4xl mx-auto px-margin md:px-margin-md text-center">
+<div class="p-8 lg:p-12 rounded-3xl bg-slate-50 relative overflow-hidden shadow-sm">
+<span class="material-symbols-outlined text-slate-300 text-5xl mb-4 block mx-auto">format_quote</span>
+<blockquote class="font-editorial-italic text-2xl md:text-3xl text-slate-900 leading-relaxed max-w-2xl mx-auto font-normal">
+          “The biggest improvement wasn’t another automation. <span class="italic text-blue-600">It was making the system visible and deterministic</span>.”
+        </blockquote>
+<div class="mt-6 flex flex-col items-center">
+<span class="font-headline-sm text-sm font-bold text-slate-900">Head of Revenue Operations</span>
+<span class="font-label-mono-sm text-xs text-slate-500">Series B Enterprise SaaS Client</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 10 MORE SYSTEMS WE'VE BUILT -->
+<section class="w-full bg-[#f8f9fa] text-slate-900 py-20 relative">
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+<div>
+<span class="font-label-mono-sm text-label-mono-sm uppercase text-blue-600 font-bold block mb-1">Portfolio</span>
+<h2 class="font-headline-lg text-3xl font-bold tracking-tight text-slate-950">
+            More systems we've engineered.
+          </h2>
+</div>
+<a class="inline-flex items-center gap-1.5 font-label-ui text-sm text-blue-600 hover:text-blue-700 font-semibold mt-3 md:mt-0" data-path="work" href="#">
+<span>View all architectures</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<a class="group p-6 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-path="work" href="#">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="px-2.5 py-0.5 rounded text-[11px] font-label-mono-sm bg-slate-100 text-slate-700 font-semibold">Fintech</span>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-blue-600 transition-colors text-[20px]">arrow_outward</span>
+</div>
+<h3 class="font-headline-sm text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+              Autonomous Inbound Qualification &amp; Routing
+            </h3>
+<p class="font-body-sm text-xs text-slate-500 mt-2">Sub-second calendar routing based on financial regulatory data and live credit tier check.</p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 font-label-mono-sm text-xs text-emerald-600 font-semibold">
+            Metric: &lt;1.8s Lead-to-Calendar Speed
+          </div>
+</a>
+<!-- Card 2 -->
+<a class="group p-6 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-path="work" href="#">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="px-2.5 py-0.5 rounded text-[11px] font-label-mono-sm bg-slate-100 text-slate-700 font-semibold">DevTools</span>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-blue-600 transition-colors text-[20px]">arrow_outward</span>
+</div>
+<h3 class="font-headline-sm text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+              Signal-Driven Developer Outbound Engine
+            </h3>
+<p class="font-body-sm text-xs text-slate-500 mt-2">Ingesting GitHub commit frequency and open-source dependency changes to trigger relevant reachout.</p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 font-label-mono-sm text-xs text-emerald-600 font-semibold">
+            Metric: +4.2x Technical Response Rate
+          </div>
+</a>
+<!-- Card 3 -->
+<a class="group p-6 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-path="work" href="#">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="px-2.5 py-0.5 rounded text-[11px] font-label-mono-sm bg-slate-100 text-slate-700 font-semibold">Logistics</span>
+<span class="material-symbols-outlined text-slate-300 group-hover:text-blue-600 transition-colors text-[20px]">arrow_outward</span>
+</div>
+<h3 class="font-headline-sm text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+              Unified RevOps Data Normalization Layer
+            </h3>
+<p class="font-body-sm text-xs text-slate-500 mt-2">Zero-loss ingestion syncing 14 fragmented legacy systems into a singular structured data store.</p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 font-label-mono-sm text-xs text-emerald-600 font-semibold">
+            Metric: 40+ Engineering Hours Saved/Wk
+          </div>
+</a>
+</div>
+</div>
+</section>
+<!-- 11 FINAL DARK CTA BLOCK: Strictly Midnight Canvas -->
+<section class="w-full bg-[#0a0e18] text-white py-24 relative overflow-hidden">
+<!-- Atmospheric blue glow backdrop -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl"></div>
+</div>
+<div class="max-w-4xl mx-auto px-margin md:px-margin-md text-center relative z-10 flex flex-col items-center gap-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-primary border-none shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider font-semibold">System Architecture Evaluation</span>
+</div>
+<h2 class="font-headline-lg text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+        Have a revenue problem <br/>
+<span class="font-editorial-italic italic font-normal text-primary">worth engineering?</span>
+</h2>
+<p class="font-body-lg text-body-lg text-slate-400 max-w-xl">
+        If the friction is real, let's figure out what system to build. No generic consulting decks—only verified production blueprints.
+      </p>
+<div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+<a class="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg bg-blue-600 text-white font-label-ui text-label-ui hover:bg-blue-500 shadow-lg shadow-blue-600/30 transition-all font-semibold" data-path="book-a-discovery" href="#">
+<span>Start a Build</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg bg-surface-container-high text-on-surface hover:text-white hover:bg-surface-bright font-label-ui text-label-ui transition-all font-semibold" data-path="what-we-build" href="#">
+<span>Explore What We Build</span>
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</a>
+</div>
+<!-- Trust signals strip -->
+<div class="pt-8 flex flex-wrap items-center justify-center gap-6 text-slate-500 font-label-mono-sm text-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">engineering</span>
+<span>Direct Principal Engineer Access</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">schedule</span>
+<span>48h Viability Audit</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">security</span>
+<span>Mutual NDA by Default</span>
+</div>
+</div>
+</div>
+</section>
+</div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_12px_rgba(0,0,0,0.35)]"><div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg pt-space-2xl pb-space-xl"><div class="grid grid-cols-1 md:grid-cols-12 gap-space-xl pb-space-xl"><div class="md:col-span-5 flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-surface">Syntropic</span><div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container"><span class="font-label-mono-sm text-label-mono-sm uppercase text-primary">AI + GTM</span></div></div><p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Deterministic enterprise AI systems and high-velocity Go-To-Market infrastructure engineered for compound revenue expansion.</p><div class="flex items-center gap-2 pt-space-xs"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-mono-sm text-label-mono-sm text-on-surface-variant">Systems Operational · Autonomous Node V4</span></div></div><div class="md:col-span-4 flex flex-col gap-space-sm"><span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-outline">Architecture &amp; Solutions</span><nav class="flex flex-col gap-2.5" data-active-classes="text-primary font-semibold"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="what-we-build" href="#">What We Build</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="how-it-works" href="#">How It Works</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="work" href="#">Work</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="ai-agents" href="#">AI Agents</a></nav></div><div class="md:col-span-3 flex flex-col gap-space-sm"><span class="font-label-mono-sm text-label-mono-sm uppercase tracking-wider text-outline">Organization</span><nav class="flex flex-col gap-2.5" data-active-classes="text-primary font-semibold"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="about" href="#">About</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="blog" href="#">Blog</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="book-a-discovery" href="#">Book a Discovery</a></nav></div></div><div class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-md"><p class="font-label-mono-sm text-label-mono-sm text-outline">© 2025 Syntropic AI Systems Inc. All rights reserved.</p><div class="flex items-center gap-space-lg"><a class="font-label-mono-sm text-label-mono-sm text-outline hover:text-on-surface transition-colors" data-path="terms-and-privacy" href="#">Terms of Service</a><a class="font-label-mono-sm text-label-mono-sm text-outline hover:text-on-surface transition-colors" data-path="terms-and-privacy" href="#">Privacy Policy</a><a class="font-label-mono-sm text-label-mono-sm text-outline hover:text-on-surface transition-colors" data-path="terms-and-privacy" href="#">Security Attestation</a></div></div></div></footer></body></html>

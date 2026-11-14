@@ -4,6 +4,7 @@ node_modules/
 
 # builds
 dist/
+.data/
 build/
 .next/
 out/
@@ -29,6 +30,10 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
 
 # testing
 coverage/
@@ -37,3 +42,7 @@ coverage/
 prisma/*.db
 
 # nested git dirs from migrated apps (removed during migration)
+
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md

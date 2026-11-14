@@ -16,13 +16,14 @@ import { meRouter } from "@features/me/me.routes";
 import { adminRouter } from "@features/admin/admin.routes";
 import { organizationsRouter } from "@features/organizations/organization.routes";
 import { workspaceRouter } from "@features/workspaces/workspace.routes";
-import { campaignsRouter } from "@features/campaigns/campaign.routes";
+import { campaignsRouter, tagsRouter } from "@features/campaigns/campaign.routes";
 import { registerAllPlugins } from "@plugins/register-all";
 import { IPrismaService, PRISMA_PLUGIN } from "@plugins/prisma/prisma.plugin";
-import { IQueueService, QUEUE_PLUGIN } from "@plugins/queue/pgboss.plugin";
+import { IQueueService, QUEUE_PLUGIN } from "@plugins/queue/queue.types";
 import { IMapsService, MAPS_PLUGIN } from "@plugins/maps/maps.plugin";
 import { IEmailService, EMAIL_PLUGIN } from "@plugins/email/email.plugin";
 import { teamRouter, invitationsRouter } from "@features/invitations/invitation.routes";
+import { ensureDefaultSuperAdmin } from "@features/auth/default-superadmin";
 
 export interface BootResult {
   app: Express;
@@ -55,6 +56,8 @@ export async function buildApp(): Promise<{ app: Express; registry: PluginRegist
   const prisma = prismaPlugin.client;
   const auth = createAuth(prisma);
 
+  await ensureDefaultSuperAdmin({ prisma, auth, config });
+
   // Better Auth reads the raw request body. JSON parsing must come after this handler.
   app.all("/api/auth/*splat", toNodeHandler(auth));
 
@@ -72,6 +75,7 @@ export async function buildApp(): Promise<{ app: Express; registry: PluginRegist
   );
   app.use("/api/invitations", invitationsRouter({ prisma, email: emailPlugin, appWebUrl: config.APP_WEB_URL }));
   app.use("/api/organizations/:organizationId/campaigns", campaignsRouter({ prisma, queue: queuePlugin }));
+  app.use("/api/organizations/:organizationId/tags", tagsRouter({ prisma }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

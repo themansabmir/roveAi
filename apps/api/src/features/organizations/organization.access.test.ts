@@ -35,7 +35,11 @@ async function signUpAndCreateWorkspace(
   return { cookie, organizationId: workspace.body.id as string };
 }
 
-describe("organization access", () => {
+const hasRealDb = Boolean(
+  process.env.DATABASE_URL && !process.env.DATABASE_URL.includes("HOST-pooler.REGION.aws.neon.tech")
+);
+
+describe.skipIf(!hasRealDb)("organization access", () => {
   const emails: string[] = [];
   const organizationIds: string[] = [];
   let app: Express.Application;

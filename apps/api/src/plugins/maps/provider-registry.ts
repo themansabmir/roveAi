@@ -1,13 +1,15 @@
 import { AppConfig } from "@core/config";
 import { MapsProvider } from "./maps.types";
+import { ApifyMapsProvider } from "./apify.provider";
 import { FixtureMapsProvider } from "./fixture.provider";
 import { OutscraperMapsProvider } from "./outscraper.provider";
 import { SerpApiMapsProvider } from "./serpapi.provider";
 import { GooglePlacesMapsProvider } from "./googleplaces.provider";
 
-export type DiscoveryProviderKey = "OUTSCRAPER" | "SERPAPI" | "GOOGLE_PLACES" | "FIXTURE";
+export type DiscoveryProviderKey = "APIFY" | "OUTSCRAPER" | "SERPAPI" | "GOOGLE_PLACES" | "FIXTURE";
 
 export const DISCOVERY_PROVIDER_KEYS: DiscoveryProviderKey[] = [
+  "APIFY",
   "OUTSCRAPER",
   "SERPAPI",
   "GOOGLE_PLACES",
@@ -28,6 +30,12 @@ interface ProviderDefinition {
 }
 
 const DEFINITIONS: ProviderDefinition[] = [
+  {
+    key: "APIFY",
+    label: "Apify Google Maps",
+    build: (config) =>
+      config.APIFY_TOKEN ? new ApifyMapsProvider(config.APIFY_TOKEN, config.APIFY_ACTOR) : null,
+  },
   {
     key: "OUTSCRAPER",
     label: "Outscraper",

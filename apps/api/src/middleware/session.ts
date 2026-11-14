@@ -23,17 +23,19 @@ export function attachSession(deps: { auth: Auth; prisma: PrismaClient }) {
         }),
         deps.prisma.user.findUnique({
           where: { id: session.user.id },
-          select: { isSuperAdmin: true },
+          select: { isSuperAdmin: true, platformRole: true },
         }),
       ]);
 
       const activeOrganizationId = session.session.activeOrganizationId ?? null;
+      const isSuperAdmin = (account?.isSuperAdmin ?? false) || account?.platformRole === "SUPER_ADMIN";
       req.auth = {
         userId: session.user.id,
         email: session.user.email,
         name: session.user.name ?? null,
         emailVerified: session.user.emailVerified ?? false,
-        isSuperAdmin: account?.isSuperAdmin ?? false,
+        platformRole: account?.platformRole ?? null,
+        isSuperAdmin,
         sessionId: session.session.id,
         activeOrganizationId,
         memberships: memberships.map((membership) => ({

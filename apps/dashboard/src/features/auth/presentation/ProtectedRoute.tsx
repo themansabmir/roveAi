@@ -24,7 +24,8 @@ export function SuperAdminRoute({ children }: { children: ReactNode }) {
 
   if (isLoading) return <StatusScreen label="Loading…" />
   if (!isAuthenticated) return <Navigate to="/login" replace state={{ from: location.pathname }} />
-  if (!me?.user.isSuperAdmin) return <Navigate to="/" replace />
+  const isPlatformStaff = me?.user.isSuperAdmin || me?.user.platformRole != null
+  if (!isPlatformStaff) return <Navigate to="/" replace />
   return children
 }
 

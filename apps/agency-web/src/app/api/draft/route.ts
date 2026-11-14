@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   const locale = "en"
   let path = `/${locale}`
   if (type === "agencyService" && slug) path = `/${locale}/services/${slug}`
-  else if (type === "agencyCaseStudy" && slug) path = `/${locale}/work/${slug}`
+  else if (type === "agencyCaseStudy" && slug) path = `/${locale}/case-studies/${slug}`
   else if (type === "agencyBlogPost" && slug) path = `/${locale}/blog/${slug}`
   else if (type === "agencyPage" && slug) path = `/${locale}/${slug}`
   redirect(path)

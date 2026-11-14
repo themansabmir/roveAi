@@ -1,15 +1,20 @@
 import { WebsiteFilter } from "@prisma/client";
 import { BadRequestError, NotFoundError } from "@core/errors";
-import { IQueueService } from "@plugins/queue/pgboss.plugin";
+import { IQueueService } from "@plugins/queue/queue.types";
 import { hostOf } from "./normalize";
-import { CampaignDetail, CampaignRepository, CampaignSummary, DISCOVER_QUEUE } from "./campaign.repository";
+import { CampaignDetail, CampaignRepository, CampaignSummary } from "./campaign.repository";
 import { CreateCampaignInput } from "./campaign.schemas";
+import { JobDispatcher } from "@features/jobs/job-dispatcher";
 
 export class CampaignService {
+  private readonly dispatcher: JobDispatcher;
+
   constructor(
     private readonly repository: CampaignRepository,
-    private readonly queue: IQueueService
-  ) {}
+    queue: IQueueService
+  ) {
+    this.dispatcher = new JobDispatcher(repository.prisma, queue);
+  }
 
   list(organizationId: string): Promise<CampaignSummary[]> {
     return this.repository.list(organizationId);
@@ -39,29 +44,31 @@ export class CampaignService {
   }
 
   async run(organizationId: string, campaignId: string): Promise<CampaignDetail> {
+    console.log(`[CampaignService.run] 🎯 Initiating run for campaignId: ${campaignId}`);
     const existing = await this.get(organizationId, campaignId);
     const claim = await this.repository.claimRun(organizationId, campaignId);
     if (claim === "missing") throw new NotFoundError("Campaign not found");
-    if (claim === "busy") return this.get(organizationId, campaignId);
+    if (claim === "busy") {
+      console.log(`[CampaignService.run] ⚠️ Campaign ${campaignId} is already running (${existing.status})`);
+      return this.get(organizationId, campaignId);
+    }
+    console.log(`[CampaignService.run] ✅ Claimed campaign run. Campaign status -> QUEUED`);
 
     const [used, limit] = await Promise.all([
       this.repository.mapsUsedThisMonth(organizationId),
       this.repository.mapsRecordLimit(organizationId),
     ]);
+    console.log(`[CampaignService.run] 📊 Maps quota check: ${used} used + ${existing.maxLeads} requested <= ${limit} limit`);
     if (used + existing.maxLeads > limit) {
       await this.repository.setCampaignStatus(campaignId, existing.status);
       throw new BadRequestError("This run would exceed the monthly Maps record ceiling.");
     }
 
     const job = await this.repository.createJob(campaignId, organizationId);
-    const queueJobId = await this.queue.publish(
-      DISCOVER_QUEUE,
-      { campaignId, jobId: job.id },
-      { singletonKey: `discover:${campaignId}` }
-    );
-    if (queueJobId) {
-      await this.repository.setQueueJobId(job.id, queueJobId);
-    }
+    console.log(`[CampaignService.run] 📋 Created Job row (id: ${job.id}, kind: DISCOVER, status: PENDING)`);
+
+    console.log(`[CampaignService.run] 📤 Dispatching DISCOVER job via JobDispatcher (id: ${job.id})`);
+    await this.dispatcher.dispatchJob(job.id);
     return this.get(organizationId, campaignId);
   }
 

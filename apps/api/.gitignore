@@ -4,3 +4,7 @@ dist/
 .env.*
 !.env.example
 *.log
+.agents/
+.claude/
+.windsurf/
+skills-lock.json

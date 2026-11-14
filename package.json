@@ -15,7 +15,10 @@
     "dev:studio": "turbo run dev --filter=@rove/studio",
     "dev:agency-web": "turbo run dev --filter=@rove/agency-web",
     "dev:dashboard": "turbo run dev --filter=@rove/dashboard",
-    "dev:api": "turbo run dev --filter=@rove/api"
+    "dev:api": "turbo run dev --filter=@rove/api",
+    "dev:worker": "pnpm --filter @rove/api dev:worker",
+    "prisma:generate": "pnpm --filter @rove/api prisma:generate",
+    "prisma:migrate": "pnpm --filter @rove/api prisma:migrate"
   },
   "devDependencies": {
     "prettier": "^3.3.3",
