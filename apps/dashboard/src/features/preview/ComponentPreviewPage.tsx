@@ -1,5 +1,16 @@
 import { useState } from "react"
-import { ArrowRight, Download, Filter, Mail, Plus, Sparkles, Trash2, Zap } from "lucide-react"
+import {
+  ArrowRight,
+  Download,
+  Filter,
+  Globe,
+  Mail,
+  Phone,
+  Plus,
+  Sparkles,
+  Trash2,
+  Zap,
+} from "lucide-react"
 import {
   Button,
   Input,
@@ -28,6 +39,16 @@ import {
   Toast,
   Breadcrumb,
   Pagination,
+  Sidebar,
+  TopBar,
+  CreditBalance,
+  AuraAvatar,
+  AuraStatusPill,
+  SuggestionCard,
+  ProspectCard,
+  NoteItem,
+  ContactRow,
+  FormField,
 } from "@/components/ui"
 
 interface ProspectRow {
@@ -99,6 +120,11 @@ export function ComponentPreviewPage() {
   const [tablePage, setTablePage] = useState(1)
   const [isTableLoading, setIsTableLoading] = useState(false)
   const [toastVisible, setToastVisible] = useState(true)
+
+  // Group C state
+  const [sidebarActive, setSidebarActive] = useState("find-leads")
+  const [auraWorking, setAuraWorking] = useState(true)
+  const [cardSelected, setCardSelected] = useState(false)
 
   const toggleChip = (id: string) => {
     setSelectedChips((prev) =>
@@ -662,7 +688,237 @@ export function ComponentPreviewPage() {
           </div>
         </section>
 
-        {/* 11. BULK ACTION BAR (Floating) */}
+        {/* ======================================================== */}
+        {/* GROUP C: LAYOUT & AURA COMPONENTS */}
+        {/* ======================================================== */}
+
+        <div className="border-t border-border pt-8">
+          <h2 className="text-lg font-bold tracking-tight text-foreground mb-1">
+            Group C: Layout & Aura AI Domain
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Navigation shell, AI assistant widgets, suggestion cards, notes, and prospect profiling
+            rows.
+          </p>
+        </div>
+
+        {/* 11. TOPBAR & CREDIT BALANCE */}
+        <section className="space-y-4">
+          <h2 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+            11. TopBar & Credit Balance
+          </h2>
+          <div className="rounded-xl border border-border overflow-hidden bg-card">
+            <TopBar
+              leftSlot={
+                <span className="font-semibold text-foreground text-sm">Find Leads Workspace</span>
+              }
+              centerSlot={<SearchInput placeholder="Quick search..." className="h-8 text-xs" />}
+              rightSlot={
+                <>
+                  <CreditBalance credits={2450} href="#credits" />
+                  <AuraStatusPill
+                    status={auraWorking ? "working" : "ready"}
+                    activeTaskName="Scraping dentists in Dubai (14/200)"
+                    progress={{ current: 14, total: 200 }}
+                    onPause={() => setAuraWorking(false)}
+                    onResume={() => setAuraWorking(true)}
+                  />
+                  <AuraAvatar size="sm" isWorking={auraWorking} />
+                </>
+              }
+            />
+          </div>
+        </section>
+
+        {/* 12. SIDEBAR NAVIGATION */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+              12. Sidebar Navigation (240px Fixed)
+            </h2>
+            <span className="text-xs text-muted-foreground">
+              Active item: <strong className="text-foreground">{sidebarActive}</strong>
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="h-[460px] rounded-xl border border-border overflow-hidden bg-card">
+              <Sidebar
+                activeId={sidebarActive}
+                onNavigate={(item) => setSidebarActive(item.id)}
+                user={{ name: "Alex Chen", organization: "Acme Growth", initials: "AC" }}
+              />
+            </div>
+
+            <div className="md:col-span-2 space-y-5">
+              {/* Aura Status Pill Standalone */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Aura AI State Indicators</CardTitle>
+                  <CardDescription>
+                    Interactive status pill supporting idle standby and active background
+                    enrichment. Click to toggle dropdown.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[11px] text-muted-foreground block">Ready Standby</span>
+                      <AuraStatusPill status="ready" />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[11px] text-muted-foreground block">
+                        Active Running (With Dropdown)
+                      </span>
+                      <AuraStatusPill
+                        status="working"
+                        activeTaskName="Enriching local leads in Dubai"
+                        progress={{ current: 48, total: 200 }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-border flex items-center gap-3">
+                    <span className="text-xs text-muted-foreground">Avatar sizes:</span>
+                    <AuraAvatar size="sm" />
+                    <AuraAvatar size="md" isWorking />
+                    <AuraAvatar size="lg" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* FormField */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>FormField Wrapper</CardTitle>
+                  <CardDescription>
+                    Accessible form field with label, required asterisk, helper text, and
+                    validation.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    label="Search Location"
+                    htmlFor="loc"
+                    required
+                    description="Enter city or coordinates"
+                  >
+                    <Input id="loc" defaultValue="Dubai, United Arab Emirates" />
+                  </FormField>
+                  <FormField
+                    label="Monthly Credit Cap"
+                    htmlFor="cap"
+                    error="Value cannot exceed organization balance (2,450 cr)"
+                  >
+                    <Input id="cap" defaultValue="5000" error />
+                  </FormField>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* 13. SUGGESTION CARDS (HOME SCREEN) */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+              13. Suggestion Cards (Home Recommendations)
+            </h2>
+            <span className="text-xs text-muted-foreground">From home.html</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <SuggestionCard
+              title="Orthodontists in Dubai"
+              reason="Slow mobile site found"
+              meta="About 200 businesses · 240 credits"
+              onStartSearch={() => alert("Starting search for Dubai Orthodontists")}
+              onEditFilters={() => alert("Editing filters")}
+            />
+            <SuggestionCard
+              title="Plumbers in Houston, TX"
+              reason="No online booking found"
+              meta="About 200 businesses · 240 credits"
+              onStartSearch={() => alert("Starting search for Houston Plumbers")}
+              onEditFilters={() => alert("Editing filters")}
+            />
+            <SuggestionCard
+              title="Law firms in London"
+              reason="Missing Google reviews"
+              meta="About 200 businesses · 240 credits"
+              onStartSearch={() => alert("Starting search for London Law firms")}
+              onEditFilters={() => alert("Editing filters")}
+            />
+          </div>
+        </section>
+
+        {/* 14. PROSPECT CARD, NOTES & CONTACT CHANNELS */}
+        <section className="space-y-4">
+          <h2 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+            14. Prospect Cards, Notes & Contact Channels
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Prospect Card */}
+            <div className="space-y-3">
+              <span className="text-xs font-medium text-muted-foreground">Prospect Card</span>
+              <ProspectCard
+                id="prospect-1"
+                company="Emirates Smile Clinic"
+                name="Dr. Tariq Mansoor · Lead Specialist"
+                location="Jumeirah, Dubai, UAE"
+                rating={4.8}
+                reviewsCount={142}
+                status="completed"
+                creditsCost={24}
+                checked={cardSelected}
+                onCheckedChange={setCardSelected}
+                onInspect={() => alert("Inspecting prospect profile")}
+              />
+            </div>
+
+            {/* NoteItem & ContactRow */}
+            <div className="space-y-3">
+              <span className="text-xs font-medium text-muted-foreground">
+                Detail Profiling Primitives (NoteItem & ContactRow)
+              </span>
+              <NoteItem
+                tag="AI suggestion"
+                content="Website mobile page speed score is 34/100. Potential high-intent pitch for Web Vitals audit."
+                date="Today at 10:14 AM"
+                author="Aura"
+              />
+              <NoteItem
+                tag="Observed"
+                content="Clinic has 2 active job openings on LinkedIn for Dental Assistants."
+                date="Yesterday"
+                author="Alex Chen"
+              />
+              <ContactRow
+                icon={<Mail className="size-4" />}
+                label="Direct Email"
+                value="tmansoor@emiratessmile.ae"
+                tag="AI Enriched"
+                href="mailto:tmansoor@emiratessmile.ae"
+              />
+              <ContactRow
+                icon={<Phone className="size-4" />}
+                label="Clinic Reception"
+                value="+971 4 394 8812"
+                tag="Listed on website"
+              />
+              <ContactRow
+                icon={<Globe className="size-4" />}
+                label="Corporate Site"
+                value="https://emiratessmile.ae"
+                tag="Verified Domain"
+                href="https://emiratessmile.ae"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* 15. BULK ACTION BAR (Floating) */}
         <BulkActionBar
           selectedCount={selectedTableIds.length}
           onClear={() => setSelectedTableIds([])}
