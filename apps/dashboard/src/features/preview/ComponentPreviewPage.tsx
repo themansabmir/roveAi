@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ArrowRight, Mail, Plus, Sparkles, Trash2 } from "lucide-react"
+import { ArrowRight, Download, Filter, Mail, Plus, Sparkles, Trash2, Zap } from "lucide-react"
 import {
   Button,
   Input,
@@ -20,7 +20,67 @@ import {
   TabsContent,
   Checkbox,
   Toggle,
+  DataTable,
+  type Column,
+  BulkActionBar,
+  EmptyState,
+  Skeleton,
+  Toast,
+  Breadcrumb,
+  Pagination,
 } from "@/components/ui"
+
+interface ProspectRow {
+  id: number
+  name: string
+  company: string
+  location: string
+  credits: number
+  status: "completed" | "in-progress" | "failed" | "cancelled"
+}
+
+const SAMPLE_PROSPECTS: ProspectRow[] = [
+  {
+    id: 1,
+    name: "Dr. Tariq Mansoor",
+    company: "Emirates Smile Clinic",
+    location: "Dubai, UAE",
+    credits: 24,
+    status: "completed",
+  },
+  {
+    id: 2,
+    name: "Sarah Al-Hassan",
+    company: "Gulf Orthodontics",
+    location: "Dubai, UAE",
+    credits: 18,
+    status: "completed",
+  },
+  {
+    id: 3,
+    name: "Dr. Marcus Vance",
+    company: "Dubai Marina Dental",
+    location: "Dubai, UAE",
+    credits: 32,
+    status: "in-progress",
+  },
+  {
+    id: 4,
+    name: "Elena Rostova",
+    company: "Prime Care Dentistry",
+    location: "Abu Dhabi, UAE",
+    credits: 12,
+    status: "completed",
+  },
+  {
+    id: 5,
+    name: "Karim Benali",
+    company: "Al Barsha Smiles",
+    location: "Dubai, UAE",
+    credits: 0,
+    status: "failed",
+  },
+]
 
 export function ComponentPreviewPage() {
   // Interactive state
@@ -32,6 +92,14 @@ export function ComponentPreviewPage() {
   const [toggleState, setToggleState] = useState(true)
   const [isLoadingBtn, setIsLoadingBtn] = useState(false)
 
+  // Group B state
+  const [selectedTableIds, setSelectedTableIds] = useState<(string | number)[]>([1])
+  const [tableSortKey, setTableSortKey] = useState("name")
+  const [tableSortDirection, setTableSortDirection] = useState<"asc" | "desc">("asc")
+  const [tablePage, setTablePage] = useState(1)
+  const [isTableLoading, setIsTableLoading] = useState(false)
+  const [toastVisible, setToastVisible] = useState(true)
+
   const toggleChip = (id: string) => {
     setSelectedChips((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
@@ -42,9 +110,64 @@ export function ComponentPreviewPage() {
     setSelectedChips((prev) => prev.filter((item) => item !== id))
   }
 
+  // Table Columns
+  const tableColumns: Column<ProspectRow>[] = [
+    {
+      key: "name",
+      header: "Lead Contact",
+      sortable: true,
+      cell: (row) => (
+        <div>
+          <span className="font-medium text-foreground block">{row.name}</span>
+          <span className="text-xs text-muted-foreground">{row.company}</span>
+        </div>
+      ),
+    },
+    {
+      key: "location",
+      header: "Location",
+      sortable: true,
+      cell: (row) => <span className="text-muted-foreground">{row.location}</span>,
+    },
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      cell: (row) => <StatusBadge status={row.status} />,
+    },
+    {
+      key: "credits",
+      header: "Credits",
+      sortable: true,
+      align: "right",
+      cell: (row) => (
+        <span className="tabular-nums font-medium text-foreground">{row.credits} cr</span>
+      ),
+    },
+    {
+      key: "action",
+      header: "Action",
+      align: "right",
+      cell: () => (
+        <Button variant="link" size="sm">
+          Inspect
+        </Button>
+      ),
+    },
+  ]
+
+  const handleSort = (key: string) => {
+    if (tableSortKey === key) {
+      setTableSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
+    } else {
+      setTableSortKey(key)
+      setTableSortDirection("asc")
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-background text-foreground antialiased p-6 md:p-10">
-      <div className="mx-auto max-w-5xl space-y-10">
+    <div className="min-h-screen bg-background text-foreground antialiased p-6 md:p-10 pb-28">
+      <div className="mx-auto max-w-5xl space-y-12">
         {/* Page Header */}
         <div className="border-b border-border pb-5">
           <div className="flex items-center gap-3 mb-2">
@@ -56,8 +179,8 @@ export function ComponentPreviewPage() {
             </h1>
           </div>
           <p className="text-sm text-muted-foreground">
-            Group A (Base Primitives) preview. All styling is 100% token-driven through Phase 1 CSS
-            variables.
+            Complete interactive component library. All components are 100% token-driven with zero
+            hardcoded hex colors.
           </p>
         </div>
 
@@ -279,7 +402,7 @@ export function ComponentPreviewPage() {
             <CardHeader>
               <CardTitle>Tabbed Module</CardTitle>
               <CardDescription>
-                Radix-style keyboard-accessible tab switches styled through Kinetix tokens.
+                Keyboard-accessible tab switches styled through Kinetix tokens.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -366,6 +489,205 @@ export function ComponentPreviewPage() {
             </CardContent>
           </Card>
         </section>
+
+        {/* ======================================================== */}
+        {/* GROUP B: COMPOSITE COMPONENTS */}
+        {/* ======================================================== */}
+
+        <div className="border-t border-border pt-8">
+          <h2 className="text-lg font-bold tracking-tight text-foreground mb-1">
+            Group B: Composite Components
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Data tables, selection toolbars, empty states, skeletons, toasts, and pagination.
+          </p>
+        </div>
+
+        {/* 7. DATA TABLE */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+              7. DataTable (Sortable, Selectable, Paginated)
+            </h2>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setIsTableLoading(true)
+                  setTimeout(() => setIsTableLoading(false), 1200)
+                }}
+              >
+                Simulate Skeleton
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setSelectedTableIds([1, 2, 3, 4, 5])}
+              >
+                Select All
+              </Button>
+            </div>
+          </div>
+
+          <DataTable
+            data={SAMPLE_PROSPECTS}
+            columns={tableColumns}
+            selectable
+            selectedIds={selectedTableIds}
+            onSelectionChange={setSelectedTableIds}
+            sortKey={tableSortKey}
+            sortDirection={tableSortDirection}
+            onSort={handleSort}
+            isLoading={isTableLoading}
+            pagination={{
+              currentPage: tablePage,
+              totalPages: 5,
+              totalItems: 24,
+              pageSize: 5,
+              onPageChange: setTablePage,
+            }}
+          />
+        </section>
+
+        {/* 8. BREADCRUMB & PAGINATION (STANDALONE) */}
+        <section className="space-y-4">
+          <h2 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+            8. Breadcrumb & Standalone Pagination
+          </h2>
+          <Card>
+            <CardContent className="space-y-6 pt-5">
+              <div className="space-y-2">
+                <span className="text-xs font-medium text-muted-foreground">
+                  Breadcrumb Navigation
+                </span>
+                <Breadcrumb
+                  items={[
+                    { label: "Dashboard", href: "#" },
+                    { label: "Prospects", href: "#" },
+                    { label: "Dentists in Dubai", current: true },
+                  ]}
+                />
+              </div>
+
+              <div className="space-y-2 pt-4 border-t border-border">
+                <span className="text-xs font-medium text-muted-foreground">
+                  Standalone Pagination Bar
+                </span>
+                <Pagination
+                  currentPage={tablePage}
+                  totalPages={8}
+                  totalItems={80}
+                  pageSize={10}
+                  onPageChange={setTablePage}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* 9. TOASTS & ALERTS */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+              9. Toasts & Alert Banners
+            </h2>
+            {!toastVisible && (
+              <Button variant="ghost" size="sm" onClick={() => setToastVisible(true)}>
+                Restore Dismissed
+              </Button>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            {toastVisible && (
+              <Toast
+                type="info"
+                title="Aura has enriched 24 new contacts"
+                description="Verified direct dial phone numbers and verified corporate emails added."
+                onClose={() => setToastVisible(false)}
+              />
+            )}
+            <Toast
+              type="success"
+              title="Export complete"
+              description="Your CSV file 'Dentists_in_Dubai.csv' is ready for download."
+            />
+            <Toast
+              type="warning"
+              title="Low credit balance warning"
+              description="You have 48 credits remaining. Upgrade tier to continue auto-runs."
+            />
+            <Toast
+              type="error"
+              title="Scrape failed for 2 domains"
+              description="Target websites timed out. Credits have been refunded to your balance."
+            />
+          </div>
+        </section>
+
+        {/* 10. EMPTY STATE & SKELETON */}
+        <section className="space-y-4">
+          <h2 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+            10. Empty State & Skeletons
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Empty State */}
+            <EmptyState
+              icon={<Filter className="size-6 stroke-[1.75]" />}
+              title="No prospects found"
+              description="No leads match your current filter combination. Try clearing some criteria."
+              action={<Button size="sm">Reset Filters</Button>}
+              secondaryAction={
+                <Button variant="secondary" size="sm">
+                  Run New Search
+                </Button>
+              }
+            />
+
+            {/* Skeleton Card */}
+            <Card className="p-5 space-y-4">
+              <div className="flex items-center gap-3">
+                <Skeleton variant="circle" className="size-10" />
+                <div className="space-y-1.5 flex-1">
+                  <Skeleton variant="text" className="w-1/2 h-3.5" />
+                  <Skeleton variant="text" className="w-1/3 h-3" />
+                </div>
+              </div>
+              <Skeleton variant="rectangle" className="h-16 w-full" />
+              <div className="flex justify-between items-center pt-2">
+                <Skeleton variant="text" className="w-20 h-4" />
+                <Skeleton variant="rectangle" className="w-24 h-7 rounded-lg" />
+              </div>
+            </Card>
+          </div>
+        </section>
+
+        {/* 11. BULK ACTION BAR (Floating) */}
+        <BulkActionBar
+          selectedCount={selectedTableIds.length}
+          onClear={() => setSelectedTableIds([])}
+          entityName="prospects"
+          actions={[
+            {
+              label: "Enrich Selected",
+              variant: "primary",
+              icon: <Zap className="size-3.5" />,
+              onClick: () => alert(`Enriching ${selectedTableIds.length} prospects`),
+            },
+            {
+              label: "Export CSV",
+              variant: "secondary",
+              icon: <Download className="size-3.5" />,
+              onClick: () => alert(`Exporting ${selectedTableIds.length} prospects`),
+            },
+            {
+              label: "Delete",
+              variant: "destructive",
+              icon: <Trash2 className="size-3.5" />,
+              onClick: () => setSelectedTableIds([]),
+            },
+          ]}
+        />
       </div>
     </div>
   )
