@@ -1,9 +1,9 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
-const directUrl = process.env["DIRECT_URL"];
+const directUrl = process.env["DIRECT_URL"] || process.env["DATABASE_URL"];
 if (!directUrl) {
-  throw new Error("DIRECT_URL is required for Prisma CLI migrations. Use the Neon direct host, not the pooler.");
+  throw new Error("DIRECT_URL or DATABASE_URL is required for Prisma CLI migrations.");
 }
 
 export default defineConfig({

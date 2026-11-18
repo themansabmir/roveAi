@@ -4,6 +4,8 @@ node_modules
 .github
 .turbo
 **/dist
+.next
+**/.next
 .env
 .env.*
 !.env.example

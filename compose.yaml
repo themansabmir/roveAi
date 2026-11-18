@@ -1,0 +1,180 @@
+# =============================================================================
+# RoVe AI — Docker Compose Orchestration (Local & Development)
+# =============================================================================
+# Connects to remote Neon DB (PostgreSQL). No local database container required.
+# Asynchronous workers use pg-boss queue over PostgreSQL and shared object storage.
+# =============================================================================
+
+name: rove
+
+# Shared environment configuration for API and background workers
+x-backend-environment: &backend-env
+  NODE_ENV: ${NODE_ENV:-development}
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  PORT: "3000"
+  DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required in .env}
+  DIRECT_URL: ${DIRECT_URL:-}
+  BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET is required in .env}
+  BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+  CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3001}
+  APP_WEB_URL: ${APP_WEB_URL:-http://localhost:5173}
+  QUEUE_DRIVER: ${QUEUE_DRIVER:-pgboss}
+  WORKER_ENABLED: "false"
+  WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-2}
+  WORKER_RETRY_LIMIT: ${WORKER_RETRY_LIMIT:-2}
+  JOB_TIMEOUT_MS: ${JOB_TIMEOUT_MS:-120000}
+  DB_POOL_MAX: ${DB_POOL_MAX:-2}
+  LOCAL_OBJECT_DIR: /app/apps/api/.data/objects
+  GCS_BUCKET: ${GCS_BUCKET:-}
+  GCP_PROJECT_ID: ${GCP_PROJECT_ID:-}
+  APIFY_TOKEN: ${APIFY_TOKEN:-}
+  APIFY_ACTOR: ${APIFY_ACTOR:-scraperlink/google-maps-scraper}
+  OUTSCRAPER_API_KEY: ${OUTSCRAPER_API_KEY:-}
+  PAGESPEED_API_KEY: ${PAGESPEED_API_KEY:-}
+  GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  LLM_MODEL: ${LLM_MODEL:-gemini-3.8-flash}
+  LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-60000}
+  SUPERADMIN_EMAIL: ${SUPERADMIN_EMAIL:-admin@rove.local}
+  SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:-supersecretpassword123}
+  SUPERADMIN_NAME: ${SUPERADMIN_NAME:-Super Admin}
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. Frontend: Agency Dashboard SPA (React + Vite served via Nginx)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/dashboard/Dockerfile
+    container_name: rove-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # 2. Backend API: Express REST API, Better-Auth, and Job Dispatcher
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: rove-api
+    command: ["node", "dist/app.js"]
+    ports:
+      - "3000:3000"
+    environment:
+      <<: *backend-env
+    volumes:
+      - object-storage-data:/app/apps/api/.data/objects
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    stop_grace_period: 15s
+    init: true
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # 3. Worker 1: Discovery (Google Maps lead ingestion via Apify/Outscraper)
+  # ---------------------------------------------------------------------------
+  worker-discover:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: rove-worker-discover
+    command: ["node", "dist/entries/discover.js"]
+    environment:
+      <<: *backend-env
+    volumes:
+      - object-storage-data:/app/apps/api/.data/objects
+    stop_grace_period: 15s
+    init: true
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # 4. Worker 2: Crawler (Website technical SEO & HTML evidence snapshotting)
+  # ---------------------------------------------------------------------------
+  worker-crawl:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: rove-worker-crawl
+    command: ["node", "dist/entries/crawl.js"]
+    environment:
+      <<: *backend-env
+    volumes:
+      - object-storage-data:/app/apps/api/.data/objects
+    stop_grace_period: 15s
+    init: true
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # 5. Worker 3: PageSpeed Audit (Google PSI performance analysis)
+  # ---------------------------------------------------------------------------
+  worker-psi:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: rove-worker-psi
+    command: ["node", "dist/entries/psi.js"]
+    environment:
+      <<: *backend-env
+    volumes:
+      - object-storage-data:/app/apps/api/.data/objects
+    stop_grace_period: 15s
+    init: true
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # 6. Worker 4: Interpretation / AI Brief (LLM reasoning & pitch generation)
+  # ---------------------------------------------------------------------------
+  worker-interpret:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: rove-worker-interpret
+    command: ["node", "dist/entries/interpret.js"]
+    environment:
+      <<: *backend-env
+    volumes:
+      - object-storage-data:/app/apps/api/.data/objects
+    stop_grace_period: 15s
+    init: true
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Optional Service: Next.js 15 Marketing Website
+  # (Activate with: docker compose --profile marketing up -d)
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: rove-web
+    ports:
+      - "3001:3001"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://api:3000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3001
+      NEXT_PUBLIC_DASHBOARD_URL: http://localhost:5173
+    depends_on:
+      api:
+        condition: service_healthy
+    profiles:
+      - marketing
+    restart: unless-stopped
+
+# -----------------------------------------------------------------------------
+# Named Volumes for Inter-Container State
+# -----------------------------------------------------------------------------
+volumes:
+  object-storage-data:
+    name: rove-object-storage
+

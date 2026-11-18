@@ -19,6 +19,7 @@ export class PgBossPlugin implements IQueueService {
       connectionString: config.DATABASE_URL,
       schema: "pgboss",
       monitorIntervalSeconds: 30,
+      max: Math.max(config.DB_POOL_MAX, 2),
     });
 
     this.boss.on("error", (err: Error) => logger.error({ err }, "pg-boss error"));
