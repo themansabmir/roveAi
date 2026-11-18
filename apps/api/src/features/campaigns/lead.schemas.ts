@@ -40,6 +40,12 @@ export const bulkLeadsSchema = z
   );
 export type BulkLeadsInput = z.infer<typeof bulkLeadsSchema>;
 
+// ---- Brief generation ----
+export const generateBriefSchema = z.object({
+  leadIds: z.array(z.string().min(1)).min(1).max(50),
+});
+export type GenerateBriefInput = z.infer<typeof generateBriefSchema>;
+
 // ---- Tag creation ----
 export const createTagSchema = z.object({
   name: z.string().trim().min(1).max(60),

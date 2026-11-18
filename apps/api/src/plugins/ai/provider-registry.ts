@@ -14,8 +14,9 @@ export class AiProviderRegistry {
   private readonly providers = new Map<string, IAiProvider>();
 
   constructor(config: AppConfig) {
-    this.register(new GeminiProvider(config.GEMINI_API_KEY, config.LLM_MODEL || "gemini-2.0-flash"));
-    this.register(new OpenAiProvider(config.OPENAI_API_KEY, config.LLM_MODEL || "gpt-4o-mini"));
+    const timeoutMs = config.LLM_TIMEOUT_MS ?? 60_000;
+    this.register(new GeminiProvider(config.GEMINI_API_KEY, config.LLM_MODEL || "gemini-3.8-flash", timeoutMs));
+    this.register(new OpenAiProvider(config.OPENAI_API_KEY, config.LLM_MODEL || "gpt-4o-mini", timeoutMs));
     this.register(new DeterministicAiProvider());
   }
 

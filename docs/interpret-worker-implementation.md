@@ -154,7 +154,7 @@ export const BriefDataSchema = z.object({
 ```
 
 * **Multi-Provider Fallback Hierarchy**:
-  1. **Google Gemini** (`gemini-2.0-flash` / `gemini-1.5-flash`) via `generateContent` with `responseMimeType: "application/json"`.
+  1. **Google Gemini** (`gemini-3.8-flash` / `gemini-1.5-flash`) via `generateContent` with `responseMimeType: "application/json"`.
   2. **OpenAI** (`gpt-4o-mini`) via Chat Completions with `response_format: { type: "json_object" }`.
   3. **Deterministic Evidence Fallback Engine**: If no API key is configured or offline, generates a bespoke, evidence-backed pitch directly from the LCP timing, CMS, review count, and audit findings so tests and local dev never break.
 
@@ -303,8 +303,8 @@ GEMINI_API_KEY="AIzaSy..."
 # Or OpenAI
 OPENAI_API_KEY="sk-..."
 
-# Optional: Override the model (defaults to "gemini-2.0-flash" or "gpt-4o-mini")
-LLM_MODEL="gemini-2.0-flash"
+# Optional: Override the model (defaults to "gemini-3.8-flash" or "gpt-4o-mini")
+LLM_MODEL="gemini-3.8-flash"
 ```
 
 > **Zero-Config Guarantee**: If no API key is provided, `InterpretService` automatically engages its deterministic evidence synthesis engine. Local development, Docker builds, and automated CI pipelines run without external API dependencies.

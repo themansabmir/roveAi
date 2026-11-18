@@ -4,6 +4,7 @@ import { requireOrgAccess } from "../../middleware/rbac";
 import { requireAuth } from "../../middleware/session";
 import { validate } from "../../middleware/validate";
 import { IQueueService } from "@plugins/queue/queue.types";
+import { JobDispatcher } from "@features/jobs/job-dispatcher";
 import { CampaignController } from "./campaign.controller";
 import { CampaignRepository } from "./campaign.repository";
 import { createCampaignSchema } from "./campaign.schemas";
@@ -15,8 +16,9 @@ export function campaignsRouter(deps: { prisma: PrismaClient; queue: IQueueServi
   const repo = new CampaignRepository(deps.prisma);
   const campaignService = new CampaignService(repo, deps.queue);
   const campaignController = new CampaignController(campaignService);
+  const dispatcher = new JobDispatcher(deps.prisma, deps.queue);
   const leadService = new LeadService(repo);
-  const leadController = new LeadController(leadService);
+  const leadController = new LeadController(leadService, dispatcher);
 
   const router = Router({ mergeParams: true });
   router.use(requireAuth(), requireOrgAccess());
@@ -30,6 +32,8 @@ export function campaignsRouter(deps: { prisma: PrismaClient; queue: IQueueServi
 
   // Prospect workspace: Leads endpoints
   router.get("/:campaignId/leads", leadController.listLeads);
+  router.post("/:campaignId/leads/brief", leadController.generateBriefs);
+  router.post("/:campaignId/leads/:leadId/brief", leadController.generateSingleBrief);
   router.get("/:campaignId/leads/:leadId", leadController.getLead);
   router.patch("/:campaignId/leads/:leadId", leadController.updateLead);
   router.post("/:campaignId/leads/bulk", leadController.bulkLeads);

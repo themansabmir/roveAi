@@ -24,8 +24,14 @@ export class PsiRepository {
     return finishJob(this.prisma, jobId, status, error);
   }
 
-  publishIfReady(queue: JobPublisher, payload: AuditJobPayload): Promise<void> {
-    return publishIfReady(this.prisma, queue, payload);
+  publishIfReady(queue: JobPublisher, payload: AuditJobPayload): Promise<void>;
+  publishIfReady(payload: AuditJobPayload): Promise<void>;
+  publishIfReady(
+    queueOrPayload: JobPublisher | AuditJobPayload,
+    maybePayload?: AuditJobPayload
+  ): Promise<void> {
+    const payload = (maybePayload ?? queueOrPayload) as AuditJobPayload;
+    return publishIfReady(this.prisma, payload);
   }
 
   replaceAudit(jobId: string, input: AuditWrite): Promise<void> {

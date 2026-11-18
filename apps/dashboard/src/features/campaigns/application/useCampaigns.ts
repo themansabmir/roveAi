@@ -8,6 +8,8 @@ import {
   createTag,
   deleteTag,
   downloadCampaignCsv,
+  generateBulkBriefs,
+  generateLeadBrief,
   getCampaign,
   listCampaigns,
   listTags,
@@ -132,6 +134,32 @@ export function useDeleteTag(organizationId: string) {
 
 export function useDownloadCsv(organizationId: string, campaignId: string) {
   return useMutation({
-    mutationFn: (leadIds?: string[]) => downloadCampaignCsv(organizationId, campaignId, leadIds),
+    mutationFn: (args?: string[] | { leadIds?: string[]; reportType?: "audit" | "briefs" | "full" }) => {
+      if (Array.isArray(args)) {
+        return downloadCampaignCsv(organizationId, campaignId, args)
+      }
+      return downloadCampaignCsv(organizationId, campaignId, args?.leadIds, args?.reportType)
+    },
+  })
+}
+
+export function useGenerateLeadBrief(organizationId: string, campaignId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ leadId }: { leadId: string }) =>
+      generateLeadBrief(organizationId, campaignId, leadId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: detailKey(organizationId, campaignId) })
+    },
+  })
+}
+
+export function useGenerateBulkBriefs(organizationId: string, campaignId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (leadIds: string[]) => generateBulkBriefs(organizationId, campaignId, leadIds),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: detailKey(organizationId, campaignId) })
+    },
   })
 }

@@ -163,12 +163,17 @@ export function ProspectTable({
                           <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
                             {lead.business.name}
                           </span>
-                          {lead.brief && (
+                          {lead.brief ? (
                             <span className="inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
                               <Sparkles className="size-2.5" />
                               Brief ready
                             </span>
-                          )}
+                          ) : lead.aiStatus === "PENDING" && lead.auditStatus === "COMPLETED" ? (
+                            <span className="inline-flex items-center gap-0.5 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground animate-pulse">
+                              <Sparkles className="size-2.5" />
+                              Brief generating...
+                            </span>
+                          ) : null}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           {lead.business.city && <span>{lead.business.city}</span>}

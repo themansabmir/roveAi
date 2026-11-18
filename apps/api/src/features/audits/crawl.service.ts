@@ -20,7 +20,7 @@ export class CrawlService {
     private readonly storage: IObjectStorage,
     private readonly queue: JobPublisher,
     private readonly limits: { maxPages: number; jobTimeoutMs: number }
-  ) {}
+  ) { }
 
   async run(payload: AuditJobPayload, meta: { retrycount: number; retrylimit: number }): Promise<void> {
     console.log(`[CrawlService.run] 🕷️ Crawl job started for lead: ${payload.leadId} (${payload.url})`);

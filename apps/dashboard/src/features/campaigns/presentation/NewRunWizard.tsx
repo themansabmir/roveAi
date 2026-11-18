@@ -180,16 +180,16 @@ export function NewRunWizard({
 
           <div className="rounded-lg border bg-muted/40 p-3">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">Run estimate</p>
-              <Badge variant="outline">before commit</Badge>
+              <p className="text-sm font-medium">Stage 1 Run Estimate</p>
+              <Badge variant="outline">Discovery & Audit</Badge>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2 text-center">
               <Estimate value={`~${estimate.businesses}`} label="businesses" />
               <Estimate value={`~${estimate.pages}`} label="pages crawled" />
-              <Estimate value={`~${estimate.briefs}`} label="AI briefs" />
+              <Estimate value="On demand" label="AI briefs" />
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Approximate, shown against your monthly ceilings.
+            <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+              Stage 1 (Lead finding & website audit) runs now. Stage 2 (AI opportunity briefs) is decoupled and generated separately on-demand per selected lead.
             </p>
           </div>
 

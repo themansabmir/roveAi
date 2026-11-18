@@ -8,8 +8,8 @@ export class GeminiProvider implements IAiProvider {
 
   constructor(
     private readonly apiKey?: string,
-    private readonly model: string = "gemini-2.0-flash",
-    private readonly timeoutMs: number = 30_000
+    private readonly model: string = "gemini-3.8-flash",
+    private readonly timeoutMs: number = 60_000
   ) {
     this.configured = Boolean(apiKey && apiKey.trim().length > 0);
   }

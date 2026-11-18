@@ -99,8 +99,39 @@ export async function deleteTag(organizationId: string, tagId: string): Promise<
   await axiosInstance.delete(`${tagsPath(organizationId)}/${tagId}`)
 }
 
-export async function downloadCampaignCsv(organizationId: string, campaignId: string, leadIds?: string[]): Promise<void> {
-  const query = leadIds?.length ? `?leadIds=${encodeURIComponent(leadIds.join(","))}` : ""
+export async function generateLeadBrief(
+  organizationId: string,
+  campaignId: string,
+  leadId: string,
+): Promise<{ dispatched: number; skipped: number; total: number }> {
+  const response = await axiosInstance.post<{ dispatched: number; skipped: number; total: number }>(
+    `${campaignsPath(organizationId)}/${campaignId}/leads/${leadId}/brief`,
+  )
+  return response.data
+}
+
+export async function generateBulkBriefs(
+  organizationId: string,
+  campaignId: string,
+  leadIds: string[],
+): Promise<{ dispatched: number; skipped: number; total: number }> {
+  const response = await axiosInstance.post<{ dispatched: number; skipped: number; total: number }>(
+    `${campaignsPath(organizationId)}/${campaignId}/leads/brief`,
+    { leadIds },
+  )
+  return response.data
+}
+
+export async function downloadCampaignCsv(
+  organizationId: string,
+  campaignId: string,
+  leadIds?: string[],
+  reportType?: "audit" | "briefs" | "full",
+): Promise<void> {
+  const params = new URLSearchParams()
+  if (leadIds?.length) params.set("leadIds", leadIds.join(","))
+  if (reportType) params.set("reportType", reportType)
+  const query = params.toString() ? `?${params.toString()}` : ""
   const response = await axiosInstance.get(`${campaignsPath(organizationId)}/${campaignId}/export${query}`, {
     responseType: "blob",
   })
@@ -108,7 +139,8 @@ export async function downloadCampaignCsv(organizationId: string, campaignId: st
   const url = window.URL.createObjectURL(blob)
   const link = document.createElement("a")
   link.href = url
-  link.setAttribute("download", `prospects-${campaignId}.csv`)
+  const prefix = reportType === "audit" ? "audit-report" : reportType === "briefs" ? "briefs-report" : "prospects"
+  link.setAttribute("download", `${prefix}-${campaignId}.csv`)
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

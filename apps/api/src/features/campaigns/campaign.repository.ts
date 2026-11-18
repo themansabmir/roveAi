@@ -125,7 +125,17 @@ export interface LeadSummaryRow {
   };
   /** Audit summary (no findings). */
   audits: { id: string; module: string; status: string; score: number | null }[];
-  brief: { id: string; aiStatus: string; headlineOpportunity: string | null } | null;
+  brief: {
+    id: string;
+    aiStatus: string;
+    headlineOpportunity: string | null;
+    suggestedService?: string | null;
+    confidence?: string | null;
+    valueProposition?: string | null;
+    outreachAngle?: string | null;
+    coldEmailDraft?: string | null;
+    callScriptDraft?: string | null;
+  } | null;
 }
 
 export interface TagView {
@@ -485,6 +495,7 @@ export class CampaignRepository {
           businessId: business.id,
           qualificationStatus: input.qualificationStatus,
           auditStatus: input.auditStatus,
+          aiStatus: "SKIPPED_GATE",
         },
       });
     } catch (err) {
@@ -577,6 +588,11 @@ export class CampaignRepository {
           brief: {
             select: { id: true, aiStatus: true, headlineOpportunity: true },
           },
+          jobs: {
+            where: { kind: "INTERPRET", status: { in: ["PENDING", "PROCESSING"] } },
+            select: { id: true },
+            take: 1,
+          },
           tags: { include: { tag: { select: { id: true, name: true } } } },
           score: { select: { breakdown: true } },
         },
@@ -586,28 +602,37 @@ export class CampaignRepository {
 
     return {
       total,
-      rows: rows.map((r) => ({
-        id: r.id,
-        qualificationStatus: r.qualificationStatus,
-        auditStatus: r.auditStatus,
-        aiStatus: r.aiStatus,
-        prospectStatus: r.prospectStatus,
-        opportunityScore: r.opportunityScore,
-        scoreBreakdown: r.score?.breakdown ?? null,
-        notes: r.notes,
-        savedAt: r.savedAt?.toISOString() ?? null,
-        archivedAt: r.archivedAt?.toISOString() ?? null,
-        tags: r.tags.map((lt) => ({ id: lt.tag.id, name: lt.tag.name })),
-        business: r.business,
-        audits: r.audits,
-        brief: r.brief
-          ? {
-              id: r.brief.id,
-              aiStatus: r.brief.aiStatus,
-              headlineOpportunity: r.brief.headlineOpportunity,
-            }
-          : null,
-      })),
+      rows: rows.map((r) => {
+        const isGenerating = ((r as unknown as { jobs?: unknown[] }).jobs?.length ?? 0) > 0;
+        const resolvedAiStatus = r.brief
+          ? (r.brief.aiStatus ?? "COMPLETED")
+          : isGenerating
+          ? "PENDING"
+          : (r.aiStatus === "PENDING" ? "SKIPPED_GATE" : r.aiStatus);
+
+        return {
+          id: r.id,
+          qualificationStatus: r.qualificationStatus,
+          auditStatus: r.auditStatus,
+          aiStatus: resolvedAiStatus as AiStatus,
+          prospectStatus: r.prospectStatus,
+          opportunityScore: r.opportunityScore,
+          scoreBreakdown: r.score?.breakdown ?? null,
+          notes: r.notes,
+          savedAt: r.savedAt?.toISOString() ?? null,
+          archivedAt: r.archivedAt?.toISOString() ?? null,
+          tags: r.tags.map((lt) => ({ id: lt.tag.id, name: lt.tag.name })),
+          business: r.business,
+          audits: r.audits,
+          brief: r.brief
+            ? {
+                id: r.brief.id,
+                aiStatus: r.brief.aiStatus,
+                headlineOpportunity: r.brief.headlineOpportunity,
+              }
+            : null,
+        };
+      }),
     };
   }
 
@@ -625,16 +650,28 @@ export class CampaignRepository {
           orderBy: { createdAt: "asc" as const },
         },
         brief: true,
+        jobs: {
+          where: { kind: "INTERPRET", status: { in: ["PENDING", "PROCESSING"] } },
+          select: { id: true },
+          take: 1,
+        },
         score: true,
         tags: { include: { tag: { select: { id: true, name: true } } } },
       },
     });
     if (!r) return null;
+    const isGenerating = ((r as unknown as { jobs?: unknown[] }).jobs?.length ?? 0) > 0;
+    const resolvedAiStatus = r.brief
+      ? (r.brief.aiStatus ?? "COMPLETED")
+      : isGenerating
+      ? "PENDING"
+      : (r.aiStatus === "PENDING" ? "SKIPPED_GATE" : r.aiStatus);
+
     return {
       id: r.id,
       qualificationStatus: r.qualificationStatus,
       auditStatus: r.auditStatus,
-      aiStatus: r.aiStatus,
+      aiStatus: resolvedAiStatus as AiStatus,
       prospectStatus: r.prospectStatus,
       opportunityScore: r.opportunityScore,
       scoreBreakdown: r.score?.breakdown ?? null,
@@ -854,6 +891,27 @@ export class CampaignRepository {
   }
 
   // ---------------------------------------------------------------------------
+  // Brief generation — find eligible leads
+  // ---------------------------------------------------------------------------
+
+  async findLeadsForBriefGeneration(
+    organizationId: string,
+    campaignId: string,
+    leadIds: string[],
+  ): Promise<{ id: string; aiStatus: AiStatus; auditStatus: AuditStatus }[]> {
+    return this.prisma.campaignLead.findMany({
+      where: {
+        id: { in: leadIds },
+        campaignId,
+        campaign: { organizationId },
+        auditStatus: "COMPLETED",
+        aiStatus: { not: "COMPLETED" },
+      },
+      select: { id: true, aiStatus: true, auditStatus: true },
+    });
+  }
+
+  // ---------------------------------------------------------------------------
   // CSV export (returns all matching rows — no pagination)
   // ---------------------------------------------------------------------------
 
@@ -885,33 +943,65 @@ export class CampaignRepository {
         audits: {
           select: { id: true, module: true, status: true, score: true },
         },
-        brief: { select: { id: true, aiStatus: true, headlineOpportunity: true } },
+        brief: {
+          select: {
+            id: true,
+            aiStatus: true,
+            headlineOpportunity: true,
+            suggestedService: true,
+            confidence: true,
+            valueProposition: true,
+            outreachAngle: true,
+            coldEmailDraft: true,
+            callScriptDraft: true,
+          },
+        },
+        jobs: {
+          where: { kind: "INTERPRET", status: { in: ["PENDING", "PROCESSING"] } },
+          select: { id: true },
+          take: 1,
+        },
         tags: { include: { tag: { select: { id: true, name: true } } } },
         score: { select: { breakdown: true } },
       },
     });
-    return rows.map((r) => ({
-      id: r.id,
-      qualificationStatus: r.qualificationStatus,
-      auditStatus: r.auditStatus,
-      aiStatus: r.aiStatus,
-      prospectStatus: r.prospectStatus,
-      opportunityScore: r.opportunityScore,
-      scoreBreakdown: r.score?.breakdown ?? null,
-      notes: r.notes,
-      savedAt: r.savedAt?.toISOString() ?? null,
-      archivedAt: r.archivedAt?.toISOString() ?? null,
-      tags: r.tags.map((lt) => ({ id: lt.tag.id, name: lt.tag.name })),
-      business: r.business,
-      audits: r.audits,
-      brief: r.brief
-        ? {
-            id: r.brief.id,
-            aiStatus: r.brief.aiStatus,
-            headlineOpportunity: r.brief.headlineOpportunity,
-          }
-        : null,
-    }));
+    return rows.map((r) => {
+      const isGenerating = ((r as unknown as { jobs?: unknown[] }).jobs?.length ?? 0) > 0;
+      const resolvedAiStatus = r.brief
+        ? (r.brief.aiStatus ?? "COMPLETED")
+        : isGenerating
+        ? "PENDING"
+        : (r.aiStatus === "PENDING" ? "SKIPPED_GATE" : r.aiStatus);
+
+      return {
+        id: r.id,
+        qualificationStatus: r.qualificationStatus,
+        auditStatus: r.auditStatus,
+        aiStatus: resolvedAiStatus as AiStatus,
+        prospectStatus: r.prospectStatus,
+        opportunityScore: r.opportunityScore,
+        scoreBreakdown: r.score?.breakdown ?? null,
+        notes: r.notes,
+        savedAt: r.savedAt?.toISOString() ?? null,
+        archivedAt: r.archivedAt?.toISOString() ?? null,
+        tags: r.tags.map((lt) => ({ id: lt.tag.id, name: lt.tag.name })),
+        business: r.business,
+        audits: r.audits,
+        brief: r.brief
+          ? {
+              id: r.brief.id,
+              aiStatus: r.brief.aiStatus,
+              headlineOpportunity: r.brief.headlineOpportunity,
+              suggestedService: r.brief.suggestedService,
+              confidence: r.brief.confidence,
+              valueProposition: r.brief.valueProposition,
+              outreachAngle: r.brief.outreachAngle,
+              coldEmailDraft: r.brief.coldEmailDraft,
+              callScriptDraft: r.brief.callScriptDraft,
+            }
+          : null,
+      };
+    });
   }
 }
 

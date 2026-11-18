@@ -719,7 +719,7 @@ model CampaignLead {
   businessId          String
   qualificationStatus QualificationStatus @default(NEW)
   auditStatus         AuditStatus         @default(PENDING)
-  aiStatus            AiStatus            @default(PENDING)
+  aiStatus            AiStatus            @default(SKIPPED_GATE)
 
   // Deterministic opportunity score (0-100), computed before AI reasoning.
   // Denormalized from LeadScore.total for list sorting.

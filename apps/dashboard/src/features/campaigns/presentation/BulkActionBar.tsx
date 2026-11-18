@@ -1,6 +1,12 @@
 import { useState } from "react"
-import { CheckSquare, Download, Bookmark, Archive, X } from "lucide-react"
+import { CheckSquare, Download, Bookmark, Archive, X, Sparkles, ChevronDown } from "lucide-react"
 import { Button } from "@rove/ui/components/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@rove/ui/components/dropdown-menu"
 import type { ProspectStatus, TagItem } from "@/features/campaigns/domain/campaign"
 
 export function BulkActionBar({
@@ -11,6 +17,7 @@ export function BulkActionBar({
   onToggleArchive,
   onAddTag,
   onExportSelected,
+  onGenerateBriefs,
   availableTags,
   isPending,
 }: {
@@ -20,7 +27,8 @@ export function BulkActionBar({
   onToggleSave: (save: boolean) => void
   onToggleArchive: (archive: boolean) => void
   onAddTag: (tagId: string) => void
-  onExportSelected: () => void
+  onExportSelected: (type?: "audit" | "briefs" | "full") => void
+  onGenerateBriefs?: () => void
   availableTags: TagItem[]
   isPending: boolean
 }) {
@@ -99,6 +107,19 @@ export function BulkActionBar({
           Save
         </Button>
 
+        {onGenerateBriefs && (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isPending}
+            onClick={onGenerateBriefs}
+            className="h-8 gap-1 px-2.5 text-xs font-medium text-primary hover:text-primary"
+          >
+            <Sparkles className="size-3.5" />
+            Generate AI Briefs ({selectedCount})
+          </Button>
+        )}
+
         <Button
           variant="outline"
           size="sm"
@@ -110,16 +131,40 @@ export function BulkActionBar({
           Archive
         </Button>
 
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={isPending}
-          onClick={onExportSelected}
-          className="h-8 gap-1 px-2.5 text-xs font-medium text-primary hover:text-primary"
-        >
-          <Download className="size-3.5" />
-          Export CSV
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isPending}
+              className="h-8 gap-1 px-2.5 text-xs font-medium text-primary hover:text-primary"
+            >
+              <Download className="size-3.5" />
+              Export ({selectedCount})
+              <ChevronDown className="size-3 opacity-60" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem
+              onClick={() => onExportSelected("full")}
+              className="text-xs"
+            >
+              Full Prospects Overview
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onExportSelected("audit")}
+              className="text-xs"
+            >
+              Website Audit & Tech Report
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onExportSelected("briefs")}
+              className="text-xs"
+            >
+              AI Opportunity Briefs & Pitches
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Button
           variant="ghost"

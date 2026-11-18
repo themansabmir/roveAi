@@ -9,7 +9,7 @@ export class OpenAiProvider implements IAiProvider {
   constructor(
     private readonly apiKey?: string,
     private readonly model: string = "gpt-4o-mini",
-    private readonly timeoutMs: number = 30_000
+    private readonly timeoutMs: number = 60_000
   ) {
     this.configured = Boolean(apiKey && apiKey.trim().length > 0);
   }

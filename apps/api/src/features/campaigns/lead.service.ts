@@ -2,6 +2,7 @@ import { ForbiddenError, NotFoundError, ConflictError } from "@core/errors";
 import { ProspectStatus } from "@prisma/client";
 import { CampaignRepository, LeadSummaryRow, LeadView, LeadsSummaryResult, TagView } from "./campaign.repository";
 import { BulkLeadsInput, LeadsQuery, UpdateLeadInput } from "./lead.schemas";
+import { JobDispatcher } from "@features/jobs/job-dispatcher";
 
 // ---------------------------------------------------------------------------
 // CSV injection sanitization: prefix dangerous chars with a tab
@@ -82,7 +83,7 @@ export function computeNextAction(lead: {
 // LeadService
 // ---------------------------------------------------------------------------
 export class LeadService {
-  constructor(private readonly repository: CampaignRepository) {}
+  constructor(private readonly repository: CampaignRepository) { }
 
   async list(
     organizationId: string,
@@ -196,12 +197,147 @@ export class LeadService {
     if (!deleted) throw new NotFoundError("Tag not found");
   }
 
+  // ---------------------------------------------------------------------------
+  // Brief generation — on-demand dispatch
+  // ---------------------------------------------------------------------------
+
+  async generateBriefs(
+    organizationId: string,
+    campaignId: string,
+    leadIds: string[],
+    dispatcher: JobDispatcher,
+  ): Promise<{ dispatched: number; skipped: number }> {
+    const eligible = await this.repository.findLeadsForBriefGeneration(organizationId, campaignId, leadIds);
+
+    const prisma = this.repository.prisma;
+    let dispatched = 0;
+    const skipped = leadIds.length - eligible.length;
+
+    for (const lead of eligible) {
+      let job = await prisma.job.findFirst({
+        where: { leadId: lead.id, campaignId, kind: "INTERPRET" },
+        orderBy: { createdAt: "desc" },
+      });
+      if (!job) {
+        job = await prisma.job.create({
+          data: { campaignId, organizationId, leadId: lead.id, kind: "INTERPRET", status: "PENDING" },
+        });
+      }
+      if (!job.dispatchedAt && job.status !== "COMPLETED" && job.status !== "CANCELLED") {
+        await dispatcher.dispatchJob(job.id);
+      }
+      dispatched++;
+    }
+
+    if (eligible.length > 0) {
+      await prisma.campaignLead.updateMany({
+        where: { id: { in: eligible.map((l) => l.id) } },
+        data: { aiStatus: "PENDING" },
+      });
+    }
+
+    return { dispatched, skipped };
+  }
+
   async exportCsv(
     organizationId: string,
     campaignId: string,
     leadIds?: string[],
+    reportType?: "audit" | "briefs" | "full",
   ): Promise<string> {
     const rows = await this.repository.getLeadsForExport(organizationId, campaignId, leadIds);
+
+    if (reportType === "audit") {
+      const headers = [
+        "Business Name",
+        "Website",
+        "Website Class",
+        "City",
+        "Rating",
+        "Review Count",
+        "Opportunity Score",
+        "Audit Status",
+        "Performance Score",
+        "Technical SEO Status",
+        "Next Action",
+        "Tags",
+        "Notes",
+      ];
+      const lines = [
+        headers.map((h) => `"${h}"`).join(","),
+        ...rows.map((r) => {
+          const nextAction = computeNextAction({
+            archivedAt: r.archivedAt,
+            prospectStatus: r.prospectStatus,
+            opportunityScore: r.opportunityScore,
+            auditStatus: r.auditStatus,
+            aiStatus: r.aiStatus,
+            brief: r.brief,
+          });
+          const perfAudit = r.audits.find((a) => a.module === "PERFORMANCE");
+          const seoAudit = r.audits.find((a) => a.module === "TECHNICAL_SEO");
+          const cols = [
+            csvSafe(r.business.name),
+            csvSafe(r.business.websiteUrl),
+            csvSafe(r.business.websiteClass),
+            csvSafe(r.business.city),
+            r.business.rating != null ? String(r.business.rating) : "",
+            r.business.reviewCount != null ? String(r.business.reviewCount) : "",
+            r.opportunityScore != null ? String(r.opportunityScore) : "",
+            csvSafe(r.auditStatus),
+            perfAudit?.score != null ? String(perfAudit.score) : "",
+            csvSafe(seoAudit?.status ?? ""),
+            csvSafe(nextAction.label),
+            csvSafe(r.tags.map((t) => t.name).join("; ")),
+            csvSafe(r.notes),
+          ];
+          return cols.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",");
+        }),
+      ];
+      return lines.join("\r\n");
+    }
+
+    if (reportType === "briefs") {
+      const headers = [
+        "Business Name",
+        "Website",
+        "City",
+        "Rating",
+        "Review Count",
+        "Opportunity Score",
+        "AI Status",
+        "Headline Opportunity",
+        "Suggested Service",
+        "Confidence",
+        "Value Proposition",
+        "Outreach Angle",
+        "Cold Email Draft",
+        "Phone Script Draft",
+      ];
+      const lines = [
+        headers.map((h) => `"${h}"`).join(","),
+        ...rows.map((r) => {
+          const cols = [
+            csvSafe(r.business.name),
+            csvSafe(r.business.websiteUrl),
+            csvSafe(r.business.city),
+            r.business.rating != null ? String(r.business.rating) : "",
+            r.business.reviewCount != null ? String(r.business.reviewCount) : "",
+            r.opportunityScore != null ? String(r.opportunityScore) : "",
+            csvSafe(r.aiStatus),
+            csvSafe(r.brief?.headlineOpportunity),
+            csvSafe(r.brief?.suggestedService),
+            csvSafe(r.brief?.confidence),
+            csvSafe(r.brief?.valueProposition),
+            csvSafe(r.brief?.outreachAngle),
+            csvSafe(r.brief?.coldEmailDraft),
+            csvSafe(r.brief?.callScriptDraft),
+          ];
+          return cols.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",");
+        }),
+      ];
+      return lines.join("\r\n");
+    }
 
     const headers = [
       "Business Name",
@@ -214,6 +350,8 @@ export class LeadService {
       "Prospect Status",
       "Next Action",
       "Audit Status",
+      "AI Status",
+      "Headline Opportunity",
       "Tags",
       "Notes",
       "Saved",
@@ -242,6 +380,8 @@ export class LeadService {
           csvSafe(r.prospectStatus),
           csvSafe(nextAction.label),
           csvSafe(r.auditStatus),
+          csvSafe(r.aiStatus),
+          csvSafe(r.brief?.headlineOpportunity),
           csvSafe(r.tags.map((t) => t.name).join("; ")),
           csvSafe(r.notes),
           r.savedAt ? "Yes" : "No",

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { Link, useParams } from "react-router-dom"
-import { ArrowLeft, Download } from "lucide-react"
+import { ArrowLeft, ChevronDown, Download } from "lucide-react"
 import { getErrorMessage } from "@/features/auth/domain/auth-error"
 import { useAuth } from "@/features/auth/application/useAuth"
 import {
@@ -8,6 +8,7 @@ import {
   useCampaign,
   useCancelCampaign,
   useDownloadCsv,
+  useGenerateBulkBriefs,
   useRunCampaign,
   useTags,
   useUpdateLead,
@@ -21,6 +22,12 @@ import {
 } from "@/features/campaigns/domain/campaign"
 import { Button } from "@rove/ui/components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@rove/ui/components/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@rove/ui/components/dropdown-menu"
 import { Skeleton } from "@rove/ui/components/skeleton"
 import { ToneBadge } from "@/features/campaigns/presentation/ToneBadge"
 import { RunPipeline } from "@/features/campaigns/presentation/RunPipeline"
@@ -43,6 +50,7 @@ export function CampaignDetailPage() {
   const updateLeadMutation = useUpdateLead(organizationId ?? "", campaignId ?? "")
   const bulkUpdateMutation = useBulkUpdateLeads(organizationId ?? "", campaignId ?? "")
   const downloadCsvMutation = useDownloadCsv(organizationId ?? "", campaignId ?? "")
+  const generateBulkBriefsMutation = useGenerateBulkBriefs(organizationId ?? "", campaignId ?? "")
   const tagsQuery = useTags(organizationId ?? "")
   const availableTags = tagsQuery.data ?? []
 
@@ -186,8 +194,14 @@ export function CampaignDetailPage() {
     )
   }
 
-  const handleBulkExport = () => {
-    downloadCsvMutation.mutate(Array.from(selectedLeadIds))
+  const handleBulkExport = (reportType?: "audit" | "briefs" | "full") => {
+    downloadCsvMutation.mutate({ leadIds: Array.from(selectedLeadIds), reportType })
+  }
+
+  const handleBulkGenerateBriefs = async () => {
+    if (selectedLeadIds.size === 0) return
+    await generateBulkBriefsMutation.mutateAsync(Array.from(selectedLeadIds))
+    setSelectedLeadIds(new Set())
   }
 
   // Single lead actions
@@ -255,16 +269,40 @@ export function CampaignDetailPage() {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {hasLeads && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={downloadCsvMutation.isPending}
-                  onClick={() => downloadCsvMutation.mutate(undefined)}
-                  className="gap-1.5"
-                >
-                  <Download className="size-3.5" />
-                  {downloadCsvMutation.isPending ? "Exporting..." : "Export all CSV"}
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={downloadCsvMutation.isPending}
+                      className="gap-1.5"
+                    >
+                      <Download className="size-3.5" />
+                      {downloadCsvMutation.isPending ? "Exporting..." : "Export CSV"}
+                      <ChevronDown className="size-3 opacity-60" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem
+                      onClick={() => downloadCsvMutation.mutate({ reportType: "full" })}
+                      className="text-xs"
+                    >
+                      Full Prospects Overview
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => downloadCsvMutation.mutate({ reportType: "audit" })}
+                      className="text-xs"
+                    >
+                      Website Audit & Tech Report
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => downloadCsvMutation.mutate({ reportType: "briefs" })}
+                      className="text-xs"
+                    >
+                      AI Opportunity Briefs & Pitches
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
               {data.status === "PAUSED" ? (
                 <Button size="sm" disabled={pending} onClick={() => void run.mutate()}>
@@ -341,8 +379,9 @@ export function CampaignDetailPage() {
                 onToggleArchive={handleBulkArchive}
                 onAddTag={handleBulkAddTag}
                 onExportSelected={handleBulkExport}
+                onGenerateBriefs={handleBulkGenerateBriefs}
                 availableTags={availableTags}
-                isPending={bulkUpdateMutation.isPending}
+                isPending={bulkUpdateMutation.isPending || generateBulkBriefsMutation.isPending}
               />
             </section>
           ) : !active ? (

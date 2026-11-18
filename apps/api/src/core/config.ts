@@ -72,6 +72,7 @@ const ConfigSchema = z.object({
   OPENAI_API_KEY: optionalText(),
   ANTHROPIC_API_KEY: optionalText(),
   LLM_MODEL: optionalText(),
+  LLM_TIMEOUT_MS: z.coerce.number().int().positive().default(60_000),
   // Super admin credentials
   SUPERADMIN_EMAIL: optionalText(),
   SUPERADMIN_PASSWORD: optionalText(),

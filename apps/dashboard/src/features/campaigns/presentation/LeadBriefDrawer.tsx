@@ -14,7 +14,7 @@ import {
   Save,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/application/useAuth"
-import { useUpdateLead } from "@/features/campaigns/application/useCampaigns"
+import { useGenerateLeadBrief, useUpdateLead } from "@/features/campaigns/application/useCampaigns"
 import type { ProspectStatus } from "@/features/campaigns/domain/campaign"
 import {
   Sheet,
@@ -51,11 +51,23 @@ export function LeadBriefDrawer({
   const { me } = useAuth()
   const organizationId = me?.organization?.id ?? ""
   const updateMutation = useUpdateLead(organizationId, campaignId ?? "")
+  const generateBriefMutation = useGenerateLeadBrief(organizationId, campaignId ?? "")
 
   const [copiedEmail, setCopiedEmail] = useState(false)
   const [copiedScript, setCopiedScript] = useState(false)
   const [notesText, setNotesText] = useState("")
   const [notesSaved, setNotesSaved] = useState(false)
+  const [isGeneratingBrief, setIsGeneratingBrief] = useState(false)
+
+  const handleGenerateBrief = async () => {
+    if (!lead) return
+    setIsGeneratingBrief(true)
+    try {
+      await generateBriefMutation.mutateAsync({ leadId: lead.id })
+    } finally {
+      setIsGeneratingBrief(false)
+    }
+  }
 
   useEffect(() => {
     if (lead) {
@@ -257,21 +269,59 @@ export function LeadBriefDrawer({
                       </Card>
                     )}
                   </>
+                ) : lead.auditStatus === "COMPLETED" && lead.aiStatus !== "PENDING" ? (
+                  <Card className="border-dashed border-primary/40 bg-primary/5">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="size-4 text-primary" />
+                          <CardTitle className="text-base font-semibold">AI Opportunity Brief Not Generated</CardTitle>
+                        </div>
+                        <Badge variant="outline" className="border-primary/40 text-primary">
+                          Audit Completed
+                        </Badge>
+                      </div>
+                      <CardDescription className="text-xs">
+                        Deterministic website audit and performance metrics are ready. Generate a tailored sales opportunity brief on demand.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Synthesizing an AI brief produces customized headline opportunities, strategic outreach angles, cold email copy, and SDR call scripts based on this business's specific audit findings.
+                      </p>
+                      <div className="flex items-center gap-3 pt-1">
+                        <Button
+                          onClick={handleGenerateBrief}
+                          disabled={isGeneratingBrief || generateBriefMutation.isPending}
+                          className="gap-2 font-medium"
+                        >
+                          <Sparkles className="size-4" />
+                          {isGeneratingBrief || generateBriefMutation.isPending ? "Queuing Brief..." : "Generate AI Brief"}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ) : (
                   <Card>
                     <CardHeader>
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm">AI Brief in Progress</CardTitle>
+                        <CardTitle className="text-sm">
+                          {lead.aiStatus === "PENDING" && lead.auditStatus === "COMPLETED"
+                            ? "AI Brief in Progress"
+                            : "Auditing Website"}
+                        </CardTitle>
                         <Badge variant="outline">
-                          {lead.auditStatus === "COMPLETED" ? "Reasoning queued" : "Auditing site"}
+                          {lead.aiStatus === "PENDING" && lead.auditStatus === "COMPLETED"
+                            ? "Reasoning queued"
+                            : "Auditing site"}
                         </Badge>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <p className="text-sm text-muted-foreground">
-                        {lead.auditStatus === "COMPLETED"
-                          ? "The technical audits for this lead have completed. The Interpret Worker is currently synthesizing the structured sales opportunity brief."
-                          : "Audit modules (Google PageSpeed and website crawl) are running. Once finished, the AI opportunity brief with cold email draft and phone script will appear here."}
+                        {lead.aiStatus === "PENDING" && lead.auditStatus === "COMPLETED"
+                          ? "The technical audits for this lead have completed. The Interpret Worker is synthesizing the structured sales opportunity brief."
+                          : "Audit modules (Google PageSpeed and website crawl) are running. Once finished, you will be able to generate the AI opportunity brief."}
                       </p>
                       <div className="rounded-md border p-3 text-xs space-y-1.5 bg-muted/20">
                         <div className="flex justify-between">
@@ -280,7 +330,7 @@ export function LeadBriefDrawer({
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">AI Reasoning Status:</span>
-                          <span className="font-medium">{lead.aiStatus || "PENDING"}</span>
+                          <span className="font-medium">{lead.aiStatus || "SKIPPED_GATE"}</span>
                         </div>
                       </div>
                     </CardContent>
