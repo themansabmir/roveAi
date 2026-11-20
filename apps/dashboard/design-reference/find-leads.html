@@ -1,0 +1,223 @@
+<!DOCTYPE html><html lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>
+  @layer base { 
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      font-family: 'Inter', sans-serif;
+    } 
+    body { 
+      overscroll-behavior: none; 
+    } 
+    * {
+      font-family: 'Inter', sans-serif !important;
+    }
+  } 
+  ::-webkit-scrollbar { display: none; }
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = { 
+  darkMode: "class", 
+  theme: { 
+    extend: { 
+      colors: { 
+        "outline": "#797587", 
+        "tertiary": "#934800", 
+        "on-primary-container": "#ffffff", 
+        "secondary-fixed-dim": "#c6c5d0", 
+        "on-secondary": "#ffffff", 
+        "on-surface": "#111114", 
+        "on-error": "#ffffff", 
+        "primary-fixed-dim": "#cabeff", 
+        "secondary-container": "#e0deea", 
+        "primary-fixed": "#e6deff", 
+        "on-surface-variant": "#85858F", 
+        "on-background": "#111114", 
+        "primary-container": "#7856FF", 
+        "secondary": "#5d5e67", 
+        "surface-dim": "#dcd9dd", 
+        "outline-variant": "#c9c3d8", 
+        "background": "#fcf8fc", 
+        "inverse-surface": "#303033", 
+        "surface-bright": "#fcf8fc", 
+        "surface-tint": "#7856FF", 
+        "surface-container-lowest": "#ffffff", 
+        "surface-container-highest": "#e4e1e6", 
+        "surface": "#fcf8fc", 
+        "surface-container": "#f0edf1", 
+        "on-secondary-container": "#61626b", 
+        "primary": "#7856FF", 
+        "surface-container-high": "#eae7eb", 
+        "surface-container-low": "#f6f2f7", 
+        "surface-variant": "#e4e1e6", 
+        "on-primary": "#ffffff" 
+      }, 
+      borderRadius: { 
+        "DEFAULT": "0.125rem", 
+        "lg": "0.25rem", 
+        "xl": "0.5rem", 
+        "full": "0.75rem" 
+      }, 
+      spacing: { 
+        "space-2xl": "2rem", 
+        "margin-lg": "2rem", 
+        "space-lg": "1rem", 
+        "margin": "1rem", 
+        "space-sm": "0.5rem", 
+        "space-xl": "1.5rem", 
+        "space-xs": "0.25rem", 
+        "space-md": "0.75rem", 
+        "margin-md": "1.5rem", 
+        "gutter": "1rem", 
+        "gutter-lg": "1.5rem" 
+      }, 
+      fontFamily: { 
+        sans: ['Inter', 'sans-serif']
+      } 
+    } 
+  } 
+};</script></head><body class="bg-background text-[#111114] antialiased"><aside class="fixed left-0 top-0 h-full w-60 bg-surface border-r border-outline-variant/30 z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-14 flex items-center px-space-lg border-b border-outline-variant/20"><div class="flex items-center gap-space-sm"><div class="w-5 h-5 rounded-lg bg-primary-container flex items-center justify-center"><div class="w-2 h-2 rounded bg-white"></div></div><span class="text-[15px] font-semibold tracking-tight text-[#111114]">Kinetix</span></div></div><nav class="flex flex-col gap-space-xs px-space-sm py-space-md" data-active-classes="bg-surface-container text-[#111114] font-semibold"><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="home" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span class="">Home</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] hover:bg-surface-container-high hover:text-[#111114] transition-colors bg-surface-container text-[#111114] font-semibold" data-path="find-leads" href="#"><svg class="w-[18px] h-[18px] shrink-0 text-[#111114]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"></circle><path d="M2 21v-2a4 4 0 0 1 4-4h4"></path><circle cx="17" cy="17" r="3"></circle><path d="m21 21-1.5-1.5"></path></svg><span class="">Find Leads</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="prospects" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span class="">Prospects</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="task-history" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="">Task History</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="credits-&amp;-usage" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect height="14" rx="2" width="20" x="2" y="5"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg><span class="">Credits &amp; Usage</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="integrations" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v6m0 6v6M3 12h6m6 0h6"></path></svg><span class="">Integrations</span></a><a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-[13px] text-[#85858F] hover:bg-surface-container-high hover:text-[#111114] transition-colors" data-path="settings" href="#"><svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="">Settings</span></a></nav></div><div class="p-space-sm border-t border-outline-variant/20"><button class="w-full flex items-center justify-between p-space-xs rounded-lg hover:bg-surface-container transition-colors text-left" type="button"><div class="flex items-center gap-space-sm min-w-0 flex-1"><div class="w-7 h-7 rounded bg-secondary-container flex items-center justify-center shrink-0"><span class="text-[12px] text-on-secondary-container font-semibold">AC</span></div><div class="flex flex-col truncate"><span class="text-[13px] text-[#111114] font-medium truncate leading-tight">Alex Chen</span><span class="text-[12px] text-[#85858F] truncate leading-tight">Acme Growth</span></div></div><svg class="w-4 h-4 text-[#85858F] shrink-0 ml-1" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></button></div></aside><div class="pl-60 min-h-screen flex flex-col"><header class="fixed top-0 left-60 right-0 h-14 bg-surface/95 backdrop-blur-sm border-b border-outline-variant/30 z-40 px-space-xl flex items-center justify-between gap-space-lg"><div class="w-48 shrink-0"></div><div class="flex-1 max-w-md"><div class="relative flex items-center"><svg class="w-4 h-4 absolute left-3 text-[#85858F] pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><input class="w-full h-8 pl-9 pr-space-md bg-surface-container-lowest border border-outline-variant/40 rounded text-[13px] text-[#111114] placeholder:text-[#85858F] focus:outline-none focus:border-[#7856FF] transition-colors" placeholder="Search..." type="text"></div></div><div class="flex items-center gap-space-md shrink-0"><div class="flex items-center gap-space-xs px-space-sm py-0.5 border border-outline-variant/30 rounded bg-surface-container-lowest"><span class="text-[12px] text-[#111114] font-semibold">2,450</span><span class="text-[12px] text-[#85858F]">credits</span></div><div class="w-8 h-8 rounded-full bg-[#7856FF] flex items-center justify-center text-white shadow-xs"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div></div></header><main class="w-full pt-14 flex-1"><div class="flex flex-col w-full">
+<script>
+    // Ensure "Find Leads" is highlighted as active in the application shell sidebar
+    document.addEventListener("DOMContentLoaded", () => {
+      const navLinks = document.querySelectorAll("aside nav a");
+      navLinks.forEach((link) => {
+        if (link.getAttribute("data-path") === "find-leads") {
+          link.classList.remove("text-[#85858F]");
+          link.classList.add("bg-surface-container", "text-[#111114]", "font-semibold");
+          const svg = link.querySelector("svg");
+          if (svg) svg.classList.add("text-[#111114]");
+        } else if (link.getAttribute("data-path") === "home") {
+          link.classList.remove("bg-surface-container", "font-semibold");
+          link.classList.add("text-[#85858F]");
+          const svg = link.querySelector("svg");
+          if (svg) svg.classList.remove("text-[#111114]");
+        }
+      });
+    });
+  </script>
+<div class="p-space-xl max-w-7xl mx-auto w-full flex flex-col gap-space-xl">
+  <!-- Aura Slim Suggestion Banner -->
+  
+
+  <!-- Top Title Header -->
+  <div class="flex flex-col gap-space-sm"><div><h1 class="text-[22px] font-semibold text-[#111114] tracking-tight">Find leads</h1></div><div class="w-full bg-[#F7F5FF] border border-[#7856FF]/20 rounded-xl px-space-md py-space-sm flex items-center justify-between shadow-xs"><div class="flex items-center gap-space-sm"><div class="w-6 h-6 rounded-full bg-[#7856FF] flex items-center justify-center text-white text-[12px] font-semibold shrink-0 shadow-xs">A</div><span class="text-[13px] text-[#111114] font-medium">Filters suggested for Dental clinics in Dubai</span></div><button type="button" class="text-[12px] font-medium text-[#7856FF] hover:underline cursor-pointer focus:outline-none">Change</button></div></div>
+
+  <!-- Main Content: Two Columns -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+    <!-- Left / Main Card: Configuration Form -->
+    <div class="lg:col-span-8 flex flex-col gap-space-xl">
+      <div class="bg-surface-container-lowest rounded-xl p-space-xl border border-outline-variant/30 shadow-sm flex flex-col gap-space-xl">
+        <div class="flex items-center justify-between pb-space-xs border-b border-outline-variant/20">
+          <span class="font-headline-sm text-headline-sm text-[#111114]">New search</span>
+          
+        </div>
+
+        <!-- Task Objective -->
+        <div class="flex flex-col gap-space-xs">
+          <label class="font-label-md text-label-md text-[#5C5C66]">Task objective</label>
+          <div class="relative flex items-center">
+            <input id="task-input" type="text" value="Find dental clinics in Dubai needing SEO &amp; digital marketing services" placeholder="e.g. Find dental clinics in Dubai needing SEO &amp; digital marketing services" class="w-full h-11 px-space-md bg-surface-container-lowest border border-outline-variant/40 rounded-lg text-body-md font-body-md text-[#111114] placeholder:text-[#85858F] focus:outline-none focus:border-[#7856FF] transition-colors shadow-xs">
+          </div>
+        </div>
+
+        <!-- Soft Editable Filter Chips: Location & Industry -->
+        <div class="flex flex-col gap-space-xs"><label class="font-label-md text-label-md text-[#5C5C66]">Filters</label><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm"><div class="flex items-center justify-between px-space-md py-2 rounded-lg bg-surface-container-low border border-outline-variant/30 text-body-sm font-body-sm text-[#111114] hover:border-outline-variant/50 transition-colors cursor-pointer group"><div class="flex items-center gap-space-sm min-w-0"><svg class="w-4 h-4 text-[#85858F] shrink-0 group-hover:text-[#111114] transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span class="font-medium truncate">Dubai, UAE</span></div><svg class="w-3.5 h-3.5 text-[#85858F] shrink-0 hover:text-[#111114]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg></div><div class="flex items-center justify-between px-space-md py-2 rounded-lg bg-surface-container-low border border-outline-variant/30 text-body-sm font-body-sm text-[#111114] hover:border-outline-variant/50 transition-colors cursor-pointer group"><div class="flex items-center gap-space-sm min-w-0"><svg class="w-4 h-4 text-[#85858F] shrink-0 group-hover:text-[#111114] transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect height="14" rx="2" ry="2" width="20" x="2" y="7"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg><span class="font-medium truncate">Dental clinics</span></div><svg class="w-3.5 h-3.5 text-[#85858F] shrink-0 hover:text-[#111114]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg></div><div class="flex items-center justify-between px-space-md py-2 rounded-lg bg-surface-container-low border border-outline-variant/30 text-body-sm font-body-sm text-[#111114] hover:border-outline-variant/50 transition-colors cursor-pointer group"><div class="flex items-center gap-space-sm min-w-0"><svg class="w-4 h-4 text-[#85858F] shrink-0 group-hover:text-[#111114] transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg><span class="font-medium truncate">Size: Single clinic</span></div><svg class="w-3.5 h-3.5 text-[#85858F] shrink-0 hover:text-[#111114]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg></div><div class="flex items-center justify-between px-space-md py-2 rounded-lg bg-surface-container-low border border-outline-variant/30 text-body-sm font-body-sm text-[#111114] hover:border-outline-variant/50 transition-colors cursor-pointer group"><div class="flex items-center gap-space-sm min-w-0"><svg class="w-4 h-4 text-[#85858F] shrink-0 group-hover:text-[#111114] transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line><line x1="9" x2="15" y1="14" y2="18"></line><line x1="15" x2="9" y1="14" y2="18"></line></svg><span class="font-medium truncate">Has no online booking</span></div><svg class="w-3.5 h-3.5 text-[#85858F] shrink-0 hover:text-[#111114]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg></div></div></div>
+
+        <!-- Number of Businesses Selection (Segmented soft chips) -->
+        <div class="flex flex-col gap-space-xs">
+          <label class="font-label-md text-label-md text-[#5C5C66]">Number of businesses</label>
+          <div id="volume-selector" class="grid grid-cols-4 gap-space-sm"><button type="button" data-amount="50" data-cost="60" class="volume-btn h-10 flex items-center justify-center rounded-lg text-body-md font-body-md bg-surface-container-low border border-outline-variant/20 text-[#85858F] hover:text-[#111114] hover:bg-surface-container transition-all cursor-pointer">50</button><button type="button" data-amount="100" data-cost="120" class="volume-btn h-10 flex items-center justify-center rounded-lg text-body-md font-body-md bg-surface-container-low border border-outline-variant/20 text-[#85858F] hover:text-[#111114] hover:bg-surface-container transition-all cursor-pointer">100</button><button type="button" data-amount="200" data-cost="240" class="volume-btn active-volume h-10 flex items-center justify-center rounded-lg text-body-md font-medium bg-[#F7F5FF] text-[#7856FF] border border-[#7856FF] shadow-xs transition-all cursor-pointer">200</button><button type="button" data-amount="500" data-cost="600" class="volume-btn h-10 flex items-center justify-center rounded-lg text-body-md font-body-md bg-surface-container-low border border-outline-variant/20 text-[#85858F] hover:text-[#111114] hover:bg-surface-container transition-all cursor-pointer">500</button></div>
+        </div>
+
+        <!-- Services to Match (Soft interactive chips) -->
+        <div class="flex flex-col gap-space-xs">
+          <label class="font-label-md text-label-md text-[#5C5C66]">Services to match</label>
+          <div id="services-chips" class="flex flex-wrap gap-space-xs"><button type="button" class="px-space-md py-1.5 rounded-lg text-body-sm font-medium bg-[#F7F5FF] text-[#7856FF] border border-[#7856FF] transition-colors shadow-xs cursor-pointer">SEO &amp; Content Marketing</button><button type="button" class="px-space-md py-1.5 rounded-lg text-body-sm font-body-sm bg-surface-container-low border border-outline-variant/30 text-[#111114] hover:bg-surface-container transition-colors cursor-pointer">Website Development</button><button type="button" class="px-space-md py-1.5 rounded-lg text-body-sm font-body-sm bg-surface-container-low border border-outline-variant/30 text-[#111114] hover:bg-surface-container transition-colors cursor-pointer">Google Ads / Paid Media</button><button type="button" class="px-space-md py-1.5 rounded-lg text-body-sm font-body-sm bg-surface-container-low border border-outline-variant/30 text-[#111114] hover:bg-surface-container transition-colors cursor-pointer">CRM Integration</button><button type="button" class="px-space-md py-1.5 rounded-lg text-body-sm font-body-sm bg-surface-container-low border border-outline-variant/30 text-[#85858F] hover:text-[#111114] hover:bg-surface-container transition-colors flex items-center gap-1 cursor-pointer"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg><span class="">Add service</span></button></div>
+        </div>
+      <div class="pt-space-xs border-t border-outline-variant/20 flex flex-wrap items-center gap-space-sm"><span class="text-[12px] font-medium text-[#5C5C66]">Try an example:</span><button type="button" onclick="document.getElementById('task-input').value = 'Find dentists in Dubai needing modern web presence &amp; SEO';" class="px-2.5 py-1 rounded-full bg-surface-container-low hover:bg-surface-container border border-outline-variant/30 text-[12px] text-[#111114] transition-colors cursor-pointer">Dentists in Dubai</button><button type="button" onclick="document.getElementById('task-input').value = 'Find HVAC contractors in Texas needing Google Local Services ads';" class="px-2.5 py-1 rounded-full bg-surface-container-low hover:bg-surface-container border border-outline-variant/30 text-[12px] text-[#111114] transition-colors cursor-pointer">HVAC in Texas</button><button type="button" onclick="document.getElementById('task-input').value = 'Find accounting firms in Sydney looking for CRM and automation';" class="px-2.5 py-1 rounded-full bg-surface-container-low hover:bg-surface-container border border-outline-variant/30 text-[12px] text-[#111114] transition-colors cursor-pointer">Accountants in Sydney</button></div></div>
+    </div>
+
+    <!-- Right Column: Credit Estimate Card -->
+    <div class="lg:col-span-4 flex flex-col gap-space-lg">
+      <div class="bg-surface-container-lowest rounded-xl p-space-xl border border-outline-variant/30 shadow-sm flex flex-col gap-space-lg">
+        <div class="flex items-center justify-between pb-space-xs border-b border-outline-variant/20">
+          <span class="font-headline-sm text-headline-sm text-[#111114]">Credit estimate</span>
+          <svg class="w-4 h-4 text-[#85858F]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <rect height="14" rx="2" width="20" x="2" y="5"></rect>
+            <line x1="2" x2="22" y1="10" y2="10"></line>
+          </svg>
+        </div>
+
+        <!-- Breakdown Rows -->
+        <div class="flex flex-col gap-space-sm pt-space-xs">
+          <div class="flex items-center justify-between py-1">
+            <span class="font-body-md text-body-md text-[#85858F]">Estimated credits</span>
+            <span id="est-credits" class="font-body-md text-body-md text-[#111114] font-semibold">240 credits</span>
+          </div>
+          <div class="flex items-center justify-between py-1">
+            <span class="font-body-md text-body-md text-[#85858F]">Your balance</span>
+            <span class="font-body-md text-body-md text-[#111114] font-medium">2,450 credits</span>
+          </div>
+          <div class="h-[1px] bg-surface-container my-1"></div>
+          <div class="flex items-center justify-between py-1">
+            <span class="font-body-md text-body-md text-[#85858F]">Balance after</span>
+            <span id="bal-after" class="font-body-md text-body-md text-[#111114] font-medium">2,210 credits</span>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="search-btn" type="button" class="w-full h-11 rounded-lg bg-[#7856FF] hover:bg-[#6644EE] active:bg-[#5838db] text-white font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors shadow-sm cursor-pointer">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+          </svg>
+          <span id="btn-text" class="">Start search (240 credits)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    // Handle Volume Selection & Credit Calculation
+    const volumeButtons = document.querySelectorAll(".volume-btn");
+    const estCreditsSpan = document.getElementById("est-credits");
+    const balAfterSpan = document.getElementById("bal-after");
+    const btnTextSpan = document.getElementById("btn-text");
+    const searchBtn = document.getElementById("search-btn");
+    const totalBalance = 2450;
+
+    volumeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        volumeButtons.forEach((b) => {
+          b.classList.remove("bg-[#111114]", "text-white");
+          b.classList.add("bg-surface-container-low", "text-[#85858F]");
+        });
+        btn.classList.remove("bg-surface-container-low", "text-[#85858F]");
+        btn.classList.add("bg-[#111114]", "text-white");
+
+        const cost = parseInt(btn.getAttribute("data-cost"), 10);
+        estCreditsSpan.textContent = `${cost} credits`;
+        balAfterSpan.textContent = `${(totalBalance - cost).toLocaleString()} credits`;
+        btnTextSpan.textContent = `Start search (${cost} credits)`;
+      });
+    });
+
+    searchBtn.addEventListener("click", () => {
+      const originalHtml = btnTextSpan.textContent;
+      btnTextSpan.textContent = "Processing search...";
+      searchBtn.disabled = true;
+      searchBtn.classList.add("opacity-80");
+
+      setTimeout(() => {
+        btnTextSpan.textContent = "Search initiated";
+        setTimeout(() => {
+          btnTextSpan.textContent = originalHtml;
+          searchBtn.disabled = false;
+          searchBtn.classList.remove("opacity-80");
+        }, 1500);
+      }, 1000);
+    });
+  </script>
+</div></main></div>
+
+
+</body></html>
