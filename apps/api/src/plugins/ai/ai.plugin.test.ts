@@ -62,4 +62,57 @@ describe("AI Plugin — Multi-Provider Architecture", () => {
     const validated = BriefDataSchema.safeParse(result.brief);
     expect(validated.success).toBe(true);
   });
+
+  it("retries on HTTP 429 and succeeds on subsequent attempt in GeminiProvider", async () => {
+    const originalFetch = globalThis.fetch;
+    let calls = 0;
+    globalThis.fetch = vi.fn().mockImplementation(async () => {
+      calls++;
+      if (calls === 1) {
+        return {
+          status: 429,
+          ok: false,
+          text: async () => "Quota exceeded",
+        };
+      }
+      return {
+        status: 200,
+        ok: true,
+        json: async () => ({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: JSON.stringify({
+                      headlineOpportunity: "Modernize Website",
+                      suggestedService: "Web Design",
+                      confidence: "HIGH",
+                      valueProposition: "Double mobile conversions",
+                      outreachAngle: "Mobile site speed",
+                      coldEmailDraft: "Hi team...",
+                      callScriptDraft: "Quick question...",
+                      keyFindings: ["Slow LCP"],
+                    }),
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      };
+    });
+
+    try {
+      const provider = new GeminiProvider("valid-key");
+      const res = await provider.generateBrief({
+        businessName: "Acme",
+        opportunityScore: 80,
+      } as any);
+      expect(calls).toBe(2);
+      expect(res.brief.headlineOpportunity).toBe("Modernize Website");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });

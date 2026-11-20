@@ -212,6 +212,7 @@ export interface SaveLeadInput {
   websiteClass: WebsiteClass;
   qualificationStatus: QualificationStatus;
   auditStatus: AuditStatus;
+  aiStatus?: AiStatus;
 }
 
 export class CampaignRepository {
@@ -642,6 +643,7 @@ export class CampaignRepository {
           businessId: item.businessId,
           qualificationStatus: item.input.qualificationStatus,
           auditStatus: item.input.auditStatus,
+          aiStatus: item.input.aiStatus ?? "NOT_REQUESTED",
         });
       }
     }

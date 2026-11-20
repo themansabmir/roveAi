@@ -9,7 +9,7 @@ export class DiscoveryService {
   constructor(
     private readonly repository: CampaignRepository,
     private readonly maps: MapsProvider,
-    private readonly audits: AuditScheduler
+    _audits?: AuditScheduler
   ) { }
 
   async run(
@@ -112,8 +112,8 @@ export class DiscoveryService {
     console.log(`[DiscoveryService.discover] 🏁 Discovery finished with ${saved}/${campaign.maxLeads} leads saved.`);
     const status = await this.repository.campaignStatus(campaignId);
     if (status === "DISCOVERING") {
-      console.log(`[DiscoveryService.discover] ⏩ Handoff: Triggering AuditScheduler.schedule(${campaignId})`);
-      await this.audits.schedule(campaignId);
+      console.log(`[DiscoveryService.discover] ✅ Discovery completed. Campaign ${campaignId} status -> COMPLETED (ready for prospect triage).`);
+      await this.repository.setCampaignStatus(campaignId, "COMPLETED");
     }
     await this.repository.setJobStatus(jobId, "COMPLETED");
     console.log(`[DiscoveryService.discover] ✨ DISCOVER Job ${jobId} status -> COMPLETED`);
@@ -178,6 +178,7 @@ export class DiscoveryService {
       websiteClass,
       qualificationStatus,
       auditStatus,
+      aiStatus: "NOT_REQUESTED",
     };
   }
 
@@ -201,5 +202,5 @@ function passesFilters(campaign: DiscoveryCampaign, row: MapsBusiness, websiteCl
 function auditForClass(websiteClass: WebsiteClass): AuditStatus {
   if (websiteClass === "MISSING") return "SKIPPED_NO_WEBSITE";
   if (websiteClass !== "OWNED_SITE") return "SKIPPED_NOT_OWNED_SITE";
-  return "PENDING";
+  return "NOT_AUDITED";
 }

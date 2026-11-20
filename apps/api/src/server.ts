@@ -10,6 +10,7 @@ import { logger } from "./core/logger";
 import { requestContext } from "./middleware/requestContext";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { attachSession } from "./middleware/session";
+import { createAuthRateLimiter } from "./middleware/rate-limiter";
 import { healthRouter } from "@features/health/health.routes";
 import { createAuth } from "@features/auth/better-auth";
 import { meRouter } from "@features/me/me.routes";
@@ -17,6 +18,7 @@ import { adminRouter } from "@features/admin/admin.routes";
 import { organizationsRouter } from "@features/organizations/organization.routes";
 import { workspaceRouter } from "@features/workspaces/workspace.routes";
 import { campaignsRouter, tagsRouter } from "@features/campaigns/campaign.routes";
+import { creditsRouter } from "@features/credits/credit.routes";
 import { registerAllPlugins } from "@plugins/register-all";
 import { IPrismaService, PRISMA_PLUGIN } from "@plugins/prisma/prisma.plugin";
 import { IQueueService, QUEUE_PLUGIN } from "@plugins/queue/queue.types";
@@ -59,7 +61,8 @@ export async function buildApp(): Promise<{ app: Express; registry: PluginRegist
   await ensureDefaultSuperAdmin({ prisma, auth, config });
 
   // Better Auth reads the raw request body. JSON parsing must come after this handler.
-  app.all("/api/auth/*splat", toNodeHandler(auth));
+  const authLimiter = createAuthRateLimiter(config);
+  app.all("/api/auth/*splat", authLimiter, toNodeHandler(auth));
 
   app.use(express.json({ limit: config.REQUEST_BODY_LIMIT }));
   app.use(cookieParser());
@@ -76,6 +79,7 @@ export async function buildApp(): Promise<{ app: Express; registry: PluginRegist
   app.use("/api/invitations", invitationsRouter({ prisma, email: emailPlugin, appWebUrl: config.APP_WEB_URL }));
   app.use("/api/organizations/:organizationId/campaigns", campaignsRouter({ prisma, queue: queuePlugin }));
   app.use("/api/organizations/:organizationId/tags", tagsRouter({ prisma }));
+  app.use("/api/organizations/:organizationId/billing/credits", creditsRouter({ prisma }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

@@ -6,6 +6,7 @@ import {
   ExternalLink,
   Gauge,
   Sparkles,
+  Play,
   AlertTriangle,
   Layers,
   Globe,
@@ -16,7 +17,11 @@ import {
   Info,
 } from "lucide-react"
 import { useAuth } from "@/features/auth/application/useAuth"
-import { useUpdateLead } from "@/features/campaigns/application/useCampaigns"
+import {
+  useGenerateBriefs,
+  useSelectiveAudit,
+  useUpdateLead,
+} from "@/features/campaigns/application/useCampaigns"
 import { getLeadActivity, type LeadActivityLogItem } from "@/features/campaigns/infrastructure/campaignApi"
 import type { ProspectStatus } from "@/features/campaigns/domain/campaign"
 import {
@@ -54,6 +59,8 @@ export function LeadBriefDrawer({
   const { me } = useAuth()
   const organizationId = me?.organization?.id ?? ""
   const updateMutation = useUpdateLead(organizationId, campaignId ?? "")
+  const auditMutation = useSelectiveAudit(organizationId, campaignId ?? "")
+  const briefMutation = useGenerateBriefs(organizationId, campaignId ?? "")
 
   const [copiedEmail, setCopiedEmail] = useState(false)
   const [copiedScript, setCopiedScript] = useState(false)
@@ -322,6 +329,76 @@ export function LeadBriefDrawer({
                       </Card>
                     )}
                   </>
+                ) : lead.auditStatus === "NOT_AUDITED" ? (
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm">Prospect Not Audited</CardTitle>
+                        <Badge variant="outline">Discovered only</Badge>
+                      </div>
+                      <CardDescription className="text-xs">
+                        This business was discovered via Google Maps. Run website crawl and PageSpeed audits to inspect Core Web Vitals, metadata, and tech stack.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          size="sm"
+                          disabled={auditMutation.isPending}
+                          onClick={() =>
+                            auditMutation.mutate({
+                              leadIds: [lead.id],
+                              tools: ["CRAWL", "PERFORMANCE"],
+                              generateAiBrief: false,
+                            })
+                          }
+                          className="gap-1.5 font-semibold"
+                        >
+                          <Play className="size-3.5 fill-current" />
+                          {auditMutation.isPending ? "Starting Audit..." : "Run Technical Audit (3 RU)"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          disabled={auditMutation.isPending}
+                          onClick={() =>
+                            auditMutation.mutate({
+                              leadIds: [lead.id],
+                              tools: ["CRAWL", "PERFORMANCE"],
+                              generateAiBrief: true,
+                            })
+                          }
+                          className="gap-1.5 font-semibold"
+                        >
+                          <Sparkles className="size-3.5" />
+                          Audit + Generate Brief (8 RU)
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : lead.aiStatus === "NOT_REQUESTED" ? (
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm">Generate AI Opportunity Brief</CardTitle>
+                        <Badge variant="secondary">Audited & Ready</Badge>
+                      </div>
+                      <CardDescription className="text-xs">
+                        Technical audit data is ready. Synthesize a customized sales pitch, value proposition headline, outreach angles, cold email draft, and phone script.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <Button
+                        size="sm"
+                        disabled={briefMutation.isPending}
+                        onClick={() => briefMutation.mutate({ leadIds: [lead.id] })}
+                        className="gap-1.5 font-semibold"
+                      >
+                        <Sparkles className="size-3.5" />
+                        {briefMutation.isPending ? "Queuing Brief..." : "Generate AI Sales Brief (5 RU)"}
+                      </Button>
+                    </CardContent>
+                  </Card>
                 ) : (
                   <Card>
                     <CardHeader>

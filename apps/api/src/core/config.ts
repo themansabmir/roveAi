@@ -79,6 +79,13 @@ const ConfigSchema = z.object({
   DEFAULT_SUPERADMIN_EMAIL: optionalText(),
   DEFAULT_SUPERADMIN_PASSWORD: optionalText(),
   DEFAULT_SUPERADMIN_NAME: optionalText(),
+  // Rate limiting & quotas
+  RATE_LIMIT_AUTH_MAX: z.coerce.number().int().positive().default(20),
+  RATE_LIMIT_AUTH_WINDOW_MIN: z.coerce.number().int().positive().default(15),
+  RATE_LIMIT_MUTATION_MAX: z.coerce.number().int().positive().default(30),
+  RATE_LIMIT_MUTATION_WINDOW_MIN: z.coerce.number().int().positive().default(1),
+  PSI_RATE_LIMIT_RPM: z.coerce.number().int().positive().default(150),
+  CRAWL_DOMAIN_DELAY_MS: z.coerce.number().int().nonnegative().default(500),
 }).superRefine((value, ctx) => {
   if (value.QUEUE_DRIVER === "pubsub" && !value.GCP_PROJECT_ID) {
     ctx.addIssue({

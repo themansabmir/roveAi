@@ -7,6 +7,7 @@ import {
   Sparkles,
   ChevronRight,
   Plus,
+  Play,
 } from "lucide-react"
 import {
   Table,
@@ -40,6 +41,8 @@ export function ProspectTable({
   onToggleArchive,
   availableTags,
   onAddTagToLead,
+  onSingleAudit,
+  onSingleBrief,
   isPending,
 }: {
   leads: CampaignLead[]
@@ -51,6 +54,8 @@ export function ProspectTable({
   onToggleArchive: (leadId: string, currentArchived: boolean) => void
   availableTags: TagItem[]
   onAddTagToLead: (leadId: string, tagId: string) => void
+  onSingleAudit?: (leadId: string) => void
+  onSingleBrief?: (leadId: string) => void
   isPending: boolean
 }) {
   const [activeLead, setActiveLead] = useState<CampaignLead | null>(null)
@@ -311,9 +316,37 @@ export function ProspectTable({
                       </div>
                     </TableCell>
 
-                    {/* Actions: Archive / Unarchive & View Brief */}
+                    {/* Actions: Quick Audit/Brief, Archive / Unarchive & View Brief */}
                     <TableCell className="text-right px-3" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
+                        {lead.auditStatus === "NOT_AUDITED" && onSingleAudit && (
+                          <button
+                            type="button"
+                            aria-label="Run technical audit"
+                            title="Run technical audit (Crawl + PSI)"
+                            onClick={() => onSingleAudit(lead.id)}
+                            className="p-1 text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            <Play className="size-3.5 fill-current" />
+                          </button>
+                        )}
+
+                        {(lead.auditStatus === "COMPLETED" || lead.auditStatus === "PARTIALLY_COMPLETED") &&
+                          !lead.brief &&
+                          lead.aiStatus !== "QUEUED" &&
+                          lead.aiStatus !== "PENDING" &&
+                          onSingleBrief && (
+                            <button
+                              type="button"
+                              aria-label="Generate AI brief"
+                              title="Generate AI sales brief"
+                              onClick={() => onSingleBrief(lead.id)}
+                              className="p-1 text-muted-foreground hover:text-primary transition-colors"
+                            >
+                              <Sparkles className="size-3.5" />
+                            </button>
+                          )}
+
                         <button
                           type="button"
                           aria-label={isArchived ? "Unarchive lead" : "Archive lead"}

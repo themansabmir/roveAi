@@ -5,11 +5,13 @@ import type { TagItem } from "@/features/campaigns/domain/campaign"
 
 export type ViewTab = "all" | "qualified" | "researched" | "contacted" | "saved" | "archived"
 export type ScoreFilter = "all" | "high" | "medium" | "low"
+export type AuditFilter = "all" | "audited" | "not_audited" | "queued" | "failed"
 
 export interface ProspectFiltersState {
   search: string
   viewTab: ViewTab
   scoreFilter: ScoreFilter
+  auditFilter?: AuditFilter
   selectedTagId: string | null
 }
 
@@ -105,6 +107,22 @@ export function ProspectFilters({
             <option value="high">High (75+)</option>
             <option value="medium">Medium (55–74)</option>
             <option value="low">Low (&lt;55)</option>
+          </select>
+        </div>
+
+        {/* Audit Status Filter */}
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span>Audit:</span>
+          <select
+            value={state.auditFilter ?? "all"}
+            onChange={(e) => onChange({ auditFilter: e.target.value as AuditFilter })}
+            className="h-9 rounded-md border border-input bg-background px-2.5 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          >
+            <option value="all">All audit states</option>
+            <option value="audited">Audited (Completed)</option>
+            <option value="not_audited">Not audited</option>
+            <option value="queued">Audit in progress</option>
+            <option value="failed">Audit failed</option>
           </select>
         </div>
 

@@ -4,6 +4,7 @@ import { AiEvidenceContext, BriefData, BriefDataSchema } from "@plugins/ai/ai.ty
 import { InterpretRepository } from "./interpret.repository";
 import { computeLeadScoreBreakdown } from "./scoring/lead-scoring";
 import { LeadScoreBreakdown } from "./scoring/score-types";
+import { CreditService } from "@features/credits/credit.service";
 
 export { BriefDataSchema };
 export type { BriefData };
@@ -29,6 +30,10 @@ export class InterpretService {
       if (meta.retrycount >= meta.retrylimit) {
         console.error(`[InterpretService.run] ❌ Interpret terminal failure:`, err);
         await this.repository.finishJob(payload.jobId, "FAILED", msg);
+        if (this.repository.prisma) {
+          const cs = new CreditService(this.repository.prisma);
+          await cs.releaseLeadReport(payload.leadId, `AI interpretation failed: ${msg}`).catch(() => {});
+        }
       } else {
         console.warn(`[InterpretService.run] ⚠️ Retrying after error: ${msg}`);
         await this.repository.releaseJob(payload.jobId);
@@ -87,6 +92,10 @@ export class InterpretService {
 
     console.log(`[InterpretService.execute] ✅ Brief & LeadScore stored in DB for lead ${lead.id}`);
     await this.repository.finishJob(payload.jobId, "COMPLETED");
+    if (this.repository.prisma) {
+      const cs = new CreditService(this.repository.prisma);
+      await cs.settleLeadReport(lead.id, { reason: "Complete AI brief report generated" }).catch(() => {});
+    }
   }
 
   /**

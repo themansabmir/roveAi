@@ -63,3 +63,20 @@ export const leadsQuerySchema = z.object({
 });
 export type LeadsQuery = z.infer<typeof leadsQuerySchema>;
 
+// ---- Selective Auditing (Phase 1) ----
+export const auditToolValues = ["CRAWL", "PERFORMANCE"] as const;
+
+export const selectiveAuditSchema = z.object({
+  leadIds: z.array(z.string()).min(1).max(200),
+  tools: z.array(z.enum(auditToolValues)).min(1).default(["CRAWL", "PERFORMANCE"]),
+  generateAiBrief: z.boolean().default(false),
+  aiBriefLeadIds: z.array(z.string()).max(200).optional(),
+  topNBriefsCount: z.number().int().min(1).max(100).optional(),
+});
+export type SelectiveAuditInput = z.infer<typeof selectiveAuditSchema>;
+
+export const generateBriefsSchema = z.object({
+  leadIds: z.array(z.string()).min(1).max(200),
+});
+export type GenerateBriefsInput = z.infer<typeof generateBriefsSchema>;
+

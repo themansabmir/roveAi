@@ -16,6 +16,66 @@ function tagsPath(organizationId: string): string {
   return `/api/organizations/${organizationId}/tags`
 }
 
+function creditsPath(organizationId: string): string {
+  return `/api/organizations/${organizationId}/billing/credits`
+}
+
+export interface CreditBalanceView {
+  balance: number
+  reserved: number
+  available: number
+  lifetimeGranted: number
+}
+
+export interface CreditPackView {
+  id: string
+  name: string
+  credits: number
+  priceCents: number
+  currency: string
+}
+
+export interface CreditLedgerView {
+  id: string
+  kind: string
+  amount: number
+  balanceAfter: number
+  reason: string
+  reservationId: string | null
+  createdAt: string
+}
+
+export async function getCreditBalance(organizationId: string): Promise<CreditBalanceView> {
+  const response = await axiosInstance.get<CreditBalanceView>(creditsPath(organizationId))
+  return response.data
+}
+
+export async function listCreditPacks(organizationId: string): Promise<CreditPackView[]> {
+  const response = await axiosInstance.get<CreditPackView[]>(`${creditsPath(organizationId)}/packs`)
+  return response.data
+}
+
+export async function refillCredits(
+  organizationId: string,
+  packId: string,
+): Promise<{ balance: number; granted: number; packName: string }> {
+  const response = await axiosInstance.post<{ balance: number; granted: number; packName: string }>(
+    `${creditsPath(organizationId)}/refill`,
+    { packId },
+  )
+  return response.data
+}
+
+export async function getCreditLedger(
+  organizationId: string,
+  limit = 50,
+): Promise<CreditLedgerView[]> {
+  const response = await axiosInstance.get<CreditLedgerView[]>(
+    `${creditsPath(organizationId)}/ledger?limit=${limit}`,
+  )
+  return response.data
+}
+
 export async function listCampaigns(organizationId: string): Promise<CampaignSummary[]> {
   const response = await axiosInstance.get<CampaignSummary[]>(campaignsPath(organizationId))
   return response.data
@@ -81,6 +141,70 @@ export async function bulkUpdateLeads(
   const response = await axiosInstance.post<{ updatedCount: number }>(
     `${campaignsPath(organizationId)}/${campaignId}/leads/bulk`,
     payload,
+  )
+  return response.data
+}
+
+export interface SelectiveAuditPayload {
+  leadIds: string[]
+  tools?: ("CRAWL" | "PERFORMANCE")[]
+  generateAiBrief?: boolean
+  aiBriefLeadIds?: string[]
+  topNBriefsCount?: number
+  idempotencyKey?: string
+}
+
+export async function runSelectiveAudit(
+  organizationId: string,
+  campaignId: string,
+  payload: SelectiveAuditPayload,
+): Promise<{ batchId: string; scheduledLeads: number; queuedJobs: number; duplicate?: boolean }> {
+  const headers: Record<string, string> = {}
+  if (payload.idempotencyKey) {
+    headers["Idempotency-Key"] = payload.idempotencyKey
+  }
+  const response = await axiosInstance.post<{ batchId: string; scheduledLeads: number; queuedJobs: number; duplicate?: boolean }>(
+    `${campaignsPath(organizationId)}/${campaignId}/leads/audit`,
+    payload,
+    { headers },
+  )
+  return response.data
+}
+
+export interface GenerateBriefsPayload {
+  leadIds: string[]
+}
+
+export async function generateAiBriefs(
+  organizationId: string,
+  campaignId: string,
+  payload: GenerateBriefsPayload,
+): Promise<{ queuedCount: number }> {
+  const response = await axiosInstance.post<{ queuedCount: number }>(
+    `${campaignsPath(organizationId)}/${campaignId}/leads/generate-briefs`,
+    payload,
+  )
+  return response.data
+}
+
+export interface AuditBatchItem {
+  id: string
+  campaignId: string
+  requestedByUserId: string | null
+  leadCount: number
+  toolsRequested: string[]
+  generateAiBrief: boolean
+  status: string
+  createdAt: string
+  completedAt: string | null
+}
+
+export async function listAuditBatches(
+  organizationId: string,
+  campaignId: string,
+): Promise<AuditBatchItem[]> {
+  const response = await axiosInstance.get<AuditBatchItem[]>(
+    `${campaignsPath(organizationId)}/${campaignId}/audit-batches`
   )
   return response.data
 }

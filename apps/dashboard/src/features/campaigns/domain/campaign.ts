@@ -183,12 +183,18 @@ export function qualificationLabel(status: string): string {
 
 export function auditStatusLabel(status: string): string {
   switch (status) {
+    case "NOT_AUDITED":
+      return "Not audited"
+    case "QUEUED":
+      return "Audit queued"
     case "PENDING":
       return "Audit pending"
     case "RUNNING":
       return "Auditing"
     case "COMPLETED":
       return "Audited"
+    case "PARTIALLY_COMPLETED":
+      return "Partially audited"
     case "FAILED":
       return "Audit failed"
     case "SKIPPED_NO_WEBSITE":
@@ -254,7 +260,7 @@ export function computeNextAction(lead: {
     case "QUALIFIED": {
       const briefAiStatus = lead.brief?.aiStatus ?? lead.aiStatus
       if (briefAiStatus === "COMPLETED") return { label: "Review evidence", tone: "success" }
-      if (briefAiStatus === "PENDING") return { label: "Brief generating", tone: "neutral" }
+      if (briefAiStatus === "PENDING" || briefAiStatus === "QUEUED") return { label: "Brief generating", tone: "neutral" }
       return { label: "Generate brief", tone: "warning" }
     }
     case "RESEARCHED":
@@ -265,6 +271,12 @@ export function computeNextAction(lead: {
     case "NEW":
     default: {
       switch (lead.auditStatus) {
+        case "NOT_AUDITED":
+          return { label: "Run audit", tone: "neutral" }
+        case "QUEUED":
+          return { label: "Audit queued", tone: "neutral" }
+        case "RUNNING":
+          return { label: "Auditing...", tone: "neutral" }
         case "SKIPPED_NO_WEBSITE":
           return { label: "Pitch web design", tone: "primary" }
         case "UNREACHABLE":
@@ -275,6 +287,7 @@ export function computeNextAction(lead: {
         case "FAILED":
           return { label: "Retry audit", tone: "danger" }
         case "COMPLETED":
+        case "PARTIALLY_COMPLETED":
           return { label: "Review findings", tone: "primary" }
         case "PENDING":
         case "SKIPPED_BUDGET":

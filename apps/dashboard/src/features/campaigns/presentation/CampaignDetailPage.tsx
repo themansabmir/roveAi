@@ -4,11 +4,14 @@ import { ArrowLeft, Download } from "lucide-react"
 import { getErrorMessage } from "@/features/auth/domain/auth-error"
 import { useAuth } from "@/features/auth/application/useAuth"
 import {
+  useAuditBatches,
   useBulkUpdateLeads,
   useCampaign,
   useCancelCampaign,
   useDownloadCsv,
+  useGenerateBriefs,
   useRunCampaign,
+  useSelectiveAudit,
   useTags,
   useUpdateLead,
 } from "@/features/campaigns/application/useCampaigns"
@@ -31,6 +34,7 @@ import {
 } from "@/features/campaigns/presentation/ProspectFilters"
 import { ProspectTable } from "@/features/campaigns/presentation/ProspectTable"
 import { BulkActionBar } from "@/features/campaigns/presentation/BulkActionBar"
+import { AuditConfigModal } from "@/features/campaigns/presentation/AuditConfigModal"
 
 export function CampaignDetailPage() {
   const { campaignId } = useParams()
@@ -42,9 +46,13 @@ export function CampaignDetailPage() {
 
   const updateLeadMutation = useUpdateLead(organizationId ?? "", campaignId ?? "")
   const bulkUpdateMutation = useBulkUpdateLeads(organizationId ?? "", campaignId ?? "")
+  const selectiveAuditMutation = useSelectiveAudit(organizationId ?? "", campaignId ?? "")
+  const generateBriefsMutation = useGenerateBriefs(organizationId ?? "", campaignId ?? "")
   const downloadCsvMutation = useDownloadCsv(organizationId ?? "", campaignId ?? "")
   const tagsQuery = useTags(organizationId ?? "")
   const availableTags = tagsQuery.data ?? []
+  const batchesQuery = useAuditBatches(organizationId ?? "", campaignId ?? "")
+  const activeBatch = batchesQuery.data?.find((b) => b.status === "PROCESSING" || b.status === "PENDING")
 
   // Filter state
   const [filterState, setFilterState] = useState<ProspectFiltersState>({
@@ -56,6 +64,7 @@ export function CampaignDetailPage() {
 
   // Selection state for bulk operations
   const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set())
+  const [auditModalOpen, setAuditModalOpen] = useState(false)
 
   if (isLoading) {
     return <Skeleton className="h-48 w-full" />
@@ -106,6 +115,14 @@ export function CampaignDetailPage() {
       if (filterState.scoreFilter === "high" && score < 75) return false
       if (filterState.scoreFilter === "medium" && (score < 55 || score >= 75)) return false
       if (filterState.scoreFilter === "low" && score >= 55) return false
+
+      // Audit status filter
+      if (filterState.auditFilter && filterState.auditFilter !== "all") {
+        if (filterState.auditFilter === "audited" && lead.auditStatus !== "COMPLETED" && lead.auditStatus !== "PARTIALLY_COMPLETED") return false
+        if (filterState.auditFilter === "not_audited" && lead.auditStatus !== "NOT_AUDITED") return false
+        if (filterState.auditFilter === "queued" && lead.auditStatus !== "QUEUED" && lead.auditStatus !== "PENDING" && lead.auditStatus !== "RUNNING") return false
+        if (filterState.auditFilter === "failed" && lead.auditStatus !== "FAILED" && lead.auditStatus !== "UNREACHABLE" && lead.auditStatus !== "BLOCKED") return false
+      }
 
       // Tag filter
       if (filterState.selectedTagId) {
@@ -190,6 +207,47 @@ export function CampaignDetailPage() {
     downloadCsvMutation.mutate(Array.from(selectedLeadIds))
   }
 
+  const handleOpenAuditModal = () => {
+    setAuditModalOpen(true)
+  }
+
+  const handleConfirmAudit = (opts: {
+    tools: ("CRAWL" | "PERFORMANCE")[]
+    generateAiBrief: boolean
+    topNCount?: number
+  }) => {
+    const idempotencyKey = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `audit_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+
+    selectiveAuditMutation.mutate(
+      {
+        leadIds: Array.from(selectedLeadIds),
+        tools: opts.tools,
+        generateAiBrief: opts.generateAiBrief,
+        topNBriefsCount: opts.topNCount,
+        idempotencyKey,
+      },
+      {
+        onSuccess: () => {
+          setAuditModalOpen(false)
+          setSelectedLeadIds(new Set())
+        },
+      }
+    )
+  }
+
+  const handleBulkGenerateBriefs = () => {
+    generateBriefsMutation.mutate(
+      {
+        leadIds: Array.from(selectedLeadIds),
+      },
+      {
+        onSuccess: () => {
+          setSelectedLeadIds(new Set())
+        },
+      }
+    )
+  }
+
   // Single lead actions
   const handleSingleStatus = (leadId: string, newStatus: ProspectStatus) => {
     updateLeadMutation.mutate({
@@ -202,6 +260,20 @@ export function CampaignDetailPage() {
     updateLeadMutation.mutate({
       leadId,
       payload: { saved: !currentSaved },
+    })
+  }
+
+  const handleSingleAudit = (leadId: string) => {
+    selectiveAuditMutation.mutate({
+      leadIds: [leadId],
+      tools: ["CRAWL", "PERFORMANCE"],
+      generateAiBrief: false,
+    })
+  }
+
+  const handleSingleBrief = (leadId: string) => {
+    generateBriefsMutation.mutate({
+      leadIds: [leadId],
     })
   }
 
@@ -310,6 +382,23 @@ export function CampaignDetailPage() {
                 </div>
               </div>
 
+              {/* Active Audit Batch Banner */}
+              {activeBatch && (
+                <div className="flex items-center justify-between rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-primary animate-pulse" />
+                    <span className="font-semibold text-foreground">
+                      Audit Batch in Progress:
+                    </span>
+                    <span className="text-muted-foreground">
+                      Auditing {activeBatch.leadCount} prospects ({activeBatch.toolsRequested.join(", ")}
+                      {activeBatch.generateAiBrief ? " + AI Briefs" : ""})...
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono text-primary font-semibold">Live diagnostics</span>
+                </div>
+              )}
+
               {/* Filters */}
               <ProspectFilters
                 state={filterState}
@@ -329,7 +418,9 @@ export function CampaignDetailPage() {
                 onToggleArchive={handleSingleArchive}
                 availableTags={availableTags}
                 onAddTagToLead={handleSingleAddTag}
-                isPending={updateLeadMutation.isPending}
+                onSingleAudit={handleSingleAudit}
+                onSingleBrief={handleSingleBrief}
+                isPending={updateLeadMutation.isPending || selectiveAuditMutation.isPending}
               />
 
               {/* Floating Bulk Action Bar */}
@@ -341,8 +432,23 @@ export function CampaignDetailPage() {
                 onToggleArchive={handleBulkArchive}
                 onAddTag={handleBulkAddTag}
                 onExportSelected={handleBulkExport}
+                onRequestAudit={handleOpenAuditModal}
+                onRequestBriefs={handleBulkGenerateBriefs}
                 availableTags={availableTags}
-                isPending={bulkUpdateMutation.isPending}
+                isPending={
+                  bulkUpdateMutation.isPending ||
+                  selectiveAuditMutation.isPending ||
+                  generateBriefsMutation.isPending
+                }
+              />
+
+              {/* Audit Configuration Modal */}
+              <AuditConfigModal
+                open={auditModalOpen}
+                onOpenChange={setAuditModalOpen}
+                selectedLeadCount={selectedLeadIds.size}
+                onConfirm={handleConfirmAudit}
+                isPending={selectiveAuditMutation.isPending}
               />
             </section>
           ) : !active ? (

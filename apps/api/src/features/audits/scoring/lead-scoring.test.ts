@@ -31,7 +31,7 @@ describe("Three-Dimensional Lead Scoring Engine (Orchestrator)", () => {
         module: "PERFORMANCE",
         status: "COMPLETED",
         score: 32,
-        observedAt: new Date("2026-11-10T10:00:00Z"),
+        observedAt: new Date(),
         findings: [
           { code: "SLOW_LCP", severity: "HIGH", message: "LCP is 4.8s" },
           { code: "HIGH_CLS", severity: "MEDIUM", message: "CLS is 0.22" },
@@ -41,7 +41,7 @@ describe("Three-Dimensional Lead Scoring Engine (Orchestrator)", () => {
         module: "TECHNICAL_SEO",
         status: "COMPLETED",
         score: 45,
-        observedAt: new Date("2026-11-10T10:00:00Z"),
+        observedAt: new Date(),
         findings: [
           { code: "MISSING_TITLE", severity: "HIGH", message: "No title tag" },
         ],
@@ -50,7 +50,7 @@ describe("Three-Dimensional Lead Scoring Engine (Orchestrator)", () => {
         module: "WEBSITE_EXPERIENCE",
         status: "COMPLETED",
         score: 50,
-        observedAt: new Date("2026-11-10T10:00:00Z"),
+        observedAt: new Date(),
         findings: [
           { code: "NO_CONTACT_FORM", severity: "HIGH", message: "No lead form" },
         ],
@@ -239,7 +239,7 @@ describe("Three-Dimensional Lead Scoring Engine (Orchestrator)", () => {
         {
           module: "PERFORMANCE",
           status: "AUDIT_FAILED",
-          observedAt: new Date("2026-11-10T12:00:00Z"),
+          observedAt: new Date(),
         },
       ],
     });
@@ -257,7 +257,7 @@ describe("Three-Dimensional Lead Scoring Engine (Orchestrator)", () => {
         {
           module: "PERFORMANCE",
           status: "AUDIT_FAILED",
-          observedAt: new Date("2026-11-10T12:00:00Z"),
+          observedAt: new Date(),
         },
       ],
     });
