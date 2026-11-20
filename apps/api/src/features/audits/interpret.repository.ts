@@ -6,7 +6,7 @@ import { persistLeadScore } from "./scoring/lead-scoring";
 import { LeadScoreBreakdown } from "./scoring/score-types";
 
 export class InterpretRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(public readonly prisma: PrismaClient) {}
 
   claimJob(jobId: string, timeoutMs: number): Promise<JobClaim> {
     return claimJob(this.prisma, jobId, timeoutMs);

@@ -8,12 +8,21 @@ import {
   createTag,
   deleteTag,
   downloadCampaignCsv,
+  generateAiBriefs,
   getCampaign,
+  getCreditBalance,
+  getCreditLedger,
+  listAuditBatches,
   listCampaigns,
+  listCreditPacks,
   listTags,
+  refillCredits,
   runCampaign,
+  runSelectiveAudit,
   updateLead,
   type BulkLeadsPayload,
+  type GenerateBriefsPayload,
+  type SelectiveAuditPayload,
   type UpdateLeadPayload,
 } from "@/features/campaigns/infrastructure/campaignApi"
 
@@ -133,5 +142,70 @@ export function useDeleteTag(organizationId: string) {
 export function useDownloadCsv(organizationId: string, campaignId: string) {
   return useMutation({
     mutationFn: (leadIds?: string[]) => downloadCampaignCsv(organizationId, campaignId, leadIds),
+  })
+}
+
+export function useSelectiveAudit(organizationId: string, campaignId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: SelectiveAuditPayload) => runSelectiveAudit(organizationId, campaignId, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: detailKey(organizationId, campaignId) })
+    },
+  })
+}
+
+export function useGenerateBriefs(organizationId: string, campaignId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: GenerateBriefsPayload) => generateAiBriefs(organizationId, campaignId, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: detailKey(organizationId, campaignId) })
+    },
+  })
+}
+
+export function useAuditBatches(organizationId: string, campaignId: string) {
+  return useQuery({
+    queryKey: ["audit-batches", organizationId, campaignId],
+    queryFn: () => listAuditBatches(organizationId, campaignId),
+    enabled: organizationId.length > 0 && campaignId.length > 0,
+    refetchInterval: 3000,
+  })
+}
+
+export function useCreditBalance(organizationId: string) {
+  return useQuery({
+    queryKey: ["credit-balance", organizationId],
+    queryFn: () => getCreditBalance(organizationId),
+    enabled: organizationId.length > 0,
+    refetchInterval: 5000,
+  })
+}
+
+export function useCreditPacks(organizationId: string) {
+  return useQuery({
+    queryKey: ["credit-packs", organizationId],
+    queryFn: () => listCreditPacks(organizationId),
+    enabled: organizationId.length > 0,
+  })
+}
+
+export function useRefillCredits(organizationId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (packId: string) => refillCredits(organizationId, packId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["credit-balance", organizationId] })
+      await queryClient.invalidateQueries({ queryKey: ["credit-ledger", organizationId] })
+    },
+  })
+}
+
+export function useCreditLedger(organizationId: string, limit = 50) {
+  return useQuery({
+    queryKey: ["credit-ledger", organizationId, limit],
+    queryFn: () => getCreditLedger(organizationId, limit),
+    enabled: organizationId.length > 0,
   })
 }

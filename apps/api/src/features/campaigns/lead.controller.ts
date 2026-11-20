@@ -1,7 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { BadRequestError, UnauthorizedError } from "@core/errors";
 import { LeadService } from "./lead.service";
-import { bulkLeadsSchema, createTagSchema, leadsQuerySchema, updateLeadSchema } from "./lead.schemas";
+import {
+  bulkLeadsSchema,
+  createTagSchema,
+  generateBriefsSchema,
+  leadsQuerySchema,
+  selectiveAuditSchema,
+  updateLeadSchema,
+} from "./lead.schemas";
 
 export class LeadController {
   constructor(private readonly service: LeadService) {}
@@ -64,6 +71,48 @@ export class LeadController {
       const userId = req.auth?.userId ?? "";
       const input = bulkLeadsSchema.parse(req.body);
       res.json(await this.service.bulk(organizationId, campaignId, input, userId));
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // POST /campaigns/:campaignId/leads/audit
+  auditLeads = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const organizationId = requiredOrg(req);
+      const campaignId = requiredParam(req, "campaignId");
+      const userId = req.auth?.userId;
+      const rawKey = req.headers["idempotency-key"];
+      const idempotencyKey = typeof rawKey === "string" ? rawKey : Array.isArray(rawKey) ? rawKey[0] : undefined;
+      const input = selectiveAuditSchema.parse(req.body);
+      const result = await this.service.runAudit(organizationId, campaignId, input, userId, idempotencyKey);
+      res.status(202).json(result);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // POST /campaigns/:campaignId/leads/generate-briefs
+  generateBriefs = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const organizationId = requiredOrg(req);
+      const campaignId = requiredParam(req, "campaignId");
+      const userId = req.auth?.userId;
+      const input = generateBriefsSchema.parse(req.body);
+      const result = await this.service.generateBriefs(organizationId, campaignId, input.leadIds, userId);
+      res.status(202).json(result);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // GET /campaigns/:campaignId/audit-batches
+  listAuditBatches = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const organizationId = requiredOrg(req);
+      const campaignId = requiredParam(req, "campaignId");
+      const batches = await this.service.listAuditBatches(organizationId, campaignId);
+      res.json(batches);
     } catch (err) {
       next(err);
     }

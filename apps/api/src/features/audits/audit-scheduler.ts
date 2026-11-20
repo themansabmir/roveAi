@@ -4,12 +4,22 @@ import { JobDispatcher } from "@features/jobs/job-dispatcher";
 import { exceedsCeiling } from "./budget";
 import { canonicalAuditUrl } from "./url";
 
+/** Minimal transactional client interface for Job creation inside a Prisma $transaction */
+export type TxClient = Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">;
+
 export interface JobPublisher {
   publish<T extends object>(
     queue: string,
     payload: T,
     opts?: { singletonKey?: string }
   ): Promise<string | null>;
+}
+
+export interface ScheduleAuditOptions {
+  leadIds?: string[];
+  tools?: ("CRAWL" | "PERFORMANCE")[];
+  generateAiBrief?: boolean;
+  aiBriefLeadIds?: string[];
 }
 
 export class AuditScheduler {
@@ -23,7 +33,10 @@ export class AuditScheduler {
     this.dispatcher = new JobDispatcher(prisma, queue);
   }
 
-  async schedule(campaignId: string): Promise<void> {
+  async schedule(
+    campaignId: string,
+    opts?: ScheduleAuditOptions
+  ): Promise<{ scheduledLeads: number; queuedJobs: number }> {
     console.log(`\n======================================================`);
     console.log(`[AuditScheduler.schedule] 🗓️ Starting audit scheduler for campaign: ${campaignId}`);
     console.log(`======================================================`);
@@ -31,29 +44,33 @@ export class AuditScheduler {
     const campaign = await this.prisma.campaign.findUnique({ where: { id: campaignId } });
     if (!campaign || campaign.status === "CANCELLED") {
       console.log(`[AuditScheduler.schedule] 🛑 Campaign ${campaignId} missing or cancelled`);
-      return;
+      return { scheduledLeads: 0, queuedJobs: 0 };
     }
 
+    const where: Prisma.CampaignLeadWhereInput = {
+      campaignId,
+      ...(opts?.leadIds?.length
+        ? { id: { in: opts.leadIds } }
+        : { auditStatus: { in: ["PENDING", "QUEUED"] } }),
+      business: { websiteClass: "OWNED_SITE" },
+    };
+
     const leads = await this.prisma.campaignLead.findMany({
-      where: {
-        campaignId,
-        auditStatus: "PENDING",
-        business: { websiteClass: "OWNED_SITE" },
-      },
+      where,
       include: { business: true },
       orderBy: { id: "asc" },
     });
 
-    console.log(`[AuditScheduler.schedule] 🎯 Found ${leads.length} qualified leads with OWNED_SITE in PENDING status`);
+    console.log(`[AuditScheduler.schedule] 🎯 Found ${leads.length} qualified leads with OWNED_SITE`);
 
     if (leads.length === 0) {
       console.log(`[AuditScheduler.schedule] ℹ️ No pending leads to audit. Calling completeIfIdle()`);
       await this.completeIfIdle(campaignId);
-      return;
+      return { scheduledLeads: 0, queuedJobs: 0 };
     }
 
     await this.prisma.campaign.updateMany({
-      where: { id: campaignId, status: "DISCOVERING" },
+      where: { id: campaignId, status: { in: ["DISCOVERING", "COMPLETED"] } },
       data: { status: "PROCESSING" },
     });
     console.log(`[AuditScheduler.schedule] 🔄 Campaign ${campaignId} status -> PROCESSING`);
@@ -66,6 +83,9 @@ export class AuditScheduler {
     let psiUsed = await this.used(campaign.organizationId, "LIGHTHOUSE_RUN");
     console.log(`[AuditScheduler.schedule] 📊 Monthly budget usage: pages=${pagesUsed}/${limits.pageFetchLimit}, psi=${psiUsed}/${limits.lighthouseRunLimit}`);
 
+    const toolsToRun = opts?.tools ?? ["CRAWL", "PERFORMANCE"];
+    let queuedJobs = 0;
+
     for (const lead of leads) {
       const website = lead.business.websiteUrl;
       if (!website) {
@@ -77,8 +97,8 @@ export class AuditScheduler {
         continue;
       }
       if (
-        exceedsCeiling(pagesUsed, this.maxPages, limits.pageFetchLimit) ||
-        exceedsCeiling(psiUsed, 1, limits.lighthouseRunLimit)
+        (toolsToRun.includes("CRAWL") && exceedsCeiling(pagesUsed, this.maxPages, limits.pageFetchLimit)) ||
+        (toolsToRun.includes("PERFORMANCE") && exceedsCeiling(psiUsed, 1, limits.lighthouseRunLimit))
       ) {
         console.log(`[AuditScheduler.schedule] ⚠️ Budget limit reached, skipping lead ${lead.id}`);
         await this.prisma.campaignLead.update({
@@ -87,15 +107,158 @@ export class AuditScheduler {
         });
         continue;
       }
+
+      // Update lead states to mark audit in progress and set requested AI Brief flag
+      let desiredAiStatus: "QUEUED" | "NOT_REQUESTED" | undefined = undefined;
+      if (opts?.aiBriefLeadIds && opts.aiBriefLeadIds.length > 0) {
+        desiredAiStatus = opts.aiBriefLeadIds.includes(lead.id) ? "QUEUED" : "NOT_REQUESTED";
+      } else if (opts?.generateAiBrief !== undefined) {
+        desiredAiStatus = opts.generateAiBrief ? "QUEUED" : "NOT_REQUESTED";
+      }
+
+      await this.prisma.campaignLead.update({
+        where: { id: lead.id },
+        data: {
+          auditStatus: "PENDING",
+          ...(desiredAiStatus ? { aiStatus: desiredAiStatus } : {}),
+        },
+      });
+
       const url = canonicalAuditUrl(website);
-      console.log(`[AuditScheduler.schedule] 🚀 Dispatching parallel CRAWL and PSI jobs for: "${lead.business.name}" (${url})`);
-      await this.ensureJob(lead.campaignId, campaign.organizationId, lead.id, "CRAWL");
-      await this.ensureJob(lead.campaignId, campaign.organizationId, lead.id, "AUDIT");
-      pagesUsed += this.maxPages;
-      psiUsed += 1;
+      console.log(`[AuditScheduler.schedule] 🚀 Dispatching tools [${toolsToRun.join(", ")}] for: "${lead.business.name}" (${url})`);
+
+      if (toolsToRun.includes("CRAWL")) {
+        await this.ensureJob(lead.campaignId, campaign.organizationId, lead.id, "CRAWL");
+        pagesUsed += this.maxPages;
+        queuedJobs += 1;
+      }
+      if (toolsToRun.includes("PERFORMANCE")) {
+        await this.ensureJob(lead.campaignId, campaign.organizationId, lead.id, "AUDIT");
+        psiUsed += 1;
+        queuedJobs += 1;
+      }
     }
 
     await this.completeIfIdle(campaignId);
+    return { scheduledLeads: leads.length, queuedJobs };
+  }
+
+  async scheduleAiBriefs(
+    campaignId: string,
+    leadIds: string[]
+  ): Promise<{ queuedCount: number }> {
+    const campaign = await this.prisma.campaign.findUniqueOrThrow({ where: { id: campaignId } });
+    const leads = await this.prisma.campaignLead.findMany({
+      where: {
+        id: { in: leadIds },
+        campaignId,
+        auditStatus: { in: ["COMPLETED", "PARTIALLY_COMPLETED"] },
+      },
+      orderBy: { id: "asc" },
+    });
+
+    let queuedCount = 0;
+    for (const lead of leads) {
+      await this.prisma.campaignLead.update({
+        where: { id: lead.id },
+        data: { aiStatus: "PENDING" },
+      });
+      await this.ensureJob(campaignId, campaign.organizationId, lead.id, "INTERPRET");
+      queuedCount += 1;
+    }
+    return { queuedCount };
+  }
+
+  /**
+   * Creates Job rows for a set of leads within an external Prisma transaction (tx).
+   * Returns the IDs of newly created Job rows so the caller can dispatch them
+   * AFTER the transaction commits — implementing the outbox pattern.
+   *
+   * Does NOT dispatch anything itself. Use `dispatchJobs(jobIds)` after tx commit.
+   */
+  async createJobRows(
+    tx: TxClient,
+    campaignId: string,
+    organizationId: string,
+    leads: Array<{ id: string; business: { websiteUrl: string | null } }>,
+    opts: {
+      tools: ("CRAWL" | "PERFORMANCE")[];
+      generateAiBrief?: boolean;
+      aiBriefLeadIds?: string[];
+    }
+  ): Promise<{ jobIds: string[]; scheduledLeads: number }> {
+    const toolsToRun = opts.tools;
+    const jobIds: string[] = [];
+    let scheduledLeads = 0;
+
+    for (const lead of leads) {
+      if (!lead.business.websiteUrl) continue;
+
+      // Determine AI status
+      let desiredAiStatus: "QUEUED" | "NOT_REQUESTED" | undefined;
+      if (opts.aiBriefLeadIds && opts.aiBriefLeadIds.length > 0) {
+        desiredAiStatus = opts.aiBriefLeadIds.includes(lead.id) ? "QUEUED" : "NOT_REQUESTED";
+      } else if (opts.generateAiBrief !== undefined) {
+        desiredAiStatus = opts.generateAiBrief ? "QUEUED" : "NOT_REQUESTED";
+      }
+
+      // Update lead auditStatus + aiStatus inside the tx
+      await tx.campaignLead.update({
+        where: { id: lead.id },
+        data: {
+          auditStatus: "PENDING",
+          ...(desiredAiStatus ? { aiStatus: desiredAiStatus } : {}),
+        },
+      });
+
+      if (toolsToRun.includes("CRAWL")) {
+        const existing = await tx.job.findFirst({
+          where: { campaignId, leadId: lead.id, kind: "CRAWL", status: { in: ["PENDING", "PROCESSING"] } },
+          select: { id: true, dispatchedAt: true, status: true },
+          orderBy: { createdAt: "desc" },
+        });
+        if (!existing || existing.dispatchedAt || existing.status === "COMPLETED" || existing.status === "CANCELLED") {
+          const job = await tx.job.create({
+            data: { campaignId, organizationId, leadId: lead.id, kind: "CRAWL", status: "PENDING", dispatchedAt: null },
+          });
+          jobIds.push(job.id);
+        } else {
+          jobIds.push(existing.id);
+        }
+      }
+
+      if (toolsToRun.includes("PERFORMANCE")) {
+        const existing = await tx.job.findFirst({
+          where: { campaignId, leadId: lead.id, kind: "AUDIT", status: { in: ["PENDING", "PROCESSING"] } },
+          select: { id: true, dispatchedAt: true, status: true },
+          orderBy: { createdAt: "desc" },
+        });
+        if (!existing || existing.dispatchedAt || existing.status === "COMPLETED" || existing.status === "CANCELLED") {
+          const job = await tx.job.create({
+            data: { campaignId, organizationId, leadId: lead.id, kind: "AUDIT", status: "PENDING", dispatchedAt: null },
+          });
+          jobIds.push(job.id);
+        } else {
+          jobIds.push(existing.id);
+        }
+      }
+
+      scheduledLeads += 1;
+    }
+
+    return { jobIds, scheduledLeads };
+  }
+
+  /**
+   * Dispatches a list of Job IDs (by ID) after a transaction has committed.
+   * Errors are swallowed per-job: the outbox sweep will re-dispatch on restart.
+   */
+  async dispatchJobs(jobIds: string[]): Promise<void> {
+    for (const jobId of jobIds) {
+      await this.dispatcher.dispatchJob(jobId).catch((err: unknown) => {
+        console.warn(`[AuditScheduler.dispatchJobs] ⚠️ Failed to dispatch job ${jobId}:`, err);
+      });
+    }
   }
 
   private async ensureJob(
@@ -105,7 +268,7 @@ export class AuditScheduler {
     kind: JobKind
   ): Promise<void> {
     let job = await this.prisma.job.findFirst({
-      where: { campaignId, leadId, kind },
+      where: { campaignId, leadId, kind, status: { in: ["PENDING", "PROCESSING"] } },
       orderBy: { createdAt: "desc" },
     });
     if (!job) {

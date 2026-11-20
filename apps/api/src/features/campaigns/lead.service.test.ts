@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { computeNextAction, LeadService } from "./lead.service";
 import { CampaignRepository } from "./campaign.repository";
-import { ForbiddenError, NotFoundError } from "@core/errors";
+import { CreditService } from "@features/credits/credit.service";
+import { ForbiddenError, NotFoundError, ConflictError } from "@core/errors";
 
 describe("computeNextAction", () => {
   it("prioritizes archivedAt above all statuses", () => {
@@ -166,6 +167,30 @@ describe("computeNextAction", () => {
       });
       expect(res).toEqual({ label: "Run research", tone: "neutral" });
     });
+
+    it("returns 'Run audit' for NOT_AUDITED status", () => {
+      const res = computeNextAction({
+        archivedAt: null,
+        prospectStatus: "NEW",
+        opportunityScore: null,
+        auditStatus: "NOT_AUDITED",
+        aiStatus: "NOT_REQUESTED",
+        brief: null,
+      });
+      expect(res).toEqual({ label: "Run audit", tone: "neutral" });
+    });
+
+    it("returns 'Audit queued' for QUEUED status", () => {
+      const res = computeNextAction({
+        archivedAt: null,
+        prospectStatus: "NEW",
+        opportunityScore: null,
+        auditStatus: "QUEUED",
+        aiStatus: "NOT_REQUESTED",
+        brief: null,
+      });
+      expect(res).toEqual({ label: "Audit queued", tone: "neutral" });
+    });
   });
 });
 
@@ -253,6 +278,151 @@ describe("LeadService", () => {
         "user_1"
       )
     ).rejects.toThrow(ForbiddenError);
+  });
+
+  describe("runAudit and generateBriefs", () => {
+    const mockAuditScheduler = {
+      schedule: vi.fn().mockResolvedValue({ scheduledLeads: 2, queuedJobs: 4 }),
+      createJobRows: vi.fn().mockResolvedValue({ jobIds: ["j1", "j2", "j3", "j4"], scheduledLeads: 2 }),
+      dispatchJobs: vi.fn().mockResolvedValue(undefined),
+      scheduleAiBriefs: vi.fn().mockResolvedValue({ queuedCount: 2 }),
+    };
+
+    const mockCreditService = {
+      reserveCredits: vi.fn().mockResolvedValue({ id: "res_abc", amount: 16 }),
+      commitReservation: vi.fn().mockResolvedValue({ status: "COMMITTED" }),
+      releaseReservation: vi.fn().mockResolvedValue({ status: "RELEASED" }),
+      getBalance: vi.fn().mockResolvedValue({ balance: 500, lifetimeGranted: 500, lifetimeConsumed: 0 }),
+    } as unknown as CreditService;
+
+    const mockPrisma = {
+      prospectTag: { findMany: vi.fn() },
+      campaignLead: {
+        findMany: vi.fn(),
+        update: vi.fn(),
+        updateMany: vi.fn(),
+      },
+      auditBatch: {
+        create: vi.fn().mockResolvedValue({ id: "batch_abc" }),
+        findUnique: vi.fn().mockResolvedValue(null),
+      },
+      reservationItem: {
+        findMany: vi.fn().mockResolvedValue([]),
+      },
+      leadActivityLog: {
+        createMany: vi.fn().mockResolvedValue({ count: 2 }),
+      },
+      $queryRaw: vi.fn(),
+      $transaction: vi.fn(),
+    };
+    mockPrisma.$transaction.mockImplementation((cb: any) => cb(mockPrisma));
+
+    const repoWithPrisma = {
+      ...fakeRepo,
+      prisma: mockPrisma,
+    } as unknown as CampaignRepository;
+
+    const auditService = new LeadService(repoWithPrisma, mockAuditScheduler as any, mockCreditService);
+
+    it("throws ForbiddenError if lead IDs do not belong to campaign", async () => {
+      mockPrisma.campaignLead.findMany.mockResolvedValueOnce([
+        { id: "lead_1", auditStatus: "NOT_AUDITED" },
+      ]); // only 1 returned when 2 requested
+
+      await expect(
+        auditService.runAudit(
+          "org_1",
+          "camp_1",
+          { leadIds: ["lead_1", "lead_alien"], tools: ["CRAWL"] },
+          "user_1"
+        )
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it("throws ConflictError if any requested leads are currently QUEUED, RUNNING, or PENDING", async () => {
+      mockPrisma.campaignLead.findMany.mockResolvedValueOnce([
+        { id: "lead_1", auditStatus: "RUNNING" },
+        { id: "lead_2", auditStatus: "NOT_AUDITED" },
+      ]);
+
+      await expect(
+        auditService.runAudit(
+          "org_1",
+          "camp_1",
+          { leadIds: ["lead_1", "lead_2"], tools: ["CRAWL"] },
+          "user_1"
+        )
+      ).rejects.toThrow(ConflictError);
+    });
+
+    it("successfully creates audit batch, activity logs, and schedules jobs", async () => {
+      mockPrisma.campaignLead.findMany
+        .mockResolvedValueOnce([
+          { id: "lead_1", auditStatus: "NOT_AUDITED" },
+          { id: "lead_2", auditStatus: "NOT_AUDITED" },
+        ])
+        .mockResolvedValueOnce([
+          { id: "lead_1", business: { websiteUrl: "https://example.com" } },
+          { id: "lead_2", business: { websiteUrl: "https://example.com" } },
+        ]);
+
+      const result = await auditService.runAudit(
+        "org_1",
+        "camp_1",
+        { leadIds: ["lead_2", "lead_1"], tools: ["CRAWL", "PERFORMANCE"], generateAiBrief: true },
+        "user_1"
+      );
+
+      expect(result).toEqual({
+        batchId: "batch_abc",
+        scheduledLeads: 2,
+        queuedJobs: 4,
+      });
+
+      // Verify batch was created
+      expect(mockPrisma.auditBatch.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          organizationId: "org_1",
+          campaignId: "camp_1",
+          leadCount: 2,
+          generateAiBrief: true,
+        }),
+      });
+
+      // Verify job rows created atomically via outbox pattern
+      expect(mockAuditScheduler.createJobRows).toHaveBeenCalledWith(
+        expect.anything(),
+        "camp_1",
+        "org_1",
+        expect.anything(),
+        expect.objectContaining({
+          tools: ["CRAWL", "PERFORMANCE"],
+          generateAiBrief: true,
+        })
+      );
+      expect(mockAuditScheduler.dispatchJobs).toHaveBeenCalledWith(["j1", "j2", "j3", "j4"]);
+    });
+
+    it("successfully triggers generateBriefs for owned leads", async () => {
+      mockPrisma.campaignLead.findMany.mockResolvedValueOnce([
+        { id: "lead_1", auditStatus: "COMPLETED" },
+        { id: "lead_2", auditStatus: "COMPLETED" },
+      ]);
+
+      const result = await auditService.generateBriefs(
+        "org_1",
+        "camp_1",
+        ["lead_1", "lead_2"],
+        "user_1"
+      );
+
+      expect(result).toEqual({
+        queuedCount: 2,
+        reservationId: "res_abc",
+        unitsEstimated: 2,
+      });
+      expect(mockAuditScheduler.scheduleAiBriefs).toHaveBeenCalledWith("camp_1", ["lead_1", "lead_2"]);
+    });
   });
 });
 

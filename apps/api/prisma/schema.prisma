@@ -77,7 +77,10 @@ enum QualificationStatus {
 
 // Lifecycle of the crawl/audit for a single lead's website.
 enum AuditStatus {
+  NOT_AUDITED
+  QUEUED
   PENDING
+  RUNNING
   SKIPPED_NO_WEBSITE
   SKIPPED_NOT_OWNED_SITE
   SKIPPED_BY_ROBOTS
@@ -85,6 +88,7 @@ enum AuditStatus {
   UNREACHABLE
   BLOCKED
   LOW_TEXT
+  PARTIALLY_COMPLETED
   COMPLETED
   FAILED
 }
@@ -128,10 +132,13 @@ enum FindingKind {
 
 // Status of the AI reasoning pass for a lead.
 enum AiStatus {
+  NOT_REQUESTED
+  QUEUED
   PENDING
   SKIPPED_GATE
   COMPLETED
   UNAVAILABLE
+  FAILED
 }
 
 // Sales-pipeline lifecycle for a prospect inside a campaign workspace.
@@ -300,6 +307,12 @@ enum ReservationStatus {
   EXPIRED
 }
 
+enum ReservationItemStatus {
+  RESERVED
+  COMMITTED
+  RELEASED
+}
+
 enum PaymentStatus {
   PENDING
   SUCCEEDED
@@ -353,6 +366,7 @@ model User {
   instructions        Instruction[]
   savedLeads          CampaignLead[]   @relation("LeadSavedBy")
   leadActivityLogs    LeadActivityLog[] @relation("ActivityLogUser")
+  auditBatchesRequested AuditBatch[]   @relation("AuditBatchRequestedBy")
   notifications       Notification[]
   reviewItemsResolved ReviewItem[]     @relation("ReviewItemResolvedBy")
 
@@ -463,6 +477,7 @@ model Organization {
   creditAccount      CreditAccount?
   creditReservations CreditReservation[]
   creditLedger       CreditLedger[]
+  auditBatches       AuditBatch[]
   payments           Payment[]
   prospectTags       ProspectTag[]
   savedViews         SavedView[]
@@ -625,6 +640,7 @@ model Campaign {
   instruction  Instruction?      @relation(fields: [instructionId], references: [id], onDelete: SetNull)
   exclusions   ExclusionDomain[]
   leads        CampaignLead[]
+  auditBatches AuditBatch[]
   jobs         Job[]
   usageEvents  UsageEvent[]
 
@@ -719,8 +735,8 @@ model CampaignLead {
   campaignId          String
   businessId          String
   qualificationStatus QualificationStatus @default(NEW)
-  auditStatus         AuditStatus         @default(PENDING)
-  aiStatus            AiStatus            @default(PENDING)
+  auditStatus         AuditStatus         @default(NOT_AUDITED)
+  aiStatus            AiStatus            @default(NOT_REQUESTED)
 
   // Deterministic opportunity score (0-100), computed before AI reasoning.
   // Denormalized from LeadScore.total for list sorting.
@@ -752,6 +768,9 @@ model CampaignLead {
   score         LeadScore?
   reviewItems   ReviewItem[]
   activityLogs  LeadActivityLog[]
+  reservationItems ReservationItem[]
+  auditBatchId  String?
+  auditBatch    AuditBatch?              @relation(fields: [auditBatchId], references: [id], onDelete: SetNull)
 
   @@unique([campaignId, businessId])
   @@index([campaignId])
@@ -759,6 +778,7 @@ model CampaignLead {
   @@index([campaignId, prospectStatus])
   @@index([campaignId, archivedAt])
   @@index([savedByUserId])
+  @@index([auditBatchId])
   @@map("campaign_lead")
 }
 
@@ -1333,9 +1353,11 @@ model UsageEvent {
 model CreditAccount {
   id              String   @id @default(cuid())
   organizationId  String   @unique
-  balance         Int      @default(0) // available
-  reserved        Int      @default(0)
-  lifetimeGranted Int      @default(0)
+  granted         Decimal  @default(0) @db.Decimal(12, 2)
+  consumed        Decimal  @default(0) @db.Decimal(12, 2)
+  balance         Decimal  @default(0) @db.Decimal(12, 2) // available = granted - consumed - reserved
+  reserved        Decimal  @default(0) @db.Decimal(12, 2)
+  lifetimeGranted Decimal  @default(0) @db.Decimal(12, 2)
   updatedAt       DateTime @updatedAt @db.Timestamptz
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -1348,30 +1370,61 @@ model CreditReservation {
   organizationId String
   campaignId     String?
   jobId          String?
-  estimated      Int
-  captured       Int               @default(0)
+  totalUnits     Decimal           @default(0) @db.Decimal(12, 2)
+  committedUnits Decimal           @default(0) @db.Decimal(12, 2)
+  releasedUnits  Decimal           @default(0) @db.Decimal(12, 2)
+  estimated      Decimal           @default(0) @db.Decimal(12, 2)
+  captured       Decimal           @default(0) @db.Decimal(12, 2)
   status         ReservationStatus @default(OPEN)
+  idempotencyKey String?           @unique @db.VarChar(128)
+  expiresAt      DateTime?         @db.Timestamptz
   createdAt      DateTime          @default(now()) @db.Timestamptz
   updatedAt      DateTime          @updatedAt @db.Timestamptz
 
-  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   ledger       CreditLedger[]
+  auditBatch   AuditBatch?
+  items        ReservationItem[]
 
   @@index([organizationId, status])
   @@index([jobId])
   @@map("credit_reservation")
 }
 
+model ReservationItem {
+  id             String                @id @default(cuid())
+  reservationId  String
+  leadId         String
+  reservedUnits  Decimal               @default(1) @db.Decimal(12, 2)
+  committedUnits Decimal               @default(0) @db.Decimal(12, 2)
+  releasedUnits  Decimal               @default(0) @db.Decimal(12, 2)
+  status         ReservationItemStatus @default(RESERVED)
+  settledAt      DateTime?             @db.Timestamptz
+  failureReason  String?               @db.VarChar(500)
+  createdAt      DateTime              @default(now()) @db.Timestamptz
+  updatedAt      DateTime              @updatedAt @db.Timestamptz
+
+  reservation CreditReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  lead        CampaignLead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@unique([reservationId, leadId])
+  @@index([reservationId, status])
+  @@index([leadId])
+  @@map("reservation_item")
+}
+
 model CreditLedger {
   id             String       @id @default(cuid())
   organizationId String
   kind           CreditTxKind
-  amount         Int // signed: +grant, -commit
-  balanceAfter   Int
+  amount         Decimal      @db.Decimal(12, 2) // signed: +grant, -commit
+  balanceAfter   Decimal      @db.Decimal(12, 2)
   reservationId  String?
   usageEventId   String?
   paymentId      String?
   reason         String       @db.VarChar(200)
+  idempotencyKey String?      @unique @db.VarChar(128)
+  metadata       Json?
   createdAt      DateTime     @default(now()) @db.Timestamptz
 
   organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -1390,7 +1443,7 @@ model CreditLedger {
 model CreditPack {
   id         String  @id @default(cuid())
   name       String  @db.VarChar(80)
-  credits    Int
+  credits    Decimal @db.Decimal(12, 2)
   priceCents Int
   currency   String  @default("usd") @db.VarChar(8)
   active     Boolean @default(true)
@@ -1484,4 +1537,37 @@ model AnalyticsEvent {
 
   @@index([organizationId, name, createdAt])
   @@map("analytics_event")
+}
+
+// ---------------------------------------------------------------------------
+// Selective Audit Batch Tracker (Phase 1)
+// ---------------------------------------------------------------------------
+
+model AuditBatch {
+  id                String        @id @default(cuid())
+  organizationId    String
+  campaignId        String
+  requestedByUserId String?
+  leadCount         Int
+  toolsRequested    AuditModule[]
+  generateAiBrief   Boolean       @default(false)
+  unitsEstimated    Decimal       @default(0) @db.Decimal(12, 2)
+  unitsConsumed     Decimal       @default(0) @db.Decimal(12, 2)
+  reservationId     String?       @unique
+  status            JobStatus     @default(PENDING)
+  idempotencyKey    String?       @unique @db.VarChar(128)
+  topNBriefsCount   Int?          // null = all, positive integer = top N by gap index
+  completedLeadCount Int          @default(0) // atomically incremented as leads finish
+  createdAt         DateTime      @default(now()) @db.Timestamptz
+  completedAt       DateTime?     @db.Timestamptz
+
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campaign     Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  requestedBy  User?              @relation("AuditBatchRequestedBy", fields: [requestedByUserId], references: [id], onDelete: SetNull)
+  reservation  CreditReservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+  leads        CampaignLead[]
+
+  @@index([organizationId, createdAt])
+  @@index([campaignId, createdAt])
+  @@map("audit_batch")
 }

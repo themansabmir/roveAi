@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { CheckSquare, Download, Bookmark, Archive, X } from "lucide-react"
+import { CheckSquare, Download, Bookmark, Archive, X, Play, Sparkles } from "lucide-react"
 import { Button } from "@rove/ui/components/button"
 import type { ProspectStatus, TagItem } from "@/features/campaigns/domain/campaign"
 
@@ -11,6 +11,8 @@ export function BulkActionBar({
   onToggleArchive,
   onAddTag,
   onExportSelected,
+  onRequestAudit,
+  onRequestBriefs,
   availableTags,
   isPending,
 }: {
@@ -21,6 +23,8 @@ export function BulkActionBar({
   onToggleArchive: (archive: boolean) => void
   onAddTag: (tagId: string) => void
   onExportSelected: () => void
+  onRequestAudit?: () => void
+  onRequestBriefs?: () => void
   availableTags: TagItem[]
   isPending: boolean
 }) {
@@ -109,6 +113,33 @@ export function BulkActionBar({
           <Archive className="size-3.5" />
           Archive
         </Button>
+
+        {/* Selective Auditing & AI Actions */}
+        {onRequestAudit && (
+          <Button
+            variant="default"
+            size="sm"
+            disabled={isPending}
+            onClick={onRequestAudit}
+            className="h-8 gap-1.5 px-3 text-xs font-semibold shadow-sm"
+          >
+            <Play className="size-3.5 fill-current" />
+            Audit
+          </Button>
+        )}
+
+        {onRequestBriefs && (
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={isPending}
+            onClick={onRequestBriefs}
+            className="h-8 gap-1.5 px-3 text-xs font-semibold text-primary"
+          >
+            <Sparkles className="size-3.5" />
+            AI Briefs
+          </Button>
+        )}
 
         <Button
           variant="outline"

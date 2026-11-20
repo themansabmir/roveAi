@@ -1,8 +1,9 @@
-import { ForbiddenError, NotFoundError, ConflictError } from "@core/errors";
-import { ProspectStatus } from "@prisma/client";
+import { ForbiddenError, NotFoundError, ConflictError, BadRequestError } from "@core/errors";
+import { AuditModule, Prisma, ProspectStatus } from "@prisma/client";
 import { CampaignRepository, LeadSummaryRow, LeadView, LeadsSummaryResult, TagView } from "./campaign.repository";
-import { BulkLeadsInput, LeadsQuery, UpdateLeadInput } from "./lead.schemas";
-
+import { BulkLeadsInput, LeadsQuery, UpdateLeadInput, SelectiveAuditInput } from "./lead.schemas";
+import { AuditScheduler } from "@features/audits/audit-scheduler";
+import { CreditService } from "../credits/credit.service";
 // ---------------------------------------------------------------------------
 // CSV injection sanitization: prefix dangerous chars with a tab
 // ---------------------------------------------------------------------------
@@ -57,8 +58,8 @@ export function computeNextAction(lead: {
     case "QUALIFIED": {
       const briefAiStatus = lead.brief?.aiStatus ?? lead.aiStatus;
       if (briefAiStatus === "COMPLETED") return { label: "Review evidence", tone: "success" };
-      if (briefAiStatus === "PENDING") return { label: "Brief generating", tone: "neutral" };
-      if (briefAiStatus === "SKIPPED_GATE" || briefAiStatus === "UNAVAILABLE") {
+      if (briefAiStatus === "PENDING" || briefAiStatus === "QUEUED") return { label: "Brief generating", tone: "neutral" };
+      if (briefAiStatus === "SKIPPED_GATE" || briefAiStatus === "UNAVAILABLE" || briefAiStatus === "NOT_REQUESTED") {
         return { label: "Generate brief", tone: "warning" };
       }
       return { label: "Generate brief", tone: "warning" };
@@ -73,6 +74,12 @@ export function computeNextAction(lead: {
     case "NEW":
     default: {
       switch (lead.auditStatus) {
+        case "NOT_AUDITED":
+          return { label: "Run audit", tone: "neutral" };
+        case "QUEUED":
+          return { label: "Audit queued", tone: "neutral" };
+        case "RUNNING":
+          return { label: "Auditing...", tone: "neutral" };
         case "SKIPPED_NO_WEBSITE":
           return { label: "Pitch web design", tone: "primary" };
         case "UNREACHABLE":
@@ -83,6 +90,7 @@ export function computeNextAction(lead: {
         case "FAILED":
           return { label: "Retry audit", tone: "danger" };
         case "COMPLETED":
+        case "PARTIALLY_COMPLETED":
           return { label: "Review findings", tone: "primary" };
         case "PENDING":
         case "SKIPPED_BUDGET":
@@ -98,7 +106,15 @@ export function computeNextAction(lead: {
 // LeadService
 // ---------------------------------------------------------------------------
 export class LeadService {
-  constructor(private readonly repository: CampaignRepository) {}
+  private readonly creditService: CreditService;
+
+  constructor(
+    private readonly repository: CampaignRepository,
+    private readonly auditScheduler?: AuditScheduler,
+    creditService?: CreditService
+  ) {
+    this.creditService = creditService ?? new CreditService(repository.prisma);
+  }
 
   async list(
     organizationId: string,
@@ -302,6 +318,254 @@ export class LeadService {
     ];
 
     return lines.join("\r\n");
+  }
+
+  // ---------------------------------------------------------------------------
+  // Selective Auditing & AI Briefs (Phase 1 Decoupled Execution)
+  // ---------------------------------------------------------------------------
+
+  async runAudit(
+    organizationId: string,
+    campaignId: string,
+    input: SelectiveAuditInput,
+    userId?: string,
+    idempotencyKey?: string,
+  ): Promise<{ batchId: string; scheduledLeads: number; queuedJobs: number; duplicate?: boolean }> {
+    // --- Fix 3: Idempotency guard (double-click protection) ---
+    if (idempotencyKey) {
+      const existing = await this.repository.prisma.auditBatch.findUnique({
+        where: { idempotencyKey },
+        select: { id: true },
+      });
+      if (existing) {
+        return { batchId: existing.id, scheduledLeads: 0, queuedJobs: 0, duplicate: true };
+      }
+    }
+
+    const dedupedIds = [...new Set(input.leadIds)].sort();
+    if (dedupedIds.length === 0) {
+      throw new BadRequestError("At least one lead ID must be provided");
+    }
+
+    // Verify all leadIds belong to this campaign and organization
+    const owned = await this.repository.prisma.campaignLead.findMany({
+      where: { id: { in: dedupedIds }, campaignId, campaign: { organizationId } },
+      select: { id: true, auditStatus: true },
+    });
+    if (owned.length !== dedupedIds.length) {
+      throw new ForbiddenError("One or more lead IDs do not belong to this campaign");
+    }
+
+    // Guard against re-auditing leads that are already actively processing in another batch
+    const inFlight = owned.filter(
+      (l) => l.auditStatus === "QUEUED" || l.auditStatus === "RUNNING" || l.auditStatus === "PENDING"
+    );
+    if (inFlight.length > 0) {
+      throw new ConflictError(
+        `Cannot start audit for leads currently in progress (${inFlight.map((l) => l.id).join(", ")}). Please wait for active audits to complete.`
+      );
+    }
+
+    // Deterministic row locking in strictly ascending ID order to prevent deadlocks
+    await this.repository.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw(
+        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id IN (${Prisma.join(dedupedIds)}) ORDER BY id ASC FOR UPDATE`
+      );
+    });
+
+    const estimatedUnits = dedupedIds.length;
+
+    // --- Fix 1 step (a): Reserve credits atomically (already its own tx) ---
+    const reservation = await this.creditService.reserveCredits(organizationId, dedupedIds, {
+      campaignId,
+      reason: `Reserved ${estimatedUnits} RU for selective prospect audit (${dedupedIds.length} leads)`,
+      ...(idempotencyKey ? { idempotencyKey } : {}),
+    });
+
+    const toolsRequested = (input.tools ?? ["CRAWL", "PERFORMANCE"]).map((t) =>
+      t === "CRAWL" ? AuditModule.TECHNOLOGY : AuditModule.PERFORMANCE
+    );
+
+    if (!this.auditScheduler) {
+      throw new Error("AuditScheduler not configured");
+    }
+
+    // Fetch lead+business data needed for job creation (outside tx to avoid unnecessary lock duration)
+    const leads = await this.repository.prisma.campaignLead.findMany({
+      where: { id: { in: dedupedIds } },
+      include: { business: { select: { websiteUrl: true } } },
+      orderBy: { id: "asc" },
+    });
+
+    // --- Fix 1 step (b): Atomically create AuditBatch + Job rows + update CampaignLead.auditStatus ---
+    // This is the outbox pattern: AuditBatch and Job rows commit atomically.
+    // If the server crashes after this tx commits but before dispatch, the
+    // JobDispatcher polling sweep will re-dispatch any PENDING jobs on restart.
+    const { batchId, jobIds, scheduledLeads } = await this.repository.prisma.$transaction(async (tx) => {
+      // Create AuditBatch (Fix 3: store idempotencyKey; store topNBriefsCount)
+      const batch = await tx.auditBatch.create({
+        data: {
+          organizationId,
+          campaignId,
+          requestedByUserId: userId || null,
+          leadCount: dedupedIds.length,
+          toolsRequested,
+          generateAiBrief: input.generateAiBrief ?? false,
+          unitsEstimated: new Prisma.Decimal(estimatedUnits),
+          reservationId: reservation.id,
+          status: "PROCESSING",
+          ...(idempotencyKey ? { idempotencyKey } : {}),
+          ...(input.topNBriefsCount !== undefined && { topNBriefsCount: input.topNBriefsCount }),
+        },
+      });
+
+      // Link leads specifically to this batch for strict batch scoping
+      await tx.campaignLead.updateMany({
+        where: { id: { in: dedupedIds } },
+        data: { auditBatchId: batch.id },
+      });
+
+      // Create Job rows atomically inside the same tx (outbox pattern — no dispatch here)
+      // When topNBriefsCount is set, don't mark any leads as AI-queued upfront;
+      // the join-barrier finalizer selects top-N after all leads complete.
+      const { jobIds, scheduledLeads } = await this.auditScheduler!.createJobRows(
+        tx,
+        campaignId,
+        organizationId,
+        leads,
+        {
+          tools: input.tools ?? ["CRAWL", "PERFORMANCE"],
+          generateAiBrief: input.topNBriefsCount !== undefined ? false : (input.generateAiBrief ?? false),
+          aiBriefLeadIds: input.topNBriefsCount !== undefined ? [] : input.aiBriefLeadIds,
+        }
+      );
+
+      // Record activity logs atomically in the same tx
+      await tx.leadActivityLog.createMany({
+        data: dedupedIds.map((leadId) => ({
+          organizationId,
+          leadId,
+          userId: userId || null,
+          action: "AUDIT_REQUESTED",
+          newState: {
+            tools: input.tools ?? ["CRAWL", "PERFORMANCE"],
+            generateAiBrief: input.generateAiBrief ?? false,
+            batchId: batch.id,
+          },
+        })),
+      });
+
+      return { batchId: batch.id, jobIds, scheduledLeads };
+    });
+
+    // --- Fix 1 step (c): Dispatch jobs AFTER the transaction commits ---
+    // If this crashes, the outbox sweep (JobDispatcher.sweep) will re-dispatch PENDING jobs.
+    await this.auditScheduler.dispatchJobs(jobIds);
+
+    return { batchId, scheduledLeads, queuedJobs: jobIds.length };
+  }
+
+  async listAuditBatches(organizationId: string, campaignId: string) {
+    const campaign = await this.repository.prisma.campaign.findUnique({
+      where: { id: campaignId, organizationId },
+      select: { id: true },
+    });
+    if (!campaign) {
+      throw new NotFoundError("Campaign not found");
+    }
+
+    return this.repository.prisma.auditBatch.findMany({
+      where: { campaignId, organizationId },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    });
+  }
+
+  async generateBriefs(
+    organizationId: string,
+    campaignId: string,
+    leadIds: string[],
+    userId?: string,
+  ): Promise<{ queuedCount: number; reservationId?: string; unitsEstimated?: number }> {
+    const dedupedIds = [...new Set(leadIds)].sort();
+    if (dedupedIds.length === 0) {
+      throw new BadRequestError("At least one lead ID must be provided");
+    }
+
+    // Verify all leadIds belong to this campaign and organization
+    const owned = await this.repository.prisma.campaignLead.findMany({
+      where: { id: { in: dedupedIds }, campaignId, campaign: { organizationId } },
+      select: { id: true, auditStatus: true },
+    });
+    if (owned.length !== dedupedIds.length) {
+      throw new ForbiddenError("One or more lead IDs do not belong to this campaign");
+    }
+
+    // Guard against re-auditing leads that are already actively processing in another batch
+    const inFlight = owned.filter(
+      (l) => l.auditStatus === "QUEUED" || l.auditStatus === "RUNNING" || l.auditStatus === "PENDING"
+    );
+    if (inFlight.length > 0) {
+      throw new ConflictError(
+        `Cannot start audit for leads currently in progress (${inFlight.map((l) => l.id).join(", ")}). Please wait for active audits to complete.`
+      );
+    }
+
+    // Deterministic row locking in strictly ascending ID order
+    await this.repository.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw(
+        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id IN (${Prisma.join(dedupedIds)}) ORDER BY id ASC FOR UPDATE`
+      );
+    });
+
+    // Record activity logs
+    await this.repository.prisma.leadActivityLog.createMany({
+      data: dedupedIds.map((leadId) => ({
+        organizationId,
+        leadId,
+        userId: userId || null,
+        action: "BRIEF_REQUESTED",
+        newState: { requestedAt: new Date().toISOString() },
+      })),
+    });
+
+    // Verify if leads already have an active or committed report reservation
+    const existingItems = await this.repository.prisma.reservationItem.findMany({
+      where: {
+        leadId: { in: dedupedIds },
+        status: { in: ["RESERVED", "COMMITTED"] },
+      },
+      select: { leadId: true },
+    });
+    const coveredLeadIds = new Set(existingItems.map((i) => i.leadId));
+    const leadsNeedingReservation = dedupedIds.filter((id) => !coveredLeadIds.has(id));
+
+    let reservationId: string | undefined;
+    let unitsEstimated = 0;
+
+    if (leadsNeedingReservation.length > 0) {
+      const reservation = await this.creditService.reserveCredits(
+        organizationId,
+        leadsNeedingReservation,
+        {
+          campaignId,
+          reason: `Reserved ${leadsNeedingReservation.length} RU for AI sales brief synthesis`,
+        }
+      );
+      reservationId = reservation.id;
+      unitsEstimated = leadsNeedingReservation.length;
+    }
+
+    if (!this.auditScheduler) {
+      throw new Error("AuditScheduler not configured");
+    }
+
+    const result = await this.auditScheduler.scheduleAiBriefs(campaignId, dedupedIds);
+    return {
+      queuedCount: result.queuedCount,
+      reservationId,
+      unitsEstimated,
+    };
   }
 }
 

@@ -22,49 +22,73 @@ export class GeminiProvider implements IAiProvider {
     const prompt = buildOpportunityPrompt(ctx);
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          temperature: 0.2,
-        },
-      }),
-      signal: AbortSignal.timeout(this.timeoutMs),
-    });
+    const maxRetries = 2;
+    let attempt = 0;
 
-    if (!res.ok) {
-      const errText = await res.text().catch(() => "");
-      logger.error({ status: res.status, errText }, "GeminiProvider: API request failed");
-      throw new AiProviderError(`Gemini HTTP ${res.status}: ${errText.slice(0, 300)}`, this.key);
-    }
+    while (attempt <= maxRetries) {
+      attempt++;
 
-    const data = (await res.json()) as {
-      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-      usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
-    };
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.2,
+          },
+        }),
+        signal: AbortSignal.timeout(this.timeoutMs),
+      });
 
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) {
-      throw new AiProviderError("Gemini returned empty candidate content", this.key);
-    }
+      if (res.status === 429 || res.status === 503) {
+        if (attempt <= maxRetries) {
+          const isTest = process.env["NODE_ENV"] === "test";
+          const backoffMs = isTest
+            ? 10 * attempt
+            : Math.pow(2, attempt) * 1000 + Math.floor(Math.random() * 500);
+          logger.warn(
+            { status: res.status, attempt, backoffMs },
+            "GeminiProvider: rate limited or service unavailable, backing off and retrying"
+          );
+          await new Promise((r) => setTimeout(r, backoffMs));
+          continue;
+        }
+      }
 
-    try {
-      const parsedJson = JSON.parse(text);
-      const brief = BriefDataSchema.parse(parsedJson);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        logger.error({ status: res.status, errText }, "GeminiProvider: API request failed");
+        throw new AiProviderError(`Gemini HTTP ${res.status}: ${errText.slice(0, 300)}`, this.key);
+      }
 
-      return {
-        brief,
-        modelName: this.model,
-        tokenUsage: {
-          inputTokens: data?.usageMetadata?.promptTokenCount ?? 0,
-          outputTokens: data?.usageMetadata?.candidatesTokenCount ?? 0,
-        },
+      const data = (await res.json()) as {
+        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+        usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
       };
-    } catch (err) {
-      throw new AiProviderError(`Failed to parse Gemini response as valid brief schema: ${err}`, this.key);
+
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) {
+        throw new AiProviderError("Gemini returned empty candidate content", this.key);
+      }
+
+      try {
+        const parsedJson = JSON.parse(text);
+        const brief = BriefDataSchema.parse(parsedJson);
+
+        return {
+          brief,
+          modelName: this.model,
+          tokenUsage: {
+            inputTokens: data?.usageMetadata?.promptTokenCount ?? 0,
+            outputTokens: data?.usageMetadata?.candidatesTokenCount ?? 0,
+          },
+        };
+      } catch (err) {
+        throw new AiProviderError(`Failed to parse Gemini response as valid brief schema: ${err}`, this.key);
+      }
     }
+
+    throw new AiProviderError("GeminiProvider: maximum retry attempts exceeded", this.key);
   }
 }

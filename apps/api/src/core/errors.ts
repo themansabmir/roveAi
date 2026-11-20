@@ -34,6 +34,12 @@ export class UnauthorizedError extends HttpError {
   }
 }
 
+export class PaymentRequiredError extends HttpError {
+  constructor(message = "Payment required: Insufficient Research Units", details?: unknown) {
+    super(402, "PAYMENT_REQUIRED", message, details);
+  }
+}
+
 export class ForbiddenError extends HttpError {
   constructor(message = "Forbidden") {
     super(403, "FORBIDDEN", message);
