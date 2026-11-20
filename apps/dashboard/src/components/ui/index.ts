@@ -1,0 +1,31 @@
+// Base Components (Consolidated from @rove/ui + local extensions)
+export * from "@rove/ui/components/button"
+export * from "@rove/ui/components/input"
+export * from "./base/SearchInput"
+export * from "@rove/ui/components/select"
+export * from "./base/Chip"
+export * from "@rove/ui/components/badge"
+export * from "@rove/ui/components/card"
+export * from "@rove/ui/components/tabs"
+export * from "@rove/ui/components/checkbox"
+export * from "./base/Toggle"
+
+// Composite Components (Promoted to @rove/ui + local compositions)
+export * from "@rove/ui/components/data-table"
+export * from "./composite/EmptyState"
+export * from "@rove/ui/components/skeleton"
+export * from "@rove/ui/components/toast"
+export * from "./composite/Breadcrumb"
+export * from "@rove/ui/components/pagination"
+
+// Layout & Rove AI Components
+export * from "./layout/Sidebar"
+export * from "./layout/TopBar"
+export * from "./layout/CreditBalance"
+export * from "./layout/AiAvatar"
+export * from "./layout/AiStatusPill"
+export * from "./layout/SuggestionCard"
+export * from "./layout/ProspectCard"
+export * from "./layout/NoteItem"
+export * from "./layout/ContactRow"
+export * from "./layout/FormField"

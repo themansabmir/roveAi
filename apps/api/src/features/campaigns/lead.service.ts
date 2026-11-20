@@ -369,7 +369,7 @@ export class LeadService {
     // Deterministic row locking in strictly ascending ID order to prevent deadlocks
     await this.repository.prisma.$transaction(async (tx) => {
       await tx.$queryRaw(
-        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id IN (${Prisma.join(dedupedIds)}) ORDER BY id ASC FOR UPDATE`
+        Prisma.sql`SELECT id FROM "campaign_lead" WHERE id IN (${Prisma.join(dedupedIds)}) ORDER BY id ASC FOR UPDATE`
       );
     });
 
@@ -486,7 +486,13 @@ export class LeadService {
     campaignId: string,
     leadIds: string[],
     userId?: string,
-  ): Promise<{ queuedCount: number; reservationId?: string; unitsEstimated?: number }> {
+  ): Promise<{
+    queuedCount: number;
+    reservationId?: string;
+    unitsEstimated?: number;
+    message: string;
+    skipped?: Array<{ leadId: string; reason: string }>;
+  }> {
     const dedupedIds = [...new Set(leadIds)].sort();
     if (dedupedIds.length === 0) {
       throw new BadRequestError("At least one lead ID must be provided");
@@ -495,32 +501,85 @@ export class LeadService {
     // Verify all leadIds belong to this campaign and organization
     const owned = await this.repository.prisma.campaignLead.findMany({
       where: { id: { in: dedupedIds }, campaignId, campaign: { organizationId } },
-      select: { id: true, auditStatus: true },
+      select: {
+        id: true,
+        auditStatus: true,
+        aiStatus: true,
+        business: {
+          select: {
+            name: true,
+            websiteUrl: true,
+            websiteClass: true,
+          },
+        },
+      },
     });
     if (owned.length !== dedupedIds.length) {
       throw new ForbiddenError("One or more lead IDs do not belong to this campaign");
     }
 
-    // Guard against re-auditing leads that are already actively processing in another batch
-    const inFlight = owned.filter(
-      (l) => l.auditStatus === "QUEUED" || l.auditStatus === "RUNNING" || l.auditStatus === "PENDING"
-    );
-    if (inFlight.length > 0) {
-      throw new ConflictError(
-        `Cannot start audit for leads currently in progress (${inFlight.map((l) => l.id).join(", ")}). Please wait for active audits to complete.`
-      );
+    // Classify eligibility with clear reasons
+    const skipped: Array<{ leadId: string; reason: string }> = [];
+
+    for (const lead of owned) {
+      if (!lead.business?.websiteUrl || lead.business.websiteClass !== "OWNED_SITE" || lead.auditStatus === "SKIPPED_NO_WEBSITE") {
+        skipped.push({
+          leadId: lead.id,
+          reason: "Lead has no website (sales brief requires an active website to analyze)",
+        });
+      } else if (
+        lead.auditStatus === "QUEUED" ||
+        lead.auditStatus === "RUNNING" ||
+        lead.auditStatus === "PENDING" ||
+        lead.aiStatus === "QUEUED" ||
+        lead.aiStatus === "PENDING"
+      ) {
+        skipped.push({
+          leadId: lead.id,
+          reason: "An audit or AI brief is already actively in progress",
+        });
+      } else if (
+        lead.auditStatus === "UNREACHABLE" ||
+        lead.auditStatus === "BLOCKED" ||
+        lead.auditStatus === "SKIPPED_BUDGET"
+      ) {
+        skipped.push({
+          leadId: lead.id,
+          reason: `Lead website could not be audited (${lead.auditStatus})`,
+        });
+      }
     }
+
+    const skippedIdSet = new Set(skipped.map((s) => s.leadId));
+    const eligible = owned.filter((l) => !skippedIdSet.has(l.id));
+
+    // If no leads are eligible, avoid silent queuedCount: 0 failure
+    if (eligible.length === 0) {
+      const primaryReason = skipped[0]?.reason ?? "prospects are not eligible";
+      const message =
+        dedupedIds.length === 1
+          ? `0 briefs queued: 1 lead was skipped because ${primaryReason.toLowerCase()}`
+          : `0 briefs queued: ${skipped.length} leads were skipped (${primaryReason.toLowerCase()})`;
+
+      return {
+        queuedCount: 0,
+        message,
+        skipped,
+      };
+    }
+
+    const eligibleIds = eligible.map((l) => l.id).sort();
 
     // Deterministic row locking in strictly ascending ID order
     await this.repository.prisma.$transaction(async (tx) => {
       await tx.$queryRaw(
-        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id IN (${Prisma.join(dedupedIds)}) ORDER BY id ASC FOR UPDATE`
+        Prisma.sql`SELECT id FROM "campaign_lead" WHERE id IN (${Prisma.join(eligibleIds)}) ORDER BY id ASC FOR UPDATE`
       );
     });
 
     // Record activity logs
     await this.repository.prisma.leadActivityLog.createMany({
-      data: dedupedIds.map((leadId) => ({
+      data: eligibleIds.map((leadId) => ({
         organizationId,
         leadId,
         userId: userId || null,
@@ -529,42 +588,83 @@ export class LeadService {
       })),
     });
 
-    // Verify if leads already have an active or committed report reservation
-    const existingItems = await this.repository.prisma.reservationItem.findMany({
-      where: {
-        leadId: { in: dedupedIds },
-        status: { in: ["RESERVED", "COMMITTED"] },
-      },
-      select: { leadId: true },
-    });
-    const coveredLeadIds = new Set(existingItems.map((i) => i.leadId));
-    const leadsNeedingReservation = dedupedIds.filter((id) => !coveredLeadIds.has(id));
+    // Separate leads that have already completed an audit vs. unaudited leads
+    const unaudited = eligible.filter((l) => l.auditStatus === "NOT_AUDITED");
+    const readyForBrief = eligible.filter((l) =>
+      ["COMPLETED", "PARTIALLY_COMPLETED", "FAILED"].includes(l.auditStatus)
+    );
 
+    let queuedCount = 0;
     let reservationId: string | undefined;
     let unitsEstimated = 0;
 
-    if (leadsNeedingReservation.length > 0) {
-      const reservation = await this.creditService.reserveCredits(
+    // 1. If any leads are unaudited, trigger technical audit with AI brief generation enabled
+    if (unaudited.length > 0) {
+      const auditResult = await this.runAudit(
         organizationId,
-        leadsNeedingReservation,
+        campaignId,
         {
-          campaignId,
-          reason: `Reserved ${leadsNeedingReservation.length} RU for AI sales brief synthesis`,
-        }
+          leadIds: unaudited.map((l) => l.id),
+          tools: ["CRAWL", "PERFORMANCE"],
+          generateAiBrief: true,
+        },
+        userId
       );
-      reservationId = reservation.id;
-      unitsEstimated = leadsNeedingReservation.length;
+      queuedCount += auditResult.scheduledLeads;
+      const batch = await this.repository.prisma.auditBatch.findUnique({
+        where: { id: auditResult.batchId },
+        select: { reservationId: true, unitsEstimated: true },
+      });
+      if (batch?.reservationId) reservationId = batch.reservationId;
+      if (batch?.unitsEstimated) unitsEstimated += Number(batch.unitsEstimated);
     }
 
-    if (!this.auditScheduler) {
-      throw new Error("AuditScheduler not configured");
+    // 2. If any leads are already audited (COMPLETED, PARTIALLY_COMPLETED, FAILED), schedule AI brief directly
+    if (readyForBrief.length > 0) {
+      const readyIds = readyForBrief.map((l) => l.id);
+      const existingItems = await this.repository.prisma.reservationItem.findMany({
+        where: {
+          leadId: { in: readyIds },
+          status: { in: ["RESERVED", "COMMITTED"] },
+        },
+        select: { leadId: true },
+      });
+      const coveredLeadIds = new Set(existingItems.map((i) => i.leadId));
+      const leadsNeedingReservation = readyIds.filter((id) => !coveredLeadIds.has(id));
+
+      if (leadsNeedingReservation.length > 0) {
+        const reservation = await this.creditService.reserveCredits(
+          organizationId,
+          leadsNeedingReservation,
+          {
+            campaignId,
+            reason: `Reserved ${leadsNeedingReservation.length} RU for AI sales brief synthesis`,
+          }
+        );
+        reservationId = reservation.id;
+        unitsEstimated += leadsNeedingReservation.length;
+      }
+
+      if (!this.auditScheduler) {
+        throw new Error("AuditScheduler not configured");
+      }
+
+      const result = await this.auditScheduler.scheduleAiBriefs(campaignId, readyIds);
+      queuedCount += result.queuedCount;
     }
 
-    const result = await this.auditScheduler.scheduleAiBriefs(campaignId, dedupedIds);
+    let message = `Successfully queued AI sales brief synthesis for ${queuedCount} lead${queuedCount > 1 ? "s" : ""}.`;
+    if (skipped.length > 0) {
+      const reasonText = skipped[0]?.reason?.toLowerCase() ?? "not eligible";
+      message += ` (${skipped.length} lead${skipped.length > 1 ? "s were" : " was"} skipped: ${reasonText})`;
+    }
+
     return {
-      queuedCount: result.queuedCount,
+      queuedCount,
       reservationId,
       unitsEstimated,
+      message,
+      skipped,
     };
   }
 }

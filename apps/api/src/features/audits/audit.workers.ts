@@ -53,42 +53,48 @@ export function buildAuditHandlers(pluginRegistry: IPluginRegistry): AuditHandle
 
 export async function subscribeAuditRole(
   pluginRegistry: IPluginRegistry,
-  role: "discover" | "crawl" | "psi" | "interpret"
+  role: "discover" | "crawl" | "psi" | "interpret" | "all"
 ): Promise<void> {
   const queue = pluginRegistry.get<IQueueService>(QUEUE_PLUGIN);
   const handlers = buildAuditHandlers(pluginRegistry);
   const config = loadConfig();
-  if (role === "discover") {
+
+  if (role === "discover" || role === "all") {
     await queue.subscribe<DiscoverPayload>(DISCOVER_QUEUE, async (payload, _jobId, meta) => {
       console.log(`\n------------------------------------------------------`);
       console.log(`[Worker: DISCOVERY] 📥 Received DISCOVER_QUEUE job: campaignId=${payload.campaignId}, jobId=${payload.jobId} (attempt ${meta.retrycount + 1}/${meta.retrylimit + 1})`);
       console.log(`------------------------------------------------------`);
       await handlers.discover(payload, meta);
     }, { localConcurrency: config.WORKER_CONCURRENCY });
-    return;
+    if (role !== "all") return;
   }
-  if (role === "crawl") {
+
+  if (role === "crawl" || role === "all") {
     await queue.subscribe<AuditJobPayload>(CRAWL_QUEUE, async (payload, _jobId, meta) => {
       console.log(`\n------------------------------------------------------`);
       console.log(`[Worker: CRAWL] 📥 Received CRAWL_QUEUE job: leadId=${payload.leadId}, url=${payload.url} (attempt ${meta.retrycount + 1}/${meta.retrylimit + 1})`);
       console.log(`------------------------------------------------------`);
       await handlers.crawl(payload, meta);
     }, { localConcurrency: config.WORKER_CONCURRENCY });
-    return;
+    if (role !== "all") return;
   }
-  if (role === "psi") {
+
+  if (role === "psi" || role === "all") {
     await queue.subscribe<AuditJobPayload>(PSI_QUEUE, async (payload, _jobId, meta) => {
       console.log(`\n------------------------------------------------------`);
       console.log(`[Worker: PSI] 📥 Received PSI_QUEUE job: leadId=${payload.leadId}, url=${payload.url} (attempt ${meta.retrycount + 1}/${meta.retrylimit + 1})`);
       console.log(`------------------------------------------------------`);
       await handlers.psi(payload, meta);
     }, { localConcurrency: 1 });
-    return;
+    if (role !== "all") return;
   }
-  await queue.subscribe<AuditJobPayload>(AUDIT_READY_QUEUE, async (payload, _jobId, meta) => {
-    console.log(`\n------------------------------------------------------`);
-    console.log(`[Worker: INTERPRET] 📥 Received AUDIT_READY_QUEUE job: leadId=${payload.leadId}, jobId=${payload.jobId} (attempt ${meta.retrycount + 1}/${meta.retrylimit + 1})`);
-    console.log(`------------------------------------------------------`);
-    await handlers.interpret(payload, meta);
-  }, { localConcurrency: config.WORKER_CONCURRENCY });
+
+  if (role === "interpret" || role === "all") {
+    await queue.subscribe<AuditJobPayload>(AUDIT_READY_QUEUE, async (payload, _jobId, meta) => {
+      console.log(`\n------------------------------------------------------`);
+      console.log(`[Worker: INTERPRET] 📥 Received AUDIT_READY_QUEUE job: leadId=${payload.leadId}, jobId=${payload.jobId} (attempt ${meta.retrycount + 1}/${meta.retrylimit + 1})`);
+      console.log(`------------------------------------------------------`);
+      await handlers.interpret(payload, meta);
+    }, { localConcurrency: config.WORKER_CONCURRENCY });
+  }
 }

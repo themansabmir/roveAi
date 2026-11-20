@@ -2,13 +2,37 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import { DashboardLayout } from "@/layout/DashboardLayout"
 import { DashboardPage } from "@/features/dashboard/presentation/DashboardPage"
 import { CampaignDetailPage } from "@/features/campaigns/presentation/CampaignDetailPage"
-import { GuestRoute, ProtectedRoute, SuperAdminRoute } from "@/features/auth/presentation/ProtectedRoute"
+import {
+  GuestRoute,
+  ProtectedRoute,
+  SuperAdminRoute,
+} from "@/features/auth/presentation/ProtectedRoute"
 import { LoginPage } from "@/features/auth/presentation/LoginPage"
 import { AdminPage } from "@/features/admin/presentation/AdminPage"
 import { TeamPage } from "@/features/team/presentation/TeamPage"
 import { AcceptInvitePage } from "@/features/team/presentation/AcceptInvitePage"
 
+const devRoutes = import.meta.env.DEV
+  ? [
+      {
+        path: "/_components",
+        lazy: async () => {
+          const { ComponentPreviewPage } = await import("@/features/preview/ComponentPreviewPage")
+          return { Component: ComponentPreviewPage }
+        },
+      },
+      {
+        path: "/dashboard/_components",
+        lazy: async () => {
+          const { ComponentPreviewPage } = await import("@/features/preview/ComponentPreviewPage")
+          return { Component: ComponentPreviewPage }
+        },
+      },
+    ]
+  : []
+
 const router = createBrowserRouter([
+  ...devRoutes,
   {
     path: "/login",
     element: (

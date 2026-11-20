@@ -17,6 +17,7 @@ out/
 .env
 .env.*
 !.env.example
+.agents/mcp_config.json
 
 # logs
 *.log
@@ -41,6 +42,10 @@ coverage/
 prisma/*.db
 
 # nested git dirs from migrated apps (removed during migration)
+
+# design reference and mockups
+design-reference/
+apps/dashboard/design-reference/
 
 
 #Ignore vscode AI rules

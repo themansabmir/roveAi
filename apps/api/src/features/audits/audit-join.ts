@@ -14,7 +14,7 @@ export async function publishIfReady(
   console.log(`[JoinBarrier.publishIfReady] 🔀 Evaluating lead completion for lead: ${payload.leadId} (jobId: ${payload.jobId})`);
   const { interpretJobId, interpretJobIds, completedReservations, settledLeadId } = await prisma.$transaction(async (tx) => {
     await tx.$queryRaw(
-      Prisma.sql`SELECT id FROM "CampaignLead" WHERE id = ${payload.leadId} FOR UPDATE`
+      Prisma.sql`SELECT id FROM "campaign_lead" WHERE id = ${payload.leadId} FOR UPDATE`
     );
     const audits = await tx.technicalAudit.findMany({
       where: { leadId: payload.leadId, module: { in: REQUIRED_MODULES } },

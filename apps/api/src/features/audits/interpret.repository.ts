@@ -81,7 +81,7 @@ export class InterpretRepository {
       // Deterministic row lock on CampaignLead to strictly follow the ORDER BY id ASC protocol
       // and prevent deadlocks with concurrent bulk user edits
       await tx.$queryRaw(
-        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id = ${input.leadId} FOR UPDATE`
+        Prisma.sql`SELECT id FROM "campaign_lead" WHERE id = ${input.leadId} FOR UPDATE`
       );
 
       await persistLeadScore(tx, input.leadId, input.scoreBreakdown);
