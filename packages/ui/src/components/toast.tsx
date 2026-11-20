@@ -1,6 +1,6 @@
 import * as React from "react"
 import { AlertCircle, CheckCircle2, Info, X, XCircle } from "lucide-react"
-import { cn } from "@rove/ui/lib/cn"
+import { cn } from "../lib/cn"
 
 export type ToastType = "info" | "success" | "warning" | "error"
 

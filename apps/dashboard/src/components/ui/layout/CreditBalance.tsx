@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Link } from "react-router-dom"
 import { CreditCard } from "lucide-react"
 import { cn } from "@rove/ui/lib/cn"
 
@@ -27,9 +28,9 @@ export function CreditBalance({ credits, onClick, href, className, ...props }: C
 
   if (href) {
     return (
-      <a href={href} className="inline-flex">
+      <Link to={href} className="inline-flex">
         {content}
-      </a>
+      </Link>
     )
   }
 

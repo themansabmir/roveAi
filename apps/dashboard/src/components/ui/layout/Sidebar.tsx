@@ -1,4 +1,5 @@
 import * as React from "react"
+import { NavLink } from "react-router-dom"
 import {
   ChevronDown,
   CreditCard,
@@ -10,6 +11,7 @@ import {
   Users,
 } from "lucide-react"
 import { cn } from "@rove/ui/lib/cn"
+import { useAuth } from "@/features/auth/application/useAuth"
 
 export interface SidebarNavItem {
   id: string
@@ -20,9 +22,9 @@ export interface SidebarNavItem {
 }
 
 const DEFAULT_SIDEBAR_NAV: SidebarNavItem[] = [
-  { id: "home", label: "Home", href: "/", icon: Home },
-  { id: "find-leads", label: "Find Leads", href: "/find-leads", icon: Search },
-  { id: "prospects", label: "Prospects", href: "/prospects", icon: Users },
+  { id: "home", label: "Dashboard", href: "/", icon: Home },
+  { id: "campaigns", label: "Campaigns", href: "/", icon: Search },
+  { id: "team", label: "Team", href: "/team", icon: Users },
   { id: "task-history", label: "Task History", href: "/task-history", icon: History },
   { id: "credits-usage", label: "Credits & Usage", href: "/credits-usage", icon: CreditCard },
   { id: "integrations", label: "Integrations", href: "/integrations", icon: Layers },
@@ -42,12 +44,32 @@ export interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
 
 export function Sidebar({
   navItems = DEFAULT_SIDEBAR_NAV,
-  activeId = "home",
+  activeId,
   onNavigate,
-  user = { name: "Alex Chen", organization: "Acme Growth", initials: "AC" },
+  user: userProp,
   className,
   ...props
 }: SidebarProps) {
+  let authUser: { name: string; organization?: string; initials?: string } | undefined
+  try {
+    const auth = useAuth()
+    if (auth?.me?.user) {
+      const email = auth.me.user.email ?? ""
+      const name = auth.me.user.name || email.split("@")[0] || "User"
+      const org = auth.me.organization?.name ?? "Workspace"
+      const initials = (auth.me.user.name ?? email).slice(0, 2).toUpperCase()
+      authUser = { name, organization: org, initials }
+    }
+  } catch {
+    // Rendered outside AuthProvider (e.g. preview)
+  }
+
+  const user = userProp || authUser || {
+    name: "Rove User",
+    organization: "Workspace",
+    initials: "RU",
+  }
+
   return (
     <aside
       className={cn(
@@ -61,9 +83,9 @@ export function Sidebar({
         <div className="h-14 flex items-center px-4 border-b border-border">
           <div className="flex items-center gap-2.5">
             <div className="size-6 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs">
-              <div className="size-2.5 rounded bg-white" />
+              <span className="text-xs font-bold leading-none">R</span>
             </div>
-            <span className="text-sm font-semibold tracking-tight text-foreground">Kinetix</span>
+            <span className="text-sm font-semibold tracking-tight text-foreground">Rove AI</span>
           </div>
         </div>
 
@@ -71,24 +93,26 @@ export function Sidebar({
         <nav className="flex flex-col gap-0.5 p-2">
           {navItems.map((item) => {
             const Icon = item.icon
-            const isActive = item.id === activeId
 
             return (
-              <a
+              <NavLink
                 key={item.id}
-                href={item.href}
+                to={item.href}
                 onClick={(e) => {
                   if (onNavigate) {
                     e.preventDefault()
                     onNavigate(item)
                   }
                 }}
-                className={cn(
-                  "flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition-colors",
-                  isActive
-                    ? "bg-secondary text-foreground font-semibold"
-                    : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
-                )}
+                className={({ isActive }) => {
+                  const active = activeId ? activeId === item.id : isActive
+                  return cn(
+                    "flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                    active
+                      ? "bg-secondary text-foreground font-semibold"
+                      : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
+                  )
+                }}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <Icon className="size-4 shrink-0" aria-hidden="true" />
@@ -99,7 +123,7 @@ export function Sidebar({
                     {item.badge}
                   </span>
                 )}
-              </a>
+              </NavLink>
             )
           })}
         </nav>

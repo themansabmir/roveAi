@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Button } from "../base/Button"
+import { Button } from "@rove/ui/components/button"
 import { cn } from "@rove/ui/lib/cn"
 
 export interface SuggestionCardProps extends React.HTMLAttributes<HTMLDivElement> {

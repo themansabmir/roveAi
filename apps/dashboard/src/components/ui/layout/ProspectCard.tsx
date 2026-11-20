@@ -1,8 +1,8 @@
 import * as React from "react"
 import { MapPin, Star } from "lucide-react"
-import { Checkbox } from "../base/Checkbox"
-import { StatusBadge, type StatusBadgeType } from "../base/Badge"
-import { Button } from "../base/Button"
+import { Checkbox } from "@rove/ui/components/checkbox"
+import { StatusBadge, type StatusBadgeType } from "@rove/ui/components/badge"
+import { Button } from "@rove/ui/components/button"
 import { cn } from "@rove/ui/lib/cn"
 
 export interface ProspectCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {

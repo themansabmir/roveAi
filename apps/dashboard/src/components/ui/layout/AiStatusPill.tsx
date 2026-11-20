@@ -1,9 +1,9 @@
 import * as React from "react"
 import { ChevronDown, Pause, Play, Sparkles } from "lucide-react"
-import { Button } from "../base/Button"
+import { Button } from "@rove/ui/components/button"
 import { cn } from "@rove/ui/lib/cn"
 
-export interface AuraStatusPillProps {
+export interface AiStatusPillProps {
   status: "ready" | "working"
   activeTaskName?: string
   progress?: { current: number; total: number }
@@ -13,20 +13,19 @@ export interface AuraStatusPillProps {
   className?: string
 }
 
-export function AuraStatusPill({
+export function AiStatusPill({
   status,
-  activeTaskName = "Enriching local leads",
+  activeTaskName = "Auditing and enriching leads",
   progress,
   onPause,
   onResume,
   onViewDetails,
   className,
-}: AuraStatusPillProps) {
+}: AiStatusPillProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const isWorking = status === "working"
 
-  // Close dropdown on outside click
   React.useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -67,7 +66,7 @@ export function AuraStatusPill({
           )}
         </span>
 
-        <span>{isWorking ? "Aura working…" : "Aura ready"}</span>
+        <span>{isWorking ? "Rove AI working…" : "Rove AI ready"}</span>
 
         <ChevronDown
           className={cn(
@@ -78,20 +77,19 @@ export function AuraStatusPill({
         />
       </button>
 
-      {/* Expanded status card */}
       {isOpen && (
         <div
           role="dialog"
-          aria-label="Aura activity details"
+          aria-label="Rove AI activity details"
           className="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-border bg-card p-4 shadow-lg animate-in fade-in-0 zoom-in-95 text-xs text-foreground"
         >
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <div className="flex items-center gap-2">
               <div className="flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-[10px]">
-                A
+                R
               </div>
               <span className="font-semibold">
-                {isWorking ? "Active Workflow" : "Assistant Idle"}
+                {isWorking ? "Active Workflow" : "Rove AI Idle"}
               </span>
             </div>
             <span

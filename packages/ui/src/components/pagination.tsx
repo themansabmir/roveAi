@@ -1,7 +1,7 @@
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "../base/Button"
-import { cn } from "@rove/ui/lib/cn"
+import { Button } from "./button"
+import { cn } from "../lib/cn"
 
 export interface PaginationProps extends React.HTMLAttributes<HTMLDivElement> {
   currentPage: number
@@ -22,7 +22,6 @@ export function Pagination({
   className,
   ...props
 }: PaginationProps) {
-  // Generate page numbers array with ellipses
   const pages = React.useMemo(() => {
     const range = (start: number, end: number) => {
       const length = end - start + 1
@@ -80,7 +79,6 @@ export function Pagination({
       className={cn("flex flex-wrap items-center justify-between gap-4 py-2 text-xs", className)}
       {...props}
     >
-      {/* Item range summary */}
       {totalItems !== undefined && (
         <span className="text-muted-foreground">
           Showing <span className="font-medium text-foreground">{startItem}</span> to{" "}
@@ -89,7 +87,6 @@ export function Pagination({
         </span>
       )}
 
-      {/* Page controls */}
       <div className="flex items-center gap-1.5 ml-auto">
         <Button
           variant="secondary"

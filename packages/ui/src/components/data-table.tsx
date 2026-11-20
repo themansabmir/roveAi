@@ -1,9 +1,9 @@
 import * as React from "react"
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
-import { Checkbox } from "../base/Checkbox"
-import { Pagination } from "./Pagination"
-import { TableRowSkeleton } from "./Skeleton"
-import { cn } from "@rove/ui/lib/cn"
+import { Checkbox } from "./checkbox"
+import { Pagination } from "./pagination"
+import { TableRowSkeleton } from "./skeleton"
+import { cn } from "../lib/cn"
 
 export interface Column<T> {
   key: string
@@ -49,7 +49,6 @@ export function DataTable<T extends { id: string | number }>({
   pagination,
   className,
 }: DataTableProps<T>) {
-  // Master checkbox logic
   const isAllSelected = data.length > 0 && data.every((item) => selectedIds.includes(item.id))
   const isSomeSelected = data.some((item) => selectedIds.includes(item.id)) && !isAllSelected
 
@@ -78,8 +77,7 @@ export function DataTable<T extends { id: string | number }>({
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
-            {/* Header */}
-            <thead className="bg-[#FAFAF8] border-b border-border text-[11px] font-semibold text-muted-foreground uppercase tracking-wider select-none">
+            <thead className="bg-secondary/40 border-b border-border text-[11px] font-semibold text-muted-foreground uppercase tracking-wider select-none">
               <tr>
                 {selectable && (
                   <th className="w-10 px-3.5 py-2.5">
@@ -93,11 +91,19 @@ export function DataTable<T extends { id: string | number }>({
                 {columns.map((col) => {
                   const isSorted = sortKey === col.key
                   const canSort = col.sortable && onSort
+                  const ariaSortValue: React.AriaAttributes["aria-sort"] = isSorted
+                    ? sortDirection === "asc"
+                      ? "ascending"
+                      : "descending"
+                    : canSort
+                      ? "none"
+                      : undefined
 
                   return (
                     <th
                       key={col.key}
                       style={{ width: col.width }}
+                      aria-sort={ariaSortValue}
                       onClick={() => canSort && onSort(col.key)}
                       className={cn(
                         "px-3.5 py-2.5 whitespace-nowrap",
@@ -134,7 +140,6 @@ export function DataTable<T extends { id: string | number }>({
               </tr>
             </thead>
 
-            {/* Body */}
             <tbody className="divide-y divide-border text-[13px] text-foreground">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
@@ -196,7 +201,6 @@ export function DataTable<T extends { id: string | number }>({
         </div>
       </div>
 
-      {/* Pagination Footer */}
       {pagination && (
         <Pagination
           currentPage={pagination.currentPage}

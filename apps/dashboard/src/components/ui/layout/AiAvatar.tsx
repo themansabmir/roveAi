@@ -1,17 +1,17 @@
 import * as React from "react"
 import { cn } from "@rove/ui/lib/cn"
 
-export interface AuraAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface AiAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "md" | "lg"
   isWorking?: boolean
 }
 
-export function AuraAvatar({
+export function AiAvatar({
   size = "md",
   isWorking = false,
   className,
   ...props
-}: AuraAvatarProps) {
+}: AiAvatarProps) {
   const sizeStyles = {
     sm: "size-6 text-xs",
     md: "size-8 text-sm",
@@ -35,7 +35,7 @@ export function AuraAvatar({
           sizeStyles,
         )}
       >
-        A
+        R
       </div>
     </div>
   )

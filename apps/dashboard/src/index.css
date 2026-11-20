@@ -1,14 +1,14 @@
 /*
  * App-level entry. Design tokens + Tailwind layers come from the shared
  * design system (@rove/ui/styles.css).
- * Kinetix (Kinetic Obsidian) Light Theme token overrides are scoped exclusively
+ * Rove AI Obsidian Light Theme token overrides are scoped exclusively
  * to this dashboard application.
  */
 @import "@rove/ui/styles.css";
 
 @layer base {
   :root {
-    /* Kinetic Obsidian Light Theme Tokens */
+    /* Rove AI Obsidian Light Theme Tokens */
     --background: 60 12% 97.6%; /* #FAFAF8 - Canvas Base */
     --foreground: 240 8% 7.3%; /* #111114 - Primary Near-black */
 
@@ -39,7 +39,7 @@
 
     --radius: 0.5rem; /* 8px base radius */
 
-    /* Sidebar Kinetix Theme */
+    /* Sidebar Theme */
     --sidebar: 0 0% 100%; /* #FFFFFF */
     --sidebar-foreground: 240 8% 7.3%;
     --sidebar-primary: 252 100% 66.9%;
@@ -49,17 +49,17 @@
     --sidebar-border: 240 5% 92.2%; /* #EAEAEC */
     --sidebar-ring: 252 100% 66.9%;
 
-    /* Kinetix Direct Token Utilities */
-    --kinetix-violet: #7856ff;
-    --kinetix-violet-hover: #6644ee;
-    --kinetix-canvas: #fafaf8;
-    --kinetix-surface: #ffffff;
-    --kinetix-hover: #f4f4f2;
-    --kinetix-border: #eaeaec;
-    --kinetix-text: #111114;
-    --kinetix-muted: #85858f;
-    --kinetix-badge-bg: #f0f0ee;
-    --kinetix-badge-text: #61626b;
+    /* Rove Direct Token Utilities */
+    --rove-violet: #7856ff;
+    --rove-violet-hover: #6644ee;
+    --rove-canvas: #fafaf8;
+    --rove-surface: #ffffff;
+    --rove-hover: #f4f4f2;
+    --rove-border: #eaeaec;
+    --rove-text: #111114;
+    --rove-muted: #85858f;
+    --rove-badge-bg: #f0f0ee;
+    --rove-badge-text: #61626b;
   }
 
   body {

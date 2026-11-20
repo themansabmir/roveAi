@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Check, Minus } from "lucide-react"
-import { cn } from "@rove/ui/lib/cn"
+import { cn } from "../lib/cn"
 
 export interface CheckboxProps {
   id?: string

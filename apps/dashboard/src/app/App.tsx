@@ -11,17 +11,28 @@ import { LoginPage } from "@/features/auth/presentation/LoginPage"
 import { AdminPage } from "@/features/admin/presentation/AdminPage"
 import { TeamPage } from "@/features/team/presentation/TeamPage"
 import { AcceptInvitePage } from "@/features/team/presentation/AcceptInvitePage"
-import { ComponentPreviewPage } from "@/features/preview/ComponentPreviewPage"
+
+const devRoutes = import.meta.env.DEV
+  ? [
+      {
+        path: "/_components",
+        lazy: async () => {
+          const { ComponentPreviewPage } = await import("@/features/preview/ComponentPreviewPage")
+          return { Component: ComponentPreviewPage }
+        },
+      },
+      {
+        path: "/dashboard/_components",
+        lazy: async () => {
+          const { ComponentPreviewPage } = await import("@/features/preview/ComponentPreviewPage")
+          return { Component: ComponentPreviewPage }
+        },
+      },
+    ]
+  : []
 
 const router = createBrowserRouter([
-  {
-    path: "/_components",
-    element: <ComponentPreviewPage />,
-  },
-  {
-    path: "/dashboard/_components",
-    element: <ComponentPreviewPage />,
-  },
+  ...devRoutes,
   {
     path: "/login",
     element: (

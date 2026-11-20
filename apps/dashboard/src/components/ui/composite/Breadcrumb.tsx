@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Link } from "react-router-dom"
 import { ChevronRight } from "lucide-react"
 import { cn } from "@rove/ui/lib/cn"
 
@@ -28,12 +29,12 @@ export function Breadcrumb({
           return (
             <li key={`breadcrumb-${index}`} className="flex items-center gap-1.5">
               {item.href && !isLast ? (
-                <a
-                  href={item.href}
+                <Link
+                  to={item.href}
                   className="font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {item.label}
-                </a>
+                </Link>
               ) : (
                 <span
                   aria-current={isLast ? "page" : undefined}

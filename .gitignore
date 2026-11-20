@@ -43,6 +43,10 @@ prisma/*.db
 
 # nested git dirs from migrated apps (removed during migration)
 
+# design reference and mockups
+design-reference/
+apps/dashboard/design-reference/
+
 
 #Ignore vscode AI rules
 .github\instructions\codacy.instructions.md

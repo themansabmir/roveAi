@@ -1,30 +1,29 @@
-// Base Components (Group A)
-export * from "./base/Button"
-export * from "./base/Input"
+// Base Components (Consolidated from @rove/ui + local extensions)
+export * from "@rove/ui/components/button"
+export * from "@rove/ui/components/input"
 export * from "./base/SearchInput"
-export * from "./base/Select"
+export * from "@rove/ui/components/select"
 export * from "./base/Chip"
-export * from "./base/Badge"
-export * from "./base/Card"
-export * from "./base/Tabs"
-export * from "./base/Checkbox"
+export * from "@rove/ui/components/badge"
+export * from "@rove/ui/components/card"
+export * from "@rove/ui/components/tabs"
+export * from "@rove/ui/components/checkbox"
 export * from "./base/Toggle"
 
-// Composite Components (Group B)
-export * from "./composite/DataTable"
-export * from "./composite/BulkActionBar"
+// Composite Components (Promoted to @rove/ui + local compositions)
+export * from "@rove/ui/components/data-table"
 export * from "./composite/EmptyState"
-export * from "./composite/Skeleton"
-export * from "./composite/Toast"
+export * from "@rove/ui/components/skeleton"
+export * from "@rove/ui/components/toast"
 export * from "./composite/Breadcrumb"
-export * from "./composite/Pagination"
+export * from "@rove/ui/components/pagination"
 
-// Layout & Aura Components (Group C)
+// Layout & Rove AI Components
 export * from "./layout/Sidebar"
 export * from "./layout/TopBar"
 export * from "./layout/CreditBalance"
-export * from "./layout/AuraAvatar"
-export * from "./layout/AuraStatusPill"
+export * from "./layout/AiAvatar"
+export * from "./layout/AiStatusPill"
 export * from "./layout/SuggestionCard"
 export * from "./layout/ProspectCard"
 export * from "./layout/NoteItem"

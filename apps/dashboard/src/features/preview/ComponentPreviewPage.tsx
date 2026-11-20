@@ -1,7 +1,6 @@
 import { useState } from "react"
 import {
   ArrowRight,
-  Download,
   Filter,
   Globe,
   Mail,
@@ -9,13 +8,16 @@ import {
   Plus,
   Sparkles,
   Trash2,
-  Zap,
 } from "lucide-react"
 import {
   Button,
   Input,
   SearchInput,
   Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Chip,
   Badge,
   StatusBadge,
@@ -33,7 +35,6 @@ import {
   Toggle,
   DataTable,
   type Column,
-  BulkActionBar,
   EmptyState,
   Skeleton,
   Toast,
@@ -42,8 +43,8 @@ import {
   Sidebar,
   TopBar,
   CreditBalance,
-  AuraAvatar,
-  AuraStatusPill,
+  AiAvatar,
+  AiStatusPill,
   SuggestionCard,
   ProspectCard,
   NoteItem,
@@ -123,7 +124,7 @@ export function ComponentPreviewPage() {
 
   // Group C state
   const [sidebarActive, setSidebarActive] = useState("find-leads")
-  const [auraWorking, setAuraWorking] = useState(true)
+  const [aiWorking, setAiWorking] = useState(true)
   const [cardSelected, setCardSelected] = useState(false)
 
   const toggleChip = (id: string) => {
@@ -201,7 +202,7 @@ export function ComponentPreviewPage() {
               <Sparkles className="size-4" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              Kinetix Design System
+              Rove AI Design System
             </h1>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -329,24 +330,28 @@ export function ComponentPreviewPage() {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-5">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground">Industry Selector</label>
-                <Select
-                  value={selectedIndustry}
-                  onChange={setSelectedIndustry}
-                  options={[
-                    { value: "health", label: "Healthcare & Dental" },
-                    { value: "legal", label: "Legal & Law Firms" },
-                    { value: "plumbing", label: "Home Services & Plumbing" },
-                    { value: "enterprise", label: "Enterprise B2B (Disabled)", disabled: true },
-                  ]}
-                />
+                <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="health">Healthcare & Dental</SelectItem>
+                    <SelectItem value="legal">Legal & Law Firms</SelectItem>
+                    <SelectItem value="plumbing">Home Services & Plumbing</SelectItem>
+                    <SelectItem value="enterprise" disabled>Enterprise B2B (Disabled)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Disabled Select</label>
-                <Select
-                  disabled
-                  defaultValue="locked"
-                  options={[{ value: "locked", label: "Workspace Locked" }]}
-                />
+                <Select disabled defaultValue="locked">
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Workspace Locked" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="locked">Workspace Locked</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -411,7 +416,7 @@ export function ComponentPreviewPage() {
                 </span>
                 <div className="flex flex-wrap items-center gap-3">
                   <Badge variant="default">200 prospects</Badge>
-                  <Badge variant="secondary">Aura Active</Badge>
+                  <Badge variant="secondary">Rove AI Active</Badge>
                   <Badge variant="outline">240 credits</Badge>
                 </div>
               </div>
@@ -428,7 +433,7 @@ export function ComponentPreviewPage() {
             <CardHeader>
               <CardTitle>Tabbed Module</CardTitle>
               <CardDescription>
-                Keyboard-accessible tab switches styled through Kinetix tokens.
+                Keyboard-accessible tab switches styled through Rove AI tokens.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -505,7 +510,7 @@ export function ComponentPreviewPage() {
                     id="tg1"
                     checked={toggleState}
                     onCheckedChange={setToggleState}
-                    label="Real-time Aura monitoring"
+                    label="Real-time Rove AI monitoring"
                     description="Receive alerts when prospects open emails"
                   />
                   <Toggle id="tg2" size="sm" defaultChecked={false} label="Compact Toggle (sm)" />
@@ -628,7 +633,7 @@ export function ComponentPreviewPage() {
             {toastVisible && (
               <Toast
                 type="info"
-                title="Aura has enriched 24 new contacts"
+                title="Rove AI has enriched 24 new contacts"
                 description="Verified direct dial phone numbers and verified corporate emails added."
                 onClose={() => setToastVisible(false)}
               />
@@ -689,12 +694,12 @@ export function ComponentPreviewPage() {
         </section>
 
         {/* ======================================================== */}
-        {/* GROUP C: LAYOUT & AURA COMPONENTS */}
+        {/* GROUP C: LAYOUT & ROVE AI COMPONENTS */}
         {/* ======================================================== */}
 
         <div className="border-t border-border pt-8">
           <h2 className="text-lg font-bold tracking-tight text-foreground mb-1">
-            Group C: Layout & Aura AI Domain
+            Group C: Layout & Rove AI Domain
           </h2>
           <p className="text-xs text-muted-foreground">
             Navigation shell, AI assistant widgets, suggestion cards, notes, and prospect profiling
@@ -716,14 +721,14 @@ export function ComponentPreviewPage() {
               rightSlot={
                 <>
                   <CreditBalance credits={2450} href="#credits" />
-                  <AuraStatusPill
-                    status={auraWorking ? "working" : "ready"}
-                    activeTaskName="Scraping dentists in Dubai (14/200)"
+                  <AiStatusPill
+                    status={aiWorking ? "working" : "ready"}
+                    activeTaskName="Auditing local dentists in Dubai (14/200)"
                     progress={{ current: 14, total: 200 }}
-                    onPause={() => setAuraWorking(false)}
-                    onResume={() => setAuraWorking(true)}
+                    onPause={() => setAiWorking(false)}
+                    onResume={() => setAiWorking(true)}
                   />
-                  <AuraAvatar size="sm" isWorking={auraWorking} />
+                  <AiAvatar size="sm" isWorking={aiWorking} />
                 </>
               }
             />
@@ -746,15 +751,15 @@ export function ComponentPreviewPage() {
               <Sidebar
                 activeId={sidebarActive}
                 onNavigate={(item) => setSidebarActive(item.id)}
-                user={{ name: "Alex Chen", organization: "Acme Growth", initials: "AC" }}
+                user={{ name: "Rove Operator", organization: "Apex Agency", initials: "RO" }}
               />
             </div>
 
             <div className="md:col-span-2 space-y-5">
-              {/* Aura Status Pill Standalone */}
+              {/* Rove AI Status Pill Standalone */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Aura AI State Indicators</CardTitle>
+                  <CardTitle>Rove AI State Indicators</CardTitle>
                   <CardDescription>
                     Interactive status pill supporting idle standby and active background
                     enrichment. Click to toggle dropdown.
@@ -764,15 +769,15 @@ export function ComponentPreviewPage() {
                   <div className="flex flex-wrap items-center gap-4">
                     <div className="space-y-1">
                       <span className="text-[11px] text-muted-foreground block">Ready Standby</span>
-                      <AuraStatusPill status="ready" />
+                      <AiStatusPill status="ready" />
                     </div>
                     <div className="space-y-1">
                       <span className="text-[11px] text-muted-foreground block">
                         Active Running (With Dropdown)
                       </span>
-                      <AuraStatusPill
+                      <AiStatusPill
                         status="working"
-                        activeTaskName="Enriching local leads in Dubai"
+                        activeTaskName="Auditing local leads in Dubai"
                         progress={{ current: 48, total: 200 }}
                       />
                     </div>
@@ -780,9 +785,9 @@ export function ComponentPreviewPage() {
 
                   <div className="pt-3 border-t border-border flex items-center gap-3">
                     <span className="text-xs text-muted-foreground">Avatar sizes:</span>
-                    <AuraAvatar size="sm" />
-                    <AuraAvatar size="md" isWorking />
-                    <AuraAvatar size="lg" />
+                    <AiAvatar size="sm" />
+                    <AiAvatar size="md" isWorking />
+                    <AiAvatar size="lg" />
                   </div>
                 </CardContent>
               </Card>
@@ -886,13 +891,13 @@ export function ComponentPreviewPage() {
                 tag="AI suggestion"
                 content="Website mobile page speed score is 34/100. Potential high-intent pitch for Web Vitals audit."
                 date="Today at 10:14 AM"
-                author="Aura"
+                author="Rove AI"
               />
               <NoteItem
                 tag="Observed"
                 content="Clinic has 2 active job openings on LinkedIn for Dental Assistants."
                 date="Yesterday"
-                author="Alex Chen"
+                author="Lead Researcher"
               />
               <ContactRow
                 icon={<Mail className="size-4" />}
@@ -918,32 +923,17 @@ export function ComponentPreviewPage() {
           </div>
         </section>
 
-        {/* 15. BULK ACTION BAR (Floating) */}
-        <BulkActionBar
-          selectedCount={selectedTableIds.length}
-          onClear={() => setSelectedTableIds([])}
-          entityName="prospects"
-          actions={[
-            {
-              label: "Enrich Selected",
-              variant: "primary",
-              icon: <Zap className="size-3.5" />,
-              onClick: () => alert(`Enriching ${selectedTableIds.length} prospects`),
-            },
-            {
-              label: "Export CSV",
-              variant: "secondary",
-              icon: <Download className="size-3.5" />,
-              onClick: () => alert(`Exporting ${selectedTableIds.length} prospects`),
-            },
-            {
-              label: "Delete",
-              variant: "destructive",
-              icon: <Trash2 className="size-3.5" />,
-              onClick: () => setSelectedTableIds([]),
-            },
-          ]}
-        />
+        {/* 15. SELECTION ACTION BAR */}
+        {selectedTableIds.length > 0 && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3.5 rounded-xl border border-border bg-card px-4 py-2.5 shadow-lg animate-in fade-in-0 slide-in-from-bottom-4 duration-200">
+            <span className="text-xs font-medium text-foreground">
+              {selectedTableIds.length} prospects selected
+            </span>
+            <Button variant="secondary" size="sm" onClick={() => setSelectedTableIds([])}>
+              Clear
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )
