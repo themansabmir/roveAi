@@ -158,12 +158,12 @@ export async function runSelectiveAudit(
   organizationId: string,
   campaignId: string,
   payload: SelectiveAuditPayload,
-): Promise<{ batchId: string; scheduledLeads: number; queuedJobs: number; duplicate?: boolean }> {
+): Promise<{ batchId: string; scheduledLeads: number; queuedJobs: number; duplicate?: boolean; message?: string }> {
   const headers: Record<string, string> = {}
   if (payload.idempotencyKey) {
     headers["Idempotency-Key"] = payload.idempotencyKey
   }
-  const response = await axiosInstance.post<{ batchId: string; scheduledLeads: number; queuedJobs: number; duplicate?: boolean }>(
+  const response = await axiosInstance.post<{ batchId: string; scheduledLeads: number; queuedJobs: number; duplicate?: boolean; message?: string }>(
     `${campaignsPath(organizationId)}/${campaignId}/leads/audit`,
     payload,
     { headers },
@@ -179,8 +179,8 @@ export async function generateAiBriefs(
   organizationId: string,
   campaignId: string,
   payload: GenerateBriefsPayload,
-): Promise<{ queuedCount: number }> {
-  const response = await axiosInstance.post<{ queuedCount: number }>(
+): Promise<{ queuedCount: number; message?: string; skipped?: Array<{ leadId: string; reason: string }> }> {
+  const response = await axiosInstance.post<{ queuedCount: number; message?: string; skipped?: Array<{ leadId: string; reason: string }> }>(
     `${campaignsPath(organizationId)}/${campaignId}/leads/generate-briefs`,
     payload,
   )

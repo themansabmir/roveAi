@@ -9,7 +9,7 @@ import { IPrismaService, PRISMA_PLUGIN } from "@plugins/prisma/prisma.plugin";
 import { IQueueService, QUEUE_PLUGIN } from "@plugins/queue/queue.types";
 import { runOutboxSweep } from "@features/jobs/outbox-sweep";
 
-export async function runRole(role: "discover" | "crawl" | "psi" | "interpret"): Promise<void> {
+export async function runRole(role: "discover" | "crawl" | "psi" | "interpret" | "all"): Promise<void> {
   const config = loadConfig();
   const shutdown = async () => {
     logger.info({ role }, "Worker shutdown initiated");
@@ -24,6 +24,9 @@ export async function runRole(role: "discover" | "crawl" | "psi" | "interpret"):
   });
 
   if (config.QUEUE_DRIVER === "pubsub") {
+    if (role === "all") {
+      throw new Error("Push server does not support 'all' role. Please specify a specific role for pubsub.");
+    }
     await startPushServer(role);
     return;
   }

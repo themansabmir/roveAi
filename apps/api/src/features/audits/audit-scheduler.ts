@@ -146,16 +146,34 @@ export class AuditScheduler {
   async scheduleAiBriefs(
     campaignId: string,
     leadIds: string[]
-  ): Promise<{ queuedCount: number }> {
+  ): Promise<{ queuedCount: number; skippedLeads: Array<{ leadId: string; reason: string }> }> {
     const campaign = await this.prisma.campaign.findUniqueOrThrow({ where: { id: campaignId } });
+    
+    // Strict allowlist: only leads that actually underwent audit AND have a real owned website
     const leads = await this.prisma.campaignLead.findMany({
       where: {
         id: { in: leadIds },
         campaignId,
-        auditStatus: { in: ["COMPLETED", "PARTIALLY_COMPLETED"] },
+        auditStatus: { in: ["COMPLETED", "PARTIALLY_COMPLETED", "FAILED"] },
+        business: {
+          websiteUrl: { not: null },
+          websiteClass: "OWNED_SITE",
+        },
       },
+      select: { id: true },
       orderBy: { id: "asc" },
     });
+
+    const eligibleIds = new Set(leads.map((l) => l.id));
+    const skippedLeads: Array<{ leadId: string; reason: string }> = [];
+    for (const id of leadIds) {
+      if (!eligibleIds.has(id)) {
+        skippedLeads.push({
+          leadId: id,
+          reason: "Lead missing website or not in COMPLETED, PARTIALLY_COMPLETED, or FAILED status",
+        });
+      }
+    }
 
     let queuedCount = 0;
     for (const lead of leads) {
@@ -166,7 +184,7 @@ export class AuditScheduler {
       await this.ensureJob(campaignId, campaign.organizationId, lead.id, "INTERPRET");
       queuedCount += 1;
     }
-    return { queuedCount };
+    return { queuedCount, skippedLeads };
   }
 
   /**

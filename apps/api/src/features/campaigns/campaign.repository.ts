@@ -896,7 +896,7 @@ export class CampaignRepository {
     await this.prisma.$transaction(async (tx) => {
       // Deterministic row lock to prevent deadlock with concurrent updates
       await tx.$queryRaw(
-        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id = ${leadId} FOR UPDATE`
+        Prisma.sql`SELECT id FROM "campaign_lead" WHERE id = ${leadId} FOR UPDATE`
       );
 
       await tx.campaignLead.update({
@@ -1029,7 +1029,7 @@ export class CampaignRepository {
     await this.prisma.$transaction(async (tx) => {
       // Deterministic row locking in strictly ascending ID order to eliminate database deadlocks
       await tx.$queryRaw(
-        Prisma.sql`SELECT id FROM "CampaignLead" WHERE id IN (${Prisma.join(dedupedIds)}) ORDER BY id ASC FOR UPDATE`
+        Prisma.sql`SELECT id FROM "campaign_lead" WHERE id IN (${Prisma.join(dedupedIds)}) ORDER BY id ASC FOR UPDATE`
       );
 
       switch (action) {

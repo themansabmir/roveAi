@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
+import { toast } from "sonner"
 import {
   Check,
   Copy,
@@ -391,7 +392,23 @@ export function LeadBriefDrawer({
                       <Button
                         size="sm"
                         disabled={briefMutation.isPending}
-                        onClick={() => briefMutation.mutate({ leadIds: [lead.id] })}
+                        onClick={() =>
+                          briefMutation.mutate(
+                            { leadIds: [lead.id] },
+                            {
+                              onSuccess: (result) => {
+                                if (result.queuedCount === 0) {
+                                  toast.warning(result.message || "0 briefs queued: Prospect is not eligible.")
+                                } else {
+                                  toast.success("Queued AI sales brief synthesis.")
+                                }
+                              },
+                              onError: (err) => {
+                                toast.error(err instanceof Error ? err.message : "Failed to queue brief")
+                              },
+                            }
+                          )
+                        }
                         className="gap-1.5 font-semibold"
                       >
                         <Sparkles className="size-3.5" />

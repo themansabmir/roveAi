@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { ArrowLeft, Download } from "lucide-react"
+import { toast } from "sonner"
 import { getErrorMessage } from "@/features/auth/domain/auth-error"
 import { useAuth } from "@/features/auth/application/useAuth"
 import {
@@ -227,9 +228,17 @@ export function CampaignDetailPage() {
         idempotencyKey,
       },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
           setAuditModalOpen(false)
           setSelectedLeadIds(new Set())
+          if (result.scheduledLeads === 0) {
+            toast.warning(result.message || "0 leads scheduled: Selected prospects have no website or are already being audited.")
+          } else {
+            toast.success(result.message || `Scheduled technical audit for ${result.scheduledLeads} prospect(s).`)
+          }
+        },
+        onError: (err) => {
+          toast.error(err instanceof Error ? err.message : "Failed to start technical audit")
         },
       }
     )
@@ -241,8 +250,18 @@ export function CampaignDetailPage() {
         leadIds: Array.from(selectedLeadIds),
       },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
           setSelectedLeadIds(new Set())
+          if (result.queuedCount === 0) {
+            toast.warning(result.message || "0 briefs queued: Selected prospects are not eligible.")
+          } else if (result.skipped && result.skipped.length > 0) {
+            toast.info(result.message || `Queued ${result.queuedCount} brief(s).`)
+          } else {
+            toast.success(result.message || `Queued AI sales brief synthesis for ${result.queuedCount} prospect(s).`)
+          }
+        },
+        onError: (err) => {
+          toast.error(err instanceof Error ? err.message : "Failed to generate AI briefs")
         },
       }
     )
@@ -264,17 +283,45 @@ export function CampaignDetailPage() {
   }
 
   const handleSingleAudit = (leadId: string) => {
-    selectiveAuditMutation.mutate({
-      leadIds: [leadId],
-      tools: ["CRAWL", "PERFORMANCE"],
-      generateAiBrief: false,
-    })
+    selectiveAuditMutation.mutate(
+      {
+        leadIds: [leadId],
+        tools: ["CRAWL", "PERFORMANCE"],
+        generateAiBrief: false,
+      },
+      {
+        onSuccess: (result) => {
+          if (result.scheduledLeads === 0) {
+            toast.warning(result.message || "0 leads scheduled: Prospect has no website or is already being audited.")
+          } else {
+            toast.success("Technical audit started.")
+          }
+        },
+        onError: (err) => {
+          toast.error(err instanceof Error ? err.message : "Failed to start audit")
+        },
+      }
+    )
   }
 
   const handleSingleBrief = (leadId: string) => {
-    generateBriefsMutation.mutate({
-      leadIds: [leadId],
-    })
+    generateBriefsMutation.mutate(
+      {
+        leadIds: [leadId],
+      },
+      {
+        onSuccess: (result) => {
+          if (result.queuedCount === 0) {
+            toast.warning(result.message || "0 briefs queued: Prospect is not eligible.")
+          } else {
+            toast.success("AI sales brief synthesis queued.")
+          }
+        },
+        onError: (err) => {
+          toast.error(err instanceof Error ? err.message : "Failed to queue brief")
+        },
+      }
+    )
   }
 
   const handleSingleArchive = (leadId: string, currentArchived: boolean) => {

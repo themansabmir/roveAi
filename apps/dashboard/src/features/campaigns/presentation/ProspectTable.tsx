@@ -331,7 +331,9 @@ export function ProspectTable({
                           </button>
                         )}
 
-                        {(lead.auditStatus === "COMPLETED" || lead.auditStatus === "PARTIALLY_COMPLETED") &&
+                        {(lead.auditStatus === "COMPLETED" ||
+                          lead.auditStatus === "PARTIALLY_COMPLETED" ||
+                          lead.auditStatus === "FAILED") &&
                           !lead.brief &&
                           lead.aiStatus !== "QUEUED" &&
                           lead.aiStatus !== "PENDING" &&
